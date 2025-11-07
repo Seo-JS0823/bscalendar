@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.bscalendar.project.ProjectMapper">
+<mapper namespace="com.bscalendar.project.mapper.ProjectMapper">
 
 	<!-- 프로젝트 생성, ID: projectCreate -->
 	<insert id="projectCreate">
@@ -10,7 +10,50 @@
 			(#{team_name}, #{team_sdate}, #{team_edate}, #{mem_id})
 	</insert>
 	
-	<!--  -->
+	<!-- 프로젝트 조회(EG_MAPP 테이블에 INSERT할 IDX 가져오기) -->
+	<select id="projectRead_idx">
+		SELECT
+			TEAM_IDX
+		FROM
+			EG_TEAM
+		WHERE
+			MEM_ID = #{mem_id} AND
+			TEAM_NAME = #{team_name}
+	</select>
+	
+	<!-- 프로젝트 생성(EG_MAPP 테이블) -->
+	<insert id="projectCreate_mapp">
+		INSERT INTO EG_MAPP
+			(TEAM_IDX, MEM_ID)
+		VALUES
+			(#{team_idx}, #{mem_id})
+	</insert>
+	
+	<!-- 프로젝트 조회(EG_MAPP), ID: projectRead -->
+	<select id="projectRead" resultType="com.bscalendar.project.dto.ProjectDTO">
+		SELECT
+			MEMBER.MEM_NAME,
+			DATE_FORMAT(TEAM.TEAM_SDATE, '%y-%m-%d') AS TEAM_SDATE,
+			DATE_FORMAT(TEAM.TEAM_EDATE, '%y-%m-%d') AS TEAM_EDATE,
+			TEAM.TEAM_NAME,
+			TEAM.TEAM_CON_FLAG,
+			TEAM.TEAM_IDX,
+			(
+				SELECT
+					count(*)
+				FROM
+					EG_MAPP SUB
+				WHERE
+					SUB.TEAM_IDX = TEAM.TEAM_IDX
+			) AS MEMBER_COUNT
+		FROM
+			EG_MAPP MAPP, EG_TEAM TEAM, EG_MEMBER MEMBER
+		WHERE
+			MEMBER.MEM_ID = TEAM.MEM_ID AND
+			MAPP.TEAM_IDX = TEAM.TEAM_IDX AND
+			MAPP.MEM_ID = #{mem_id}
+	</select>
+	
 	<!--  -->
 	<!--  -->
 	<!--  -->

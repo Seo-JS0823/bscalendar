@@ -21,10 +21,14 @@ TEAM_DEL_FLAG	CHAR		DEFAULT 'N'		프로젝트 삭제 여부
 	private String team_regdate;
 	private String team_del_flag;
 	
+	// EG_MAPP, EG_TEAM 외 테이블
+	private String mem_name;
+	private Integer member_count;
+	
 	public ProjectDTO() {}
-
+	
 	public ProjectDTO(Integer team_idx, String team_name, String team_sdate, String team_edate, String mem_id,
-			String team_con_flag, String team_regdate, String team_del_flag) {
+			String team_con_flag, String team_regdate, String team_del_flag, String mem_name, Integer member_count) {
 		super();
 		this.team_idx = team_idx;
 		this.team_name = team_name;
@@ -34,8 +38,10 @@ TEAM_DEL_FLAG	CHAR		DEFAULT 'N'		프로젝트 삭제 여부
 		this.team_con_flag = team_con_flag;
 		this.team_regdate = team_regdate;
 		this.team_del_flag = team_del_flag;
+		this.mem_name = mem_name;
+		this.member_count = member_count;
 	}
-
+	
 	public Integer getTeam_idx() {
 		return team_idx;
 	}
@@ -48,7 +54,7 @@ TEAM_DEL_FLAG	CHAR		DEFAULT 'N'		프로젝트 삭제 여부
 		return team_name;
 	}
 
-	public void setTeam_Name(String team_name) {
+	public void setTeam_name(String team_name) {
 		this.team_name = team_name;
 	}
 
@@ -98,6 +104,33 @@ TEAM_DEL_FLAG	CHAR		DEFAULT 'N'		프로젝트 삭제 여부
 
 	public void setTeam_del_flag(String team_del_flag) {
 		this.team_del_flag = team_del_flag;
+	}
+
+	public String getMem_name() {
+		return mem_name;
+	}
+
+	public void setMem_name(String mem_name) {
+		this.mem_name = mem_name;
+	}
+
+	public Integer getMember_count() {
+		return member_count;
+	}
+
+	public void setMember_count(Integer member_count) {
+		this.member_count = member_count;
+	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				   .append(this.mem_id + ", ")
+				   .append(this.mem_name + ", ")
+				   .append(this.team_name + ", ")
+				   .append(this.team_sdate + ", ")
+				   .append(this.team_edate)
+				   .toString();
 	}
 	
 }

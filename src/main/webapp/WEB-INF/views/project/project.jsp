@@ -27,6 +27,26 @@
           <div>
             <span class="cal-descript green">● 팀 업무</span>
             <span class="cal-descript orange">● 개인 업무</span>
+            <span class="cal-descript blue" id="members">● 소속 멤버</span>
+            <input type="hidden" id="team_idx" value="${team_idx}">
+            <script> // 멤버 확인
+            	let projectMember = {};
+            	
+            
+            	const teamIdx = document.getElementById('team_idx').value;
+            	fetch(`/api/project/members/\${teamIdx}`)
+            	.catch(error => console.log(error))
+            	.then(response => response.json())
+            	.then(data => {
+            		projectMember = data;
+            	});
+            
+            	const members = document.getElementById('members');
+            	members.addEventListener('click', () => {
+            		// TODO: 소속된 멤버가 누구누구 있는지 확인할 수 있는 로직
+            		
+            	});
+            </script>
           </div>
         </div>
         <!-- calendar.js -->

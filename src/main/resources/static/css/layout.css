@@ -246,6 +246,7 @@
 
 
 .calendar-container { /* 달력 콘테이너 */
+	position: relative;
   width: 100%;
   height: 60%;
   box-shadow: 0 0 3px #ccc;
@@ -269,6 +270,10 @@
 }
 .cal-descript.orange {
   color: orange;
+}
+.cal-descript.blue {
+	color: #6495ED;
+	cursor: pointer;
 }
 
 
