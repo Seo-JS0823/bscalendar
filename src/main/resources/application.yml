@@ -1,6 +1,9 @@
 spring:
   application:
     name: bscalendar
+  config:
+    import:
+      - optional:file:.env[.properties]
   mvc:
     view:
       prefix: /WEB-INF/views/
