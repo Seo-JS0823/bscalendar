@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/layout.css">
   <title>부성카렌다</title>
-<script src="js/index.global.min.js"></script>
-<script src="js/calendar.js"></script>
+<script src="/js/index.global.min.js"></script>
+<script src="/js/calendar.js"></script>
 </head>
 <body>
 <nav class="top-menu-area">

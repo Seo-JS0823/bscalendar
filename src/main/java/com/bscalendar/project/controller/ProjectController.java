@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -23,12 +24,23 @@ public class ProjectController {
 	 * 프로젝트 삭제: DELETE, /api/project
 	 */
 	
-	@PostMapping("/")
+	@GetMapping("/view")
+	public String projectView() {
+		return "project/project";
+	}
+	
+	@GetMapping("/list/view")
+	public String projectListView() {
+		return "project/project-list";
+	}
+	
+	@PostMapping("")
 	@ResponseBody
-	public ResponseEntity<ProjectDTO> projectCreate() {
+	public ResponseEntity<ProjectDTO> projectCreate(@RequestBody ProjectDTO project) {
 		// TODO: 프로젝트 생성
+		System.out.println(project);
 		
-		return null;
+		return ResponseEntity.ok(project);
 	}
 	
 	@GetMapping("/")

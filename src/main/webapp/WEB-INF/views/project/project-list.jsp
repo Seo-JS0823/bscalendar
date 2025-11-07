@@ -43,13 +43,13 @@
             <hr>
             <div class="create-input">
               <label>프로젝트 제목</label>
-              <input type="text" placeholder="방 제목을 입력하세요.">
+              <input type="text" id="team_name" placeholder="프로젝트 제목을 입력하세요.">
             </div>
             <div class="create-input">
               <label>시작 날짜</label>
-              <input type="date" placeholder="방 제목을 입력하세요.">
+              <input type="date" id="team_sdate">
               <label>종료 날짜</label>
-              <input type="date" placeholder="방 제목을 입력하세요.">
+              <input type="date" id="team_edate">
             </div>
             <div class="create-btns">
               <button id="create-btn">CREATE</button>
@@ -69,8 +69,36 @@
             });
 
             const createBtn = document.getElementById('create-btn');
-            createBtn.addEventListener('click', () => {
-              // TODO: 프로젝트 생성 로직
+            createBtn.addEventListener('click', (e) => {
+              const url = '/api/project';
+              
+              const projectName = document.getElementById('team_name').value;
+              const projectStartDate = document.getElementById('team_sdate').value;
+              const projectEndDate = document.getElementById('team_edate').value;
+              
+              if(!projectName) {
+            	  alert('프로젝트 제목은 필수입니다.')
+            	  e.preventDefault();
+              }
+              const member = {
+            		  team_name: projectName,
+            		  team_sdate: projectStartDate,
+            		  team_edate: projectEndDate
+              }
+              console.log(member);
+              fetch(url, {
+            	  method: 'post',
+            	  headers: {
+            		  'Content-Type':'application/json'
+            	  },
+            	  body: JSON.stringify(member)
+              })
+              .catch(error => console.log(error))
+              .then(response => response.json())
+              .then(data => {
+            	  console.log(data)
+              });
+              
             });
 
             const closeBtn = document.getElementById('create-btn-close');

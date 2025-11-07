@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bscalendar.project.ProjectMapper">
+
+	<!-- 프로젝트 생성, ID: projectCreate -->
+	<insert id="projectCreate">
+		INSERT INTO EG_TEAM
+			(TEAM_NAME, TEAM_SDATE, TEAM_EDATE, MEM_ID)
+		VALUES
+			(#{team_name}, #{team_sdate}, #{team_edate}, #{mem_id})
+	</insert>
+	
+	<!--  -->
+	<!--  -->
+	<!--  -->
+	<!--  -->
+</mapper>
