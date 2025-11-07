@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: bscalendar
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${MARIA_URL}
+    username: ${MARIA_USERNAME}
+    password: ${MARIA_PASSWORD}
+    
+server:
+  port: 9090
+  servlet:
+    context-path: /
+    encoding:
+      force: true
+    jsp:
+      init-parameters:
+        development: true
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+
+jwt:
+  secret: ${SECERT_KEY}

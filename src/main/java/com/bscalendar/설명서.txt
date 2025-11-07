@@ -1,0 +1,10 @@
+1. 뷰 페이지를 띄우는 메서드는 각자 Controller에 따로 만들것
+     - 로그인/회원가입/비밀번호 찾기는 index 패키지에 이미 만들어져 있음
+
+2. 전부 REST API 방식으로 URL 만들어 두었음
+     - 각 Controller 메서드에 필요한 파라미터는 알아서 넣으면 됩니다.
+         - ex) @RequestBody, @PathVariable, DTO 등
+
+3. 추가적으로 필요한 기능은 URL 다르게 해서 컨트롤러 메서드 추가하면 됩니다.
+
+4. Mapper도 가독성/수정/관리를 위해 통일하는 방향이 나을 것 같으니 mapper.xml로 작성 
