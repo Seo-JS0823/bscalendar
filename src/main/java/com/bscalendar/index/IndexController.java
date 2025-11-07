@@ -9,7 +9,7 @@ public class IndexController {
 	@GetMapping("/")
 	public String login() {
 		// TODO: 로그인 페이지
-		return "";
+		return "work/work-create";
 	}
 	
 	@GetMapping("/join")

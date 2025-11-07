@@ -15,16 +15,18 @@
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
 
-      const startDate = document.getElementById('startDate');
+      const startDate = document.getElementById('startDate'); // 업무시작 날짜
       startDate.value = `${year}-${month}-${day}`;
 
-      const endDate = document.getElementById('endDate');
+      const endDate = document.getElementById('endDate'); // 업무 종료날짜
       endDate.value = `${year}-${month}-${day}`;
 
-      const alramControl = document.getElementById('alram-control');
-      alramControl.addEventListener('click', () => {
-        const element = document.getElementById('alram');
-        const descript = document.getElementById('alram-descript');
+      const alarmControl = document.getElementById('alarm-control'); // 알람 설정 버튼
+      
+  	  // 알람설정 버튼 누르면 날짜선택 뜸 아니면 placeholder내용 뜸
+      alarmControl.addEventListener('click', () => { 
+        const element = document.getElementById('alarm');
+        const descript = document.getElementById('alarm-descript');
         const state = element.className;
         console.log(state)
         if(state === 'close') {
@@ -42,9 +44,19 @@
         }
       });
 
-      const createBtn = document.getElementById('work-create-btn');
+      const createBtn = document.getElementById('work-create-btn'); // 등록 버튼
       createBtn.addEventListener('click', () => {
-        alert('TODO: 등록 이벤트');
+    	  const openEl = document.querySelector('#open')
+    	  const privateEl = document.querySelector('#private')
+    	  let hideCheck = 'N';
+    	  
+    	  if(openEl.checked) {
+    		  let url = '/insertwork/' + hideCheck;
+    	  } else if(privateEl.checked) {
+    		  hideCheck = 'Y';
+    		  url = '/insertwork/' + hideCheck;
+    	  }
+    	  
       });
     })
   </script>
@@ -62,14 +74,14 @@
     <div class="work-create-content">
       <div class="work-create-content-box">
         <div class="work-create-content-row">
-          <input type="radio" name="WORKS_HIDE"><label for="WORKS_HIDE">공유 (팀 업무)</label>
-          <input type="radio" name="WORKS_HIDE" checked><label for="WORKS_HIDE">비공유 (개인 업무)</label>
+          <label for="open"><input type="radio" id="open" name="alarm" value="">공개 (팀 공개)</label>
+          <label for="private"><input type="radio" id="private" name="alarm" value="">비공개 (개인)</label>
         </div>
         <hr>
         <div class="work-create-content-row gap1">
-          <label class="work-create-content-label pointer" id="alram-control" for="alram">알람 설정</label>
-          <input class="close" type="datetime-local" id="alram">
-          <input class="open" type="text" id="alram-descript" placeholder="알람 설정을 눌러주세요." readonly>
+          <label class="work-create-content-label pointer" id="alarm-control" for="alarm">알람 설정</label>
+          <input class="close" type="datetime-local" id="alarm">
+          <input class="open" type="text" id="alarm-descript" placeholder="알람 설정을 눌러주세요." readonly>
         </div>
         <div class="work-create-content-row mg1 gap1">
           <label class="work-create-content-label" for="startDate">업무 시작날짜</label>
