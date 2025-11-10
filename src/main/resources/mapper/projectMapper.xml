@@ -54,7 +54,43 @@
 			MAPP.MEM_ID = #{mem_id}
 	</select>
 	
-	<!--  -->
+	<!-- 프로젝트에 소속된 멤버 조회, ID: projectMembersRead -->
+	<select id="projectMembersRead" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
+		SELECT
+			MEMBER.MEM_NAME,
+			MEMBER.MEM_ID
+		FROM
+			EG_MAPP MAPP, EG_MEMBER MEMBER, EG_TEAM TEAM
+		WHERE
+			MEMBER.MEM_ID = MAPP.MEM_ID AND
+			MAPP.TEAM_IDX = TEAM.TEAM_IDX AND
+			MAPP.TEAM_IDX = #{team_idx}
+	</select>
+	
+	<!-- 프로젝트에 소속된 멤버가 등록한 업무 리스트 조회, ID: projectMemberToWorksRead -->
+	<select id="projectMemberToWorksRead" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.WORKS_IDX,
+			W.TEAM_IDX,
+			W.MEM_ID,
+			W.WORKS_COMMENT,
+			W.WORKS_HIDE,
+			W.WORKS_ARLAM,
+			IFNULL(W.WORKS_ALRAM_DATE, '미등록') AS WORKS_ALRAM_DATE,
+			W.WORKS_ARLAM_CONF,
+			DATE_FORMAT(W.WORKS_SDATE, '%y-%m-%d %H시 %m분') AS WORKS_SDATE,
+			DATE_FORMAT(W.WORKS_EDATE, '%y-%m-%d %H시 %m분') AS WORKS_EDATE,
+			W.WORKD_FIN_FLAG,
+			W.WORKS_DEL_FLAG
+		FROM
+			EG_MEMBER MEMBER, EG_TEAM TEAM, EG_WORKS W
+		WHERE
+			MEMBER.MEM_ID = W.MEM_ID AND
+			W.TEAM_IDX = TEAM.TEAM_IDX AND
+			W.MEM_ID = #{member_id} AND
+			W.TEAM_IDX = #{team_idx};
+	</select>
+	
 	<!--  -->
 	<!--  -->
 </mapper>

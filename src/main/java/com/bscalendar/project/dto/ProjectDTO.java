@@ -42,85 +42,35 @@ TEAM_DEL_FLAG	CHAR		DEFAULT 'N'		프로젝트 삭제 여부
 		this.member_count = member_count;
 	}
 	
-	public Integer getTeam_idx() {
-		return team_idx;
-	}
+	public Integer getTeam_idx() { return team_idx; }
+	public void setTeam_idx(Integer team_idx) { this.team_idx = team_idx; }
 
-	public void setTeam_idx(Integer team_idx) {
-		this.team_idx = team_idx;
-	}
+	public String getTeam_name() { return team_name; }
+	public void setTeam_name(String team_name) { this.team_name = team_name; }
 
-	public String getTeam_name() {
-		return team_name;
-	}
+	public String getTeam_sdate() { return team_sdate; }
+	public void setTeam_sdate(String team_sdate) { this.team_sdate = team_sdate; }
 
-	public void setTeam_name(String team_name) {
-		this.team_name = team_name;
-	}
+	public String getTeam_edate() { return team_edate; }
+	public void setTeam_edate(String team_edate) { this.team_edate = team_edate; }
 
-	public String getTeam_sdate() {
-		return team_sdate;
-	}
+	public String getMem_id() { return mem_id; }
+	public void setMem_id(String mem_id) { this.mem_id = mem_id; }
 
-	public void setTeam_sdate(String team_sdate) {
-		this.team_sdate = team_sdate;
-	}
+	public String getTeam_con_flag() { return team_con_flag; }
+	public void setTeam_con_flag(String team_con_flag) { this.team_con_flag = team_con_flag; }
 
-	public String getTeam_edate() {
-		return team_edate;
-	}
+	public String getTeam_regdate() { return team_regdate; }
+	public void setTeam_regdate(String team_regdate) { this.team_regdate = team_regdate; }
 
-	public void setTeam_edate(String team_edate) {
-		this.team_edate = team_edate;
-	}
+	public String getTeam_del_flag() { return team_del_flag; }
+	public void setTeam_del_flag(String team_del_flag) { this.team_del_flag = team_del_flag; }
 
-	public String getMem_id() {
-		return mem_id;
-	}
+	public String getMem_name() { return mem_name; }
+	public void setMem_name(String mem_name) { this.mem_name = mem_name; }
 
-	public void setMem_id(String mem_id) {
-		this.mem_id = mem_id;
-	}
-
-	public String getTeam_con_flag() {
-		return team_con_flag;
-	}
-
-	public void setTeam_con_flag(String team_con_flag) {
-		this.team_con_flag = team_con_flag;
-	}
-
-	public String getTeam_regdate() {
-		return team_regdate;
-	}
-
-	public void setTeam_regdate(String team_regdate) {
-		this.team_regdate = team_regdate;
-	}
-
-	public String getTeam_del_flag() {
-		return team_del_flag;
-	}
-
-	public void setTeam_del_flag(String team_del_flag) {
-		this.team_del_flag = team_del_flag;
-	}
-
-	public String getMem_name() {
-		return mem_name;
-	}
-
-	public void setMem_name(String mem_name) {
-		this.mem_name = mem_name;
-	}
-
-	public Integer getMember_count() {
-		return member_count;
-	}
-
-	public void setMember_count(Integer member_count) {
-		this.member_count = member_count;
-	}
+	public Integer getMember_count() { return member_count; }
+	public void setMember_count(Integer member_count) { this.member_count = member_count; }
 
 	@Override
 	public String toString() {

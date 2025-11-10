@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bscalendar.project.dto.ProjectDTO;
+import com.bscalendar.project.dto.response.MemberWorkDTO;
+import com.bscalendar.project.dto.response.ProjectMemberDTO;
 import com.bscalendar.project.mapper.ProjectMapper;
 
 @Service
@@ -41,5 +43,17 @@ public class ProjectService {
 		}
 		
 		return projectList;
+	}
+	
+	// 프로젝트에 소속된 멤버 조회: Controller [GET: projectMemberRead Method]
+	public List<ProjectMemberDTO> projectMemberRead(Integer team_idx) {
+		List<ProjectMemberDTO> members = projectMapper.projectMembersRead(team_idx);
+		return members;
+	}
+	
+	// 프로젝트에 소속된 멤버가 등록한 업무 리스트 조회: Controller [GET: projectMemberWorkRead Method]
+	public List<MemberWorkDTO> projectMemberWorkRead(String member_id, Integer team_idx) {
+		List<MemberWorkDTO> memberToWorks = projectMapper.projectMemberToWorksRead(member_id, team_idx);
+		return memberToWorks;
 	}
 }
