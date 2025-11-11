@@ -2,21 +2,27 @@ package com.bscalendar.work.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bscalendar.work.dto.WorkDTO;
+import com.bscalendar.work.mapper.WorkMapper;
 
 @Controller
 @RequestMapping("/api/work")
 public class WorkController {
+	
+	@Autowired
+	private WorkMapper workMapper;
 	/* REST API URL
 	 * 업무 생성: POST,     /api/work
 	 * 업무 조회: GET,      /api/work
@@ -24,12 +30,17 @@ public class WorkController {
 	 * 업무 삭제: DELETE,   /api/work
 	 */
 	
-	@PostMapping("/")
+	@PostMapping("/insertWork")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> workCreate() {
+	public ResponseEntity<WorkDTO> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
+		WorkDTO work = workMapper.workCreate(workDTO);
 		
-		return null;
+		ResponseEntity<WorkDTO> result =
+			(work != null)
+			? ResponseEntity.status(HttpStatus.OK).body(work)
+			: ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return result;
 	}
 	
 	@GetMapping("")

@@ -46,19 +46,46 @@
 
       const createBtn = document.getElementById('work-create-btn'); // 등록 버튼
       createBtn.addEventListener('click', () => {
-    	  const openEl = document.querySelector('#open')
-    	  const privateEl = document.querySelector('#private')
-    	  let hideCheck = 'N';
+    	  const openEl    		 = document.querySelector('#open'); // 공개 버튼
+    	  const privateEl 		 = document.querySelector('#private'); // 비공개 버튼
+    	  const alarmControlEl = document.querySelector('#alarm-control') // 알람 설정
+    	  const alarmEl 			 = document.querySelector('#alarm'); // 알람 날짜
+    	  const startDateEl 	 = document.querySelector('#startDate') // 업무 시작일
+    	  const endDateEl 		 = document.querySelector('#endDate') // 업무 종료일
+    	  const workCommentEl  = document.querySelector('#work-comment') // 업무 내용
     	  
-    	  if(openEl.checked) {
-    		  let url = '/insertwork/' + hideCheck;
-    	  } else if(privateEl.checked) {
+    	  const url = '/api/work/insertWork';
+    	  
+    	  let hideCheck  = 'N';
+    	  let alarmCheck = 'N';
+    	  
+    	  if(privateEl.checked) {
     		  hideCheck = 'Y';
-    		  url = '/insertwork/' + hideCheck;
     	  }
     	  
-      });
-    })
+    	  if(alarmEl.value) {
+    		  alarmCheck = 'Y';
+    	  }
+    	  
+    	  fetch(url, {
+    		  method: 'POST',
+    		  headers: {'Content-type':'application/json'},
+    		  body: Json.stringify({
+    			  works_comment: workCommentEl.value,
+    			  works_hide: hideCheck,
+    			  works_arlam: alarmCheck,
+    			  works_arlam_date: alarmEl.value,
+    			  works_sdate: startDateEl.value, 
+    				works_edate: endDateEl.value,
+    		  }),
+    	  })
+    	  .then( response => response.json() )
+    	  .then( data => {
+    		  
+    	  } )
+    	  
+      }); // 업무등록 클릭 이벤트
+    }) // DOMContentLoaded
   </script>
 </head>
 <body>
