@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReplyUpdateDTO {
 
-    private int replyIdx; //고유아이디
+    private int reply_idx; //고유아이디
     
-    private String replyComment; //수정내용
+    private String reply_comment; //수정내용
     
 }

@@ -8,16 +8,17 @@ import com.bscalendar.reply.dto.ReplyUpdateDTO;
 
 @Mapper
 public interface ReplyMapper {
+
     int insertReply(ReplyCreateDTO createDto);
     
-    ReplyResponseDTO getReplyByIdx(int replyIdx);
+    ReplyResponseDTO getReplyByIdx(int reply_idx);
 
-    List<ReplyResponseDTO> getRepliesByWorksIdx(int worksIdx);
+    List<ReplyResponseDTO> getRepliesByWorksIdx(int works_idx);
 
     int updateReply(ReplyUpdateDTO updateDto);
 
-    int deleteReply(int replyIdx);
+    int deleteReply(int reply_idx);
 
-	String getAuthorMemIdByReplyIdx(int replyIdx);
+    String getAuthorMemIdByReplyIdx(int reply_idx);
     
 }

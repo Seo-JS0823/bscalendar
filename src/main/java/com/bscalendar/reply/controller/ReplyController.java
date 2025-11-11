@@ -28,76 +28,84 @@ import jakarta.servlet.http.HttpSession;
 public class ReplyController {
 	
 	@Autowired
-	private ReplyService replyService; 
+	private ReplyService replyService;
 	
-	
-	@PostMapping("/")
+	/**
+	 * 1. 댓글 생성 (POST)
+	 */
+	@PostMapping("")
 	@ResponseBody
 	public ResponseEntity<ReplyResponseDTO> replyCreate(
 			@RequestBody ReplyCreateDTO createDto,
-			HttpSession session) { 
+			HttpSession session) {
 		String loginMemberId = (String) session.getAttribute("loginMemberId");
 
-		// 비로그인 사용자 차단
 		if (loginMemberId == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); 
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 		
-		//서비스 호출 시 DTO와 함께 로그인 ID도 전달
 		ReplyResponseDTO response = replyService.createReply(createDto, loginMemberId);
 		return ResponseEntity.ok(response);		
 	}
 	
-	@GetMapping("/") 
+	/**
+	 * 2. 댓글 목록 조회 (GET)
+	 */
+	@GetMapping("")
 	@ResponseBody
-	public ResponseEntity<List<ReplyResponseDTO>> replyRead(@RequestParam("worksIdx") int worksIdx) {		
-		List<ReplyResponseDTO> replyList = replyService.getRepliesByWorksIdx(worksIdx);
+	public ResponseEntity<List<ReplyResponseDTO>> replyRead(
+			// ★ [수정] DTO 규칙에 맞게 snake_case로 통일
+			@RequestParam("works_idx") int works_idx
+	) {		
+		List<ReplyResponseDTO> replyList = replyService.getRepliesByWorksIdx(works_idx);
 		return ResponseEntity.ok(replyList);		
 	}
 	
-	@PutMapping("/{replyIdx}")
+	/**
+	 * 3. 댓글 수정 (PUT)
+	 */
+	@PutMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
 	@ResponseBody
 	public ResponseEntity<ReplyResponseDTO> replyUpdate(
-			@PathVariable("replyIdx") int replyIdx, 
+			@PathVariable("reply_idx") int reply_idx,// ★ [수정]
 			@RequestBody ReplyUpdateDTO updateDto,
 			HttpSession session) {
-		//세션에서 로그인한 사용자 ID 가져오기
+		
 		String loginMemberId = (String) session.getAttribute("loginMemberId");
 		
-		//비로그인 사용자 차단
 		if (loginMemberId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
 		}
 		
-		updateDto.setReplyIdx(replyIdx);
+		// DTO에 Path의 ID 설정
+		updateDto.setReply_idx(reply_idx);
 		
-		//서비스 호출 시 DTO와 로그인 ID 전달
 		try {
 			ReplyResponseDTO response = replyService.updateReply(updateDto, loginMemberId);
 			return ResponseEntity.ok(response);
 		} catch (RuntimeException e) {
-			// 서비스에서 발생한 권한 없음 예외 처리
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
 		}
 	}
 	
-	@DeleteMapping("/{replyIdx}")
+	/**
+	 * 4. 댓글 삭제 (DELETE)
+	 */
+	@DeleteMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
 	@ResponseBody
 	public ResponseEntity<Void> replyDelete(
-			@PathVariable("replyIdx") int replyIdx,
+			@PathVariable("reply_idx") int reply_idx, // ★ [수정]
 			HttpSession session) {
-		//세션에서 로그인한 사용자 ID 가져오기
+		
 		String loginMemberId = (String) session.getAttribute("loginMemberId");
 
-		//비로그인 사용자 차단
 		if (loginMemberId == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
 		}
 		
-		//서비스 호출 시 ID와 로그인 ID 전달
 		try {
-			replyService.deleteReply(replyIdx, loginMemberId);
-			return ResponseEntity.ok().build(); // 삭제 성공 (200 OK)
+			replyService.deleteReply(reply_idx, loginMemberId);
+			return ResponseEntity.ok().build(); // 삭제 성공
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
 		}

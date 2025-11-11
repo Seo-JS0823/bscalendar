@@ -13,16 +13,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReplyResponseDTO {
 
-    private int replyIdx; //댓글 고유아이디
+    private int reply_idx; //댓글 고유아이디
     
-    private int worksIdx; //댓글이 적힌 업무
+    private int works_idx; //댓글이 적힌 업무
     
-    private String memId; //작성자아이디
+    private String mem_id; //작성자아이디
     
-    private String memName; //작성자
+    private String mem_name; //작성자
     
-    private String replyComment; //내용
+    private String reply_comment; //내용
     
-    private String replyRegdate; //작성일
+    private String reply_regdate; //작성일
     
 }
