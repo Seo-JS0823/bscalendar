@@ -11,7 +11,7 @@ public class ProjectViewController {
 	@GetMapping("/project/list")
 	public String projectListView() {
 		
-		return "project/project-list";
+		return "work/work-detail";
 	}
 	
 	@GetMapping("/project/{team_idx}")

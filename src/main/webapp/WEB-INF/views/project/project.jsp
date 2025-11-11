@@ -5,13 +5,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/weather.css">
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/layout.css">
   <title>부성카렌다</title>
-<script src="/js/index.global.min.js"></script>
-<script src="/js/calendar.js"></script>
+  
+	<script src="/js/index.global.min.js"></script>
+	<script src="/js/calendar.js"></script>
+	
 </head>
 <body>
+
 <nav class="top-menu-area">
 
 </nav>
@@ -106,9 +110,38 @@
       		});
       	})
       </script>
+      <script src="/js/keyStore.js"></script>
+			<script src="/js/weather.js"></script>
+			<script src="/js/conv_weather.js"></script>
       <!-- 날씨 Layer -->
-      <div class="weather-container">
-				
+      <div class="weather-container" id="weather-load">
+      	<script>
+      	// init()
+      	// UI 다 만들어지면 주석 해제
+      	</script>
+				<div class="wrap">
+					<div class="weather">
+						<div>
+							<div>
+								<h1>오늘의 날씨</h1>
+							</div>
+							<div></div><!--주간 날씨보기 공공포털오류-->
+						</div>
+						<div>
+						<div class="weather-icon"><img></div>
+							<div class="weather-detail">
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+								<div class="item"></div>
+							</div>
+						</div>
+					</div>
+				</div>
       </div>
 
     </div>
