@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     eventDisplay: 'block',
     eventTimeFormat: {
       hour: '2-digit',
-      minute: '2-dight',
+      minute: '2-digit',
       hour12: false
     }
   });

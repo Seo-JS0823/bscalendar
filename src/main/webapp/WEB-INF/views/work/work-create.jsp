@@ -67,6 +67,7 @@
 </nav>
 
 <div class="container">
+	<input type="hidden" value="${team_idx}">
   <div class="work-create-container">
     <div class="work-create-header">
       <h1>업무 등록</h1>

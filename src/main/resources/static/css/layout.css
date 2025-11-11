@@ -246,6 +246,7 @@
 
 
 .calendar-container { /* 달력 콘테이너 */
+	position: relative;
   width: 100%;
   height: 60%;
   box-shadow: 0 0 3px #ccc;
@@ -270,11 +271,57 @@
 .cal-descript.orange {
   color: orange;
 }
+.cal-descript.blue {
+	color: #6495ED;
+	cursor: pointer;
+}
+#member_name {
+	margin-left: auto;
+}
+#member_name::after {
+	content: ' ●';
+}
+
+
+.project-members { /* 프로젝트 멤버 */
+	width: 100%;
+	height: 10%;
+	border: 1px solid #ccc;
+	box-shadow: 0 0 5px #ccc;
+	overflow: hidden;
+}
+.project-members h1 {
+	padding-left: 1rem;
+	font-size: 1.4rem;
+	color: #6495ed;
+	background: #333;
+}
+.project-members-list {
+	width: 100%;
+	height: calc(100% - 1.4rem);
+	padding: 1rem;
+	background: white;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.2rem;
+	flex-wrap: wrap;
+}
+.project-members-list button {
+	font-size: 1.2rem;
+	font-weight: bold;
+	padding: 0.2rem 1rem;
+	background: #6495ed;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+	margin: 0;
+	color: white;
+}
 
 
 .weather-container { /* 날씨 콘테이너 */
   width: 100%;
-  height: 40%;
+  height: 30%;
   border: 1px solid #ccc;
   box-shadow: 0 0 5px #ccc;
 }
