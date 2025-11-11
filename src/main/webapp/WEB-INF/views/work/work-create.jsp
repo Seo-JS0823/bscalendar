@@ -46,6 +46,7 @@
 
       const createBtn = document.getElementById('work-create-btn'); // 등록 버튼
       createBtn.addEventListener('click', () => {
+    	  
     	  const openEl    		 = document.querySelector('#open'); // 공개 버튼
     	  const privateEl 		 = document.querySelector('#private'); // 비공개 버튼
     	  const alarmControlEl = document.querySelector('#alarm-control') // 알람 설정
@@ -54,23 +55,30 @@
     	  const endDateEl 		 = document.querySelector('#endDate') // 업무 종료일
     	  const workCommentEl  = document.querySelector('#work-comment') // 업무 내용
     	  
+    	  const alarmDescript = document.getElementById('alarm-descript');
+    	  
+    	  const teamIdx = ${team_idx}; // Model 에서 보내준 값
+    	  const memId   = '${mem_id}'; // Model 에서 보내준 값
+    	  
     	  const url = '/api/work/insertWork';
     	  
     	  let hideCheck  = 'N';
-    	  let alarmCheck = 'N';
+    	  let alarmCheck = 'N'
+    	  
+    	  if(alarmEl.value) {
+    		  alarmCheck = 'Y';
+    	  } 
     	  
     	  if(privateEl.checked) {
     		  hideCheck = 'Y';
     	  }
-    	  
-    	  if(alarmEl.value) {
-    		  alarmCheck = 'Y';
-    	  }
-    	  
+
     	  fetch(url, {
     		  method: 'POST',
-    		  headers: {'Content-type':'application/json'},
-    		  body: Json.stringify({
+    		  headers: {'Content-type':'application/json; charset=UTF-8'},
+    		  body: JSON.stringify({
+    			  team_idx: teamIdx,
+    		  	mem_id: memId,
     			  works_comment: workCommentEl.value,
     			  works_hide: hideCheck,
     			  works_arlam: alarmCheck,

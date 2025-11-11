@@ -7,6 +7,6 @@ import com.bscalendar.work.dto.WorkDTO;
 @Mapper
 public interface WorkMapper {
 
-	WorkDTO workCreate(WorkDTO workDTO);
+	int workCreate(WorkDTO workDTO);
 
 }

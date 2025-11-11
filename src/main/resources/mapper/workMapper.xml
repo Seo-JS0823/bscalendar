@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bscalendar.work.mapper.WorkMapper">
 	<insert id="workCreate">
-		
+			INSERT INTO EG_WORKS
+				(team_idx, mem_id, works_comment, works_hide, works_arlam,
+				 works_arlam_date, works_sdate, works_edate)
+			VALUES
+				(#{team_idx}, #{mem_id}, #{works_comment}, #{works_hide}, #{works_arlam},
+			   #{works_arlam_date}, #{works_sdate}, #{works_edate})
 	</insert>
 </mapper>

@@ -52,6 +52,7 @@
       	.catch(error => console.error(error))
       	.then(response => response.json())
       	.then(data => {
+      		console.log(data);
       		memberList.innerHTML = '';
       		data.forEach(member => {
       			const memId = member.mem_id;
@@ -221,6 +222,11 @@
 		const url = workCreateLocation.href;
 		window.open(url + teamIdx, '_blank');
 	});
+	
+	const worklistEl = document.querySelector('#worklist'); // 업무 리시트 테이블 
+	
+	
+	
 </script>
 </body>
 </html>

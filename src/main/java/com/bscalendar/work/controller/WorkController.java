@@ -34,11 +34,15 @@ public class WorkController {
 	@ResponseBody
 	public ResponseEntity<WorkDTO> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
-		WorkDTO work = workMapper.workCreate(workDTO);
+		if(workDTO.getWorks_arlam_date().equals("")) {
+			workDTO.setWorks_arlam_date(null);
+		}
+		System.out.println("뭐지?" + workDTO);
+		int work = workMapper.workCreate(workDTO);
 		
 		ResponseEntity<WorkDTO> result =
-			(work != null)
-			? ResponseEntity.status(HttpStatus.OK).body(work)
+			(work > 0)
+			? ResponseEntity.status(HttpStatus.OK).body(workDTO)
 			: ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		return result;
 	}
@@ -50,6 +54,8 @@ public class WorkController {
 		
 		return null;
 	}
+	
+	// TODO: works_idx 
 	
 	@PutMapping("/")
 	@ResponseBody

@@ -11,6 +11,7 @@ public class WorkViewController {
 	@GetMapping("/work/create/{team_idx}")
 	public String workCreate(@PathVariable("team_idx") Integer team_idx, Model model) {
 		model.addAttribute("team_idx", team_idx);
+		model.addAttribute("mem_id", "tengen");
 		return "work/work-create";
 	}
 }
