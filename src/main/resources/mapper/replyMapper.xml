@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<!-- 네임스페이스는 com.bscalendar.reply.mapper.ReplyMapper 와 일치 -->
+<mapper namespace="com.bscalendar.reply.mapper.ReplyMapper">
+
+    <!-- 
+      1. (Create) 댓글 삽입
+    -->
+    <insert id="insertReply" parameterType="com.bscalendar.reply.dto.ReplyCreateDTO"
+            useGeneratedKeys="true" keyProperty="reply_idx">
+        
+        INSERT INTO EG_REPLY (
+            WORKS_IDX, 
+            MEM_ID, 
+            REPLY_COMMENT, 
+            REPLY_REGDATE
+        ) VALUES (
+            #{works_idx},     
+            #{mem_id},         
+            #{reply_comment}, 
+            NOW()
+        )
+    </insert>
+
+    <!-- 
+      2. (Read 1) 단일 댓글 조회
+    -->
+    <select id="getReplyByIdx" resultType="com.bscalendar.reply.dto.ReplyResponseDTO">
+        SELECT 
+            R.REPLY_IDX, R.WORKS_IDX, R.MEM_ID, R.REPLY_COMMENT, R.REPLY_REGDATE,
+            M.MEM_NAME
+        FROM 
+            EG_REPLY R
+        JOIN 
+            EG_MEMBER M ON R.MEM_ID = M.MEM_ID
+        WHERE 
+            R.REPLY_IDX = #{reply_idx} 
+    </select>
+
+    <!-- 
+      3. 특정 업무의 모든 댓글 목록 조회
+    -->
+    <select id="getRepliesByWorksIdx" resultType="com.bscalendar.reply.dto.ReplyResponseDTO">
+        SELECT 
+            R.REPLY_IDX, R.WORKS_IDX, R.MEM_ID, R.REPLY_COMMENT, R.REPLY_REGDATE,
+            M.MEM_NAME
+        FROM 
+            EG_REPLY R
+        JOIN 
+            EG_MEMBER M ON R.MEM_ID = M.MEM_ID
+        WHERE 
+            R.WORKS_IDX = #{works_idx} 
+    </select>
+
+    <!-- 
+      4. (Update) 댓글 수정
+    -->
+    <update id="updateReply" parameterType="com.bscalendar.reply.dto.ReplyUpdateDTO">
+        UPDATE EG_REPLY
+        SET 
+            REPLY_COMMENT = #{reply_comment}
+        WHERE 
+            REPLY_IDX = #{reply_idx}
+    </update>
+
+    <!-- 5. (Delete) 댓글 삭제 -->
+    <delete id="deleteReply">
+        DELETE FROM EG_REPLY
+        WHERE REPLY_IDX = #{reply_idx}
+    </delete>
+
+    <!-- 6. (권한 확인용) 작성자 ID 조회 -->
+    <select id="getAuthorMemIdByReplyIdx" resultType="String">
+        SELECT MEM_ID
+        FROM EG_REPLY
+        WHERE REPLY_IDX = #{reply_idx}
+    </select>
+
+</mapper>

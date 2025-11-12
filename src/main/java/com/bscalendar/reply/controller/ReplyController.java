@@ -2,57 +2,113 @@ package com.bscalendar.reply.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bscalendar.reply.dto.ReplyDTO;
+import com.bscalendar.reply.dto.ReplyCreateDTO;
+import com.bscalendar.reply.dto.ReplyUpdateDTO;
+import com.bscalendar.reply.dto.ReplyResponseDTO;
+import com.bscalendar.reply.service.ReplyService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/api/reply")
 public class ReplyController {
-	/* REST API URL
-	 * 댓글 생성: POST,     /api/reply
-	 * 댓글 조회: GET,      /api/reply
-	 * 댓글 수정: PUT,      /api/reply
-	 * 댓글 삭제: DELETE,   /api/reply
+	
+	@Autowired
+	private ReplyService replyService;
+	
+	/**
+	 * 1. 댓글 생성 (POST)
 	 */
-	
-	@PostMapping("/")
+	@PostMapping("")
 	@ResponseBody
-	public ResponseEntity<ReplyDTO> replyCreate() {
-		// TODO: 댓글 생성
+	public ResponseEntity<ReplyResponseDTO> replyCreate(
+			@RequestBody ReplyCreateDTO createDto,
+			HttpSession session) {
+		String loginMemberId = (String) session.getAttribute("loginMemberId");
+
+		if (loginMemberId == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 		
-		return null;
+		ReplyResponseDTO response = replyService.createReply(createDto, loginMemberId);
+		return ResponseEntity.ok(response);		
 	}
 	
-	@GetMapping("/")
+	/**
+	 * 2. 댓글 목록 조회 (GET)
+	 */
+	@GetMapping("")
 	@ResponseBody
-	public ResponseEntity<List<ReplyDTO>> replyRead() {
-		// TODO: 댓글 조회
-		
-		return null;
+	public ResponseEntity<List<ReplyResponseDTO>> replyRead(
+			// ★ [수정] DTO 규칙에 맞게 snake_case로 통일
+			@RequestParam("works_idx") int works_idx
+	) {		
+		List<ReplyResponseDTO> replyList = replyService.getRepliesByWorksIdx(works_idx);
+		return ResponseEntity.ok(replyList);		
 	}
 	
-	@PutMapping("/")
+	/**
+	 * 3. 댓글 수정 (PUT)
+	 */
+	@PutMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
 	@ResponseBody
-	public ResponseEntity<ReplyDTO> replyUpdate() {
-		// TODO: 댓글 수정
+	public ResponseEntity<ReplyResponseDTO> replyUpdate(
+			@PathVariable("reply_idx") int reply_idx,// ★ [수정]
+			@RequestBody ReplyUpdateDTO updateDto,
+			HttpSession session) {
 		
-		return null;
+		String loginMemberId = (String) session.getAttribute("loginMemberId");
+		
+		if (loginMemberId == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
+		}
+		
+		// DTO에 Path의 ID 설정
+		updateDto.setReply_idx(reply_idx);
+		
+		try {
+			ReplyResponseDTO response = replyService.updateReply(updateDto, loginMemberId);
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+		}
 	}
 	
-	@DeleteMapping("/")
+	/**
+	 * 4. 댓글 삭제 (DELETE)
+	 */
+	@DeleteMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
 	@ResponseBody
-	public ResponseEntity<ReplyDTO> replyDelete() {
-		// TODO: 댓글 삭제
+	public ResponseEntity<Void> replyDelete(
+			@PathVariable("reply_idx") int reply_idx, // ★ [수정]
+			HttpSession session) {
 		
-		return null;
+		String loginMemberId = (String) session.getAttribute("loginMemberId");
+
+		if (loginMemberId == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
+		}
+		
+		try {
+			replyService.deleteReply(reply_idx, loginMemberId);
+			return ResponseEntity.ok().build(); // 삭제 성공
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+		}
 	}
 	
 }
