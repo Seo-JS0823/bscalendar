@@ -32,6 +32,7 @@ public class ReplyController {
 	
 	/**
 	 * 1. 댓글 생성 (POST)
+	 * (URL: POST /api/reply)
 	 */
 	@PostMapping("")
 	@ResponseBody
@@ -50,24 +51,26 @@ public class ReplyController {
 	
 	/**
 	 * 2. 댓글 목록 조회 (GET)
+	 * (URL: GET /api/reply)
 	 */
-	@GetMapping("")
+	@GetMapping("/list")
 	@ResponseBody
 	public ResponseEntity<List<ReplyResponseDTO>> replyRead(
-			// ★ [수정] DTO 규칙에 맞게 snake_case로 통일
 			@RequestParam("works_idx") int works_idx
 	) {		
+		
 		List<ReplyResponseDTO> replyList = replyService.getRepliesByWorksIdx(works_idx);
 		return ResponseEntity.ok(replyList);		
 	}
 	
 	/**
 	 * 3. 댓글 수정 (PUT)
+	 * (URL: PUT /api/reply/1)
 	 */
-	@PutMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
+	@PutMapping("/{reply_idx}")
 	@ResponseBody
 	public ResponseEntity<ReplyResponseDTO> replyUpdate(
-			@PathVariable("reply_idx") int reply_idx,// ★ [수정]
+			@PathVariable("reply_idx") int reply_idx,
 			@RequestBody ReplyUpdateDTO updateDto,
 			HttpSession session) {
 		
@@ -77,7 +80,6 @@ public class ReplyController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401
 		}
 		
-		// DTO에 Path의 ID 설정
 		updateDto.setReply_idx(reply_idx);
 		
 		try {
@@ -90,11 +92,12 @@ public class ReplyController {
 	
 	/**
 	 * 4. 댓글 삭제 (DELETE)
+	 * (URL: DELETE /api/reply/1)
 	 */
-	@DeleteMapping("/{reply_idx}") // ★ [수정] PathVariable도 snake_case로 통일
+	@DeleteMapping("/{reply_idx}")
 	@ResponseBody
 	public ResponseEntity<Void> replyDelete(
-			@PathVariable("reply_idx") int reply_idx, // ★ [수정]
+			@PathVariable("reply_idx") int reply_idx,
 			HttpSession session) {
 		
 		String loginMemberId = (String) session.getAttribute("loginMemberId");

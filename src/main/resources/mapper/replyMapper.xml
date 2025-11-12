@@ -30,14 +30,18 @@
     -->
     <select id="getReplyByIdx" resultType="com.bscalendar.reply.dto.ReplyResponseDTO">
         SELECT 
-            R.REPLY_IDX, R.WORKS_IDX, R.MEM_ID, R.REPLY_COMMENT, R.REPLY_REGDATE,
-            M.MEM_NAME
+            R.REPLY_IDX     AS reply_idx,
+            R.WORKS_IDX     AS works_idx,
+            R.MEM_ID        AS mem_id,
+            R.REPLY_COMMENT AS reply_comment,
+            R.REPLY_REGDATE AS reply_regdate,
+            M.MEM_NAME      AS mem_name
         FROM 
             EG_REPLY R
         JOIN 
             EG_MEMBER M ON R.MEM_ID = M.MEM_ID
         WHERE 
-            R.REPLY_IDX = #{reply_idx} 
+            R.REPLY_IDX = #{reply_idx}
     </select>
 
     <!-- 
@@ -45,14 +49,20 @@
     -->
     <select id="getRepliesByWorksIdx" resultType="com.bscalendar.reply.dto.ReplyResponseDTO">
         SELECT 
-            R.REPLY_IDX, R.WORKS_IDX, R.MEM_ID, R.REPLY_COMMENT, R.REPLY_REGDATE,
-            M.MEM_NAME
+            R.REPLY_IDX     AS reply_idx,
+            R.WORKS_IDX     AS works_idx,
+            R.MEM_ID        AS mem_id,
+            R.REPLY_COMMENT AS reply_comment,
+            R.REPLY_REGDATE AS reply_regdate,
+            M.MEM_NAME      AS mem_name
         FROM 
             EG_REPLY R
         JOIN 
             EG_MEMBER M ON R.MEM_ID = M.MEM_ID
         WHERE 
-            R.WORKS_IDX = #{works_idx} 
+            R.WORKS_IDX = #{works_idx}
+        ORDER BY 
+            R.REPLY_REGDATE ASC
     </select>
 
     <!-- 

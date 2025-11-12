@@ -1,15 +1,10 @@
-<%--
-  (경로: /WEB-INF/views/reply/test.jsp)
-  'snake_case' 규칙으로 통일된 '댓글(메모)' API 최종 테스트 페이지
---%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- EL 태그(${...})를 사용하기 위해 isELIgnored=false를 명시합니다. --%>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>댓글 기능(메모) 단위 테스트</title>
+<title>댓글 기능(메모) 테스트</title>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -22,7 +17,7 @@
 </head>
 <body>
 
-    <h1>댓글 (메모) 기능 단위 테스트 (SnakeCase)</h1>
+    <h1>댓글 (메모) 기능 테스트</h1>
     <p>(※ `TestPageController`가 `tengen` (으)로 강제 로그인 처리함)</p>
 
     <input type="hidden" id="worksIdx" value="${testWorksIdx}">
@@ -39,33 +34,41 @@
 
     <script>	      
         // -----------------------------------------------------
-        // 1. [GET] /api/reply (댓글 목록 조회)
+        // 1. [GET] /api/reply/list (댓글 목록 조회)
         // -----------------------------------------------------
         function loadReplies() {
             
-            // EL 태그 문제를 무시하고 '1'을 하드코딩
-            const current_works_idx = 1; // $('#worksIdx').val();
+            const current_works_idx = 1; // $('#works_idx').val();
+            
             $.ajax({
-                url: "/api/reply",
+                url: "/api/reply/list",
                 type: "GET",
                 data: {
-                    works_idx: current_works_idx // 1이 전송됨
+                    works_idx: current_works_idx 
                 },
                 success: function(replies) {
                     $('#replyList').empty(); 
                     
-                    if (replies.length === 0) {
+                    if (!replies || replies.length === 0) {
                         $('#replyList').html("댓글이 없습니다.");
                         return;
                     }
+                    
+                    // 반복문 시작
                     replies.forEach(function(reply) {
-                        let html = '<div class="reply-item">';
-                        html += `[${reply.reply_idx}] `; 
-                        html += `<b>${reply.mem_name}</b>: `;
-                        html += `<span id="comment-${reply.reply_idx}">${reply.reply_comment}</span>`;
-                        html += `<button onclick="editReply(${reply.reply_idx})">수정</button>`;
-                        html += `<button onclick="deleteReply(${reply.reply_idx})">삭제</button>`;
+                        
+                        console.log("도착한 데이터:", reply);
+                        console.log("reply.reply_idx 값:", reply.reply_idx); 
+                        
+                        // '+' 연산자로만 HTML 생성
+                        var html = '<div class="reply-item">';
+                        html += '[' + reply.reply_idx + '] '; 
+                        html += '<b>' + reply.mem_name + '</b>: ';
+                        html += '<span id="comment-' + reply.reply_idx + '">' + reply.reply_comment + '</span>';
+                        html += '<button onclick="editReply(' + reply.reply_idx + ')">수정</button>';
+                        html += '<button onclick="deleteReply(' + reply.reply_idx + ')">삭제</button>';
                         html += '</div>';
+                        
                         $('#replyList').append(html);
                     });
                 },
@@ -81,8 +84,7 @@
         // -----------------------------------------------------
         $('#btnCreateReply').on('click', function() {
             
-            // ★ [수정] 500(외래 키) 오류 해결을 위해 '1'을 하드코딩
-            const current_works_idx = 1; // $('#worksIdx').val();
+            const current_works_idx = 1; // $('#works_idx').val();
             let comment = $('#newReplyComment').val();
 
             if (!comment) {
@@ -91,11 +93,11 @@
             }
             
             $.ajax({
-                url: "/api/reply",
+                url: "/api/reply", 
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({
-                    works_idx: current_works_idx, // 1이 전송
+                    works_idx: current_works_idx, 
                     reply_comment: comment
                 }),
                 success: function(response) {
@@ -114,13 +116,20 @@
         // 3. [PUT] /api/reply/{reply_idx} (댓글 수정)
         // -----------------------------------------------------
         function editReply(reply_idx) {
-            let originalComment = $(`#comment-${reply_idx}`).text();
+            
+            console.log("수정할 ID:", reply_idx);
+            
+            if (!reply_idx) {
+                alert("수정할 ID가 없습니다! (undefined)");
+                return;
+            }
+            
+            let originalComment = $('#comment-' + reply_idx).text();
             let newComment = prompt("수정할 내용을 입력하세요:", originalComment);
 
             if (newComment && newComment !== originalComment) {
-                // ReplyController의 replyUpdate() 호출
                 $.ajax({
-                    url: "/api/reply/" + reply_idx, 
+                    url: "/api/reply/" + reply_idx,
                     type: "PUT",
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -142,11 +151,18 @@
         // 4. [DELETE] /api/reply/{reply_idx} (댓글 삭제)
         // -----------------------------------------------------
         function deleteReply(reply_idx) { 
-            if (confirm(`[${reply_idx}]번 댓글을 정말 삭제하시겠습니까?`)) {
+            
+            console.log("삭제할 ID:", reply_idx);
+
+            if (!reply_idx) {
+                alert("삭제할 ID가 없습니다! (undefined)");
+                return;
+            }
+
+            if (confirm('[' + reply_idx + ']번 댓글을 \'정말로!!\' 삭제하시겠습니까?')) {
                 
-                // ReplyController의 replyDelete() 호출
                 $.ajax({
-                    url: "/api/reply/" + reply_idx, 
+                    url: "/api/reply/" + reply_idx,
                     type: "DELETE",
                     success: function() {
                         alert("댓글 삭제 성공!");
@@ -160,8 +176,6 @@
             }
         }
 
-
-        // 페이지 로드 시 '댓글 새로고침' 버튼 자동 클릭
         $('#btnLoadReplies').on('click', loadReplies).click();
 
     </script>
