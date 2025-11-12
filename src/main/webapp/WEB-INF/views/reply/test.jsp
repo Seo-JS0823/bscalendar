@@ -1,24 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- EL 태그(${...})를 사용하기 위해 isELIgnored=false를 명시합니다. --%>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>댓글 기능(메모) 테스트</title>
+<title>댓글 기능(메모) 단위 테스트</title>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <style>
     body { font-family: sans-serif; padding: 20px; }
     #replyList { border: 1px solid #ccc; min-height: 100px; padding: 10px; margin-top: 10px; background-color: #f9f9f9; }
-    .reply-item { border-bottom: 1px dotted #eee; padding: 5px; }
-    .reply-item button { margin-left: 10px; font-size: 10px; cursor: pointer; }
+    
+    .reply-item { 
+        border-bottom: 1px dotted #eee; 
+        padding: 8px 5px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+    .reply-main { flex-grow: 1; }
+    .reply-meta { flex-shrink: 0; margin-left: 10px; }
+    
+    .reply-date {
+        font-size: 11px;
+        color: #888;
+        margin-right: 10px;
+    }
+    .reply-meta button { margin-left: 5px; font-size: 10px; cursor: pointer; }
 </style>
 </head>
 <body>
 
-    <h1>댓글 (메모) 기능 테스트</h1>
-    <p>(※ `TestPageController`가 `tengen` (으)로 강제 로그인 처리함)</p>
+    <h1>댓글 (메모) 기능  테스트</h1>
+    <p>(※ TestPageController가 tengen (으)로 강제 로그인)</p>
 
     <input type="hidden" id="worksIdx" value="${testWorksIdx}">
     
@@ -38,7 +54,7 @@
         // -----------------------------------------------------
         function loadReplies() {
             
-            const current_works_idx = 1; // $('#works_idx').val();
+            const current_works_idx = 1; // $('#worksIdx').val();
             
             $.ajax({
                 url: "/api/reply/list",
@@ -54,19 +70,24 @@
                         return;
                     }
                     
-                    // 반복문 시작
                     replies.forEach(function(reply) {
                         
-                        console.log("도착한 데이터:", reply);
-                        console.log("reply.reply_idx 값:", reply.reply_idx); 
-                        
-                        // '+' 연산자로만 HTML 생성
                         var html = '<div class="reply-item">';
+                        
+                        // 1. 왼쪽 (댓글 내용)
+                        html += '<div class="reply-main">';
                         html += '[' + reply.reply_idx + '] '; 
                         html += '<b>' + reply.mem_name + '</b>: ';
                         html += '<span id="comment-' + reply.reply_idx + '">' + reply.reply_comment + '</span>';
+                        html += '</div>'; // end reply-main
+                        
+                        // 2. 오른쪽 (메타 정보: 날짜 + 버튼)
+                        html += '<div class="reply-meta">';
+                        html += '<span class="reply-date">' + reply.reply_regdate + '</span>';
                         html += '<button onclick="editReply(' + reply.reply_idx + ')">수정</button>';
                         html += '<button onclick="deleteReply(' + reply.reply_idx + ')">삭제</button>';
+                        html += '</div>';
+                        
                         html += '</div>';
                         
                         $('#replyList').append(html);
@@ -84,7 +105,7 @@
         // -----------------------------------------------------
         $('#btnCreateReply').on('click', function() {
             
-            const current_works_idx = 1; // $('#works_idx').val();
+            const current_works_idx = 1; // $('#worksIdx').val();
             let comment = $('#newReplyComment').val();
 
             if (!comment) {
@@ -93,7 +114,7 @@
             }
             
             $.ajax({
-                url: "/api/reply", 
+                url: "/api/reply",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({
@@ -117,8 +138,6 @@
         // -----------------------------------------------------
         function editReply(reply_idx) {
             
-            console.log("수정할 ID:", reply_idx);
-            
             if (!reply_idx) {
                 alert("수정할 ID가 없습니다! (undefined)");
                 return;
@@ -129,7 +148,7 @@
 
             if (newComment && newComment !== originalComment) {
                 $.ajax({
-                    url: "/api/reply/" + reply_idx,
+                    url: "/api/reply/" + reply_idx, 
                     type: "PUT",
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -152,8 +171,6 @@
         // -----------------------------------------------------
         function deleteReply(reply_idx) { 
             
-            console.log("삭제할 ID:", reply_idx);
-
             if (!reply_idx) {
                 alert("삭제할 ID가 없습니다! (undefined)");
                 return;
@@ -162,7 +179,7 @@
             if (confirm('[' + reply_idx + ']번 댓글을 \'정말로!!\' 삭제하시겠습니까?')) {
                 
                 $.ajax({
-                    url: "/api/reply/" + reply_idx,
+                    url: "/api/reply/" + reply_idx, 
                     type: "DELETE",
                     success: function() {
                         alert("댓글 삭제 성공!");
@@ -175,7 +192,6 @@
                 });
             }
         }
-
         $('#btnLoadReplies').on('click', loadReplies).click();
 
     </script>
