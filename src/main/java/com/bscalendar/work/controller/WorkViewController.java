@@ -17,6 +17,8 @@ public class WorkViewController {
 	@GetMapping("/work/detail/{works_idx}")
 	public String workRead(@PathVariable("works_idx") Integer works_idx, Model model) {
 		
+		model.addAttribute("works_idx", works_idx); //댓글을 위해 추가한 부분
+		
 		return "work/work-detail";
 	}
 	
