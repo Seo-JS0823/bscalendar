@@ -37,14 +37,17 @@ document.addEventListener('DOMContentLoaded', function() {
 				events.forEach(item => {
 					const hideFlag = item.hideFlag;
 					if(hideFlag === 'N') {
-						item.display = 'none';
+						item.title = '팀 업무';
+						item.backgroundColor = 'lightpink';
+						item.color = 'lightpink';
 					} else if(hideFlag === 'Y') {
 						item.title = '개인 업무';
 						item.backgroundColor = '#6495ed';
 						item.color = '#6495ed';
 					}
 				})
- 				successCallback(events);
+				const mergedEvents = mergeEvents(events);
+ 				successCallback(mergedEvents);
 			})
 		},
 		dateClick: function(info) {
@@ -160,6 +163,42 @@ function workRender(workInfo) {
 		
 		worklistEl.appendChild(tr);
 	});
+}
+
+// 막대기 렌더링 날짜 병합 함수
+function mergeEvents(events) {
+	if(!events || events.length === 0) {
+		return [];
+	}
+	
+	// 이벤트 시작 날짜 기준 오름차순 정렬
+	events.sort((a, b) => new Date(a.start) - new Date(b.start));
+	
+	const merged = [];
+	
+	// 병합을 위해 이벤트 복사
+	let currentEvent = { ...events[0] };
+	for(let i = 1; i < events.length; i++) {
+		const nextEvent = events[i];
+		
+		const currentEnd = new Date(currentEvent.end);
+		const nextStart = new Date(nextEvent.start);
+		
+		// 현재 이벤트의 종료 날짜가 다음 이벤트의 시작 날짜보다 늦을 경우
+		if(currentEnd > nextStart) {
+			
+			// 병합: 더 늦은 종료날짜로 현재 이벤트의 종료일을 갱신
+			const nextEnd = new Date(nextEvent.end);
+			if(nextEnd > currentEnd) {
+				currentEvent.end = nextEvent.end;
+			}
+		} else {
+			merged.push(currentEvent);
+			currentEvent = { ...nextEvent };
+		}
+	}
+	merged.push(currentEvent);
+	return merged;
 }
 /*
 FullCalendar 재 렌더링 반응형 속성 깨짐 현상 해결법
