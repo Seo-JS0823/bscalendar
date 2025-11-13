@@ -114,7 +114,7 @@ weather = {
     }, // End of skyIcon()
     draw:() => {
         /* 상세 데이터, 아이콘 보여주기 */
-        let el, els, str, imgsrc="../img/weather-icon/";
+        let el, els, str, imgsrc ="../img/weather-icon/";
         let category = ["POP", "PTY", "REH", "SKY", "UUU", "VVV", "VEC", "WSD"]
         els = document.getElementsByClassName("weather")[0];
     
