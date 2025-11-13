@@ -4,6 +4,7 @@ public class MemberWorkDTO {
 	private Integer works_idx;
 	private Integer team_idx;
 	private String mem_id;
+	private String mem_name;
 	private String works_comment;
 	private String works_hide;
 	private String works_arlam;
@@ -21,6 +22,7 @@ public class MemberWorkDTO {
 			Integer works_idx,
 			Integer team_idx,
 			String mem_id,
+			String mem_name,
 			String works_comment,
 			String works_hide,
 			String works_arlam,
@@ -35,6 +37,7 @@ public class MemberWorkDTO {
 		this.works_idx = works_idx;
 		this.team_idx = team_idx;
 		this.mem_id = mem_id;
+		this.mem_name = mem_name;
 		this.works_comment = works_comment;
 		this.works_hide = works_hide;
 		this.works_arlam = works_arlam;
@@ -56,6 +59,9 @@ public class MemberWorkDTO {
 	public String getMem_id() { return mem_id; }
 	public void setMem_id(String mem_id) { this.mem_id = mem_id; }
 
+	public String getMem_name() { return mem_name; }
+	public void setMem_name(String mem_name) { this.mem_name = mem_name; }
+	
 	public String getWorks_comment() { return works_comment; }
 	public void setWorks_comment(String works_comment) { this.works_comment = works_comment; }
 
@@ -85,4 +91,14 @@ public class MemberWorkDTO {
 
 	public String getWorks_del_flag() { return works_del_flag; }
 	public void setWorks_del_flag(String works_del_flag) { this.works_del_flag = works_del_flag; }
+
+	@Override
+	public String toString() {
+		return "MemberWorkDTO [works_idx=" + works_idx + ", team_idx=" + team_idx + ", mem_id=" + mem_id
+				+ ", works_comment=" + works_comment + ", works_hide=" + works_hide + ", works_arlam=" + works_arlam
+				+ ", works_alram_date=" + works_alram_date + ", works_arlam_conf=" + works_arlam_conf + ", works_sdate="
+				+ works_sdate + ", works_edate=" + works_edate + ", works_regdate=" + works_regdate
+				+ ", works_fin_flag=" + works_fin_flag + ", works_del_flag=" + works_del_flag + "]";
+	}
+	
 }

@@ -11,12 +11,11 @@ public class ProjectViewController {
 	@GetMapping("/project/list")
 	public String projectListView() {
 		
-		return "work/work-detail";
+		return "project/project-list";
 	}
 	
 	@GetMapping("/project/{team_idx}")
 	public String projectDetailView(@PathVariable("team_idx") Integer team_idx, Model model) {
-		System.out.println("TEAM_IDX: " + team_idx);
 		model.addAttribute("team_idx", team_idx);
 		
 		return "project/project";

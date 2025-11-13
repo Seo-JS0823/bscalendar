@@ -56,4 +56,10 @@ public class ProjectService {
 		List<MemberWorkDTO> memberToWorks = projectMapper.projectMemberToWorksRead(member_id, team_idx);
 		return memberToWorks;
 	}
+
+	// 달력을 클릭했을 때 클릭한 날짜에 해당하는 업무 리스트 가져오기
+	public List<MemberWorkDTO> dateToWorks(Integer teamIdx, String sdate, String edate) {
+		List<MemberWorkDTO> dateToWorks = projectMapper.projectDateToWorksRead(teamIdx, sdate, edate);
+		return dateToWorks;
+	}
 }

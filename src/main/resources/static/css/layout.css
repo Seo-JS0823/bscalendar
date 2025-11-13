@@ -219,7 +219,7 @@
   height: 100%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 40rem calc(100% - 40rem);
   overflow: hidden;
 }
 .content {
@@ -237,7 +237,6 @@
   gap: 1rem;
 }
 .content:first-child {
-  background-color: #fffafa;
   border-left: 1px solid #ccc;
 }
 .content:last-child {
@@ -555,7 +554,7 @@
   flex-direction: column;
   gap: 1rem;
 }
-.detail-descript .row-box {
+.row-box {
   width: 100%;
   display: flex;
   align-items: center;
@@ -681,16 +680,13 @@
 	width: 100%;
 	height: auto;
 	min-height: 21rem;
-	padding: 0 1rem;
+	padding: 1rem;
 }
 .work-reply-member {
-	width: 95%;
+	width: 90%;
 	height: auto;
-	margin: 1rem 0;
 	padding: 0.5rem 1rem;
-	border: 1px solid #ccc;
 	border-radius: 1rem;
-	background: #6495ed;
 	display: flex;
 	align-items: flex-start;
 	gap: 1rem;
@@ -709,6 +705,27 @@
 	width: calc(100% - 10rem);
 	overflow-wrap: break-word;
 	font-size: 1.2rem;
+}
+.work-reply-update {
+	width: 10%;
+	height: 3rem;
+	text-align: center;
+}
+.work-reply-update button {
+	display: inline-block;
+	width: 48%;
+	height: 100%;
+	margin: 0;
+	color: white;
+	background: #00aa00;
+	border-radius: 1rem;
+}
+.work-reply-update button:last-child {
+	background: #dc3545;
+}
+.work-reply-update button:hover {
+	text-shadow: 0 0 3px #fff;
+	transform: scale(1.05);
 }
 .work-reply {
 	width: 100%;
@@ -736,6 +753,29 @@
 	color: white;
 	background: #6495ed;
 	border: 1px solid #ccc;
+}
+.col-box {
+	width: 100%;
+	height: auto;
+	display: flex;
+	flex-direction: column;
+	padding: 0.6rem;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+}
+.col-box > p {
+	padding: 0.2rem 1rem;
+	font-size: 1.2rem;
+}
+.reply-name {
+	display: inline-block;
+	width: 12rem;
+	padding: 0.2rem 0;
+	text-align: center;
+	font-size: 1.5rem;
+	background-color: #6495ed;
+	border-radius: 1rem;
+	color: white;
 }
 
 @media (width <= 1200px) {

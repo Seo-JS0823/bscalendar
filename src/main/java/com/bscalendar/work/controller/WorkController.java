@@ -2,6 +2,7 @@ package com.bscalendar.work.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bscalendar.work.dto.WorkDTO;
+import com.bscalendar.work.mapper.WorkMapper;
 
 @Controller
 @RequestMapping("/api/work")
@@ -23,6 +25,9 @@ public class WorkController {
 	 * 업무 수정: PUT,      /api/work
 	 * 업무 삭제: DELETE,   /api/work
 	 */
+	
+	@Autowired
+	private WorkMapper workMapper;
 	
 	@PostMapping("/")
 	@ResponseBody
@@ -40,13 +45,18 @@ public class WorkController {
 		return null;
 	}
 	
-	@PutMapping("/")
+	/*
+	@PutMapping("/update/{works_idx}")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> readUpdate() {
+	public ResponseEntity<WorkDTO> readUpdate(@PathVariable("works_idx") Integer works_idx) {
 		// TODO: 업무 수정
+		int updated = workMapper.workUpdate(works_idx);
+		if(updated < 1) {
+			return ResponseEntity.badRequest().body(null);
+		}
 		
-		return null;
-	}
+		// TODO: 다시 SELECT
+	}*/
 	
 	@DeleteMapping("/")
 	@ResponseBody

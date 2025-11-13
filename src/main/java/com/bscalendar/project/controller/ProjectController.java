@@ -91,8 +91,21 @@ public class ProjectController {
 		
 		// TODO: team_idx와 member_id에 해당하는 work 리스트 가져오기
 		List<MemberWorkDTO> memberToWorks = projectSvc.projectMemberWorkRead(member_id, team_idx);
-		
+		System.out.println(memberToWorks);
 		return ResponseEntity.ok(memberToWorks);
+	}
+	
+	// team_idx, sdate, edate로 업무조회 / 공유 업무만
+	@GetMapping("/work/list/{teamIdx}/{sdate}/{edate}")
+	@ResponseBody
+	public ResponseEntity<List<MemberWorkDTO>> dateToWorkList(
+			@PathVariable("teamIdx") Integer teamIdx,
+			@PathVariable("sdate") String sdate,
+			@PathVariable("edate") String edate) {
+		
+		// TODO: Service 호출
+		List<MemberWorkDTO> dateToWorks = projectSvc.dateToWorks(teamIdx, sdate, edate);
+		return ResponseEntity.ok(dateToWorks);
 	}
 	
 	@PutMapping("/")
