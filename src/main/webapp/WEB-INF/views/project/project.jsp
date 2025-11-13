@@ -125,6 +125,38 @@
 				     					}));
 					     				successCallback(events);
 				     				})
+				     			},
+				     			// TODO: 해당 날짜의 칸을 눌렀을 때 발생되는 이벤트
+				     			// TODO: eventClick과 마찬가지로 똑같은 로직
+				     			dateClick: function(info) {
+				     				// --> 날짜, team_idx로 worklist 가져오고 렌더링 하는것
+				     				const teamIdx = window.location.pathname.replace('/project/', '');
+				     				const date = info.dateStr;
+				     				const url = `/api/work/list/date/\${date}/` + teamIdx;
+				     				
+				     				fetch(url)
+				     				.catch(err => console.err(err))
+				     				.then(response => response.json())
+				     				.then(data => {
+				     					const clickedDate = document.getElementById('clicked-date');
+				     					clickedDate.textContent = date;
+				     					
+				     					const finFlagState = document.getElementById('finFlagState');
+				     					let notFinFlag = 0;
+				     					let okFinFlag = 0;
+				     					data.forEach(work => {
+				     						const finFlag = work.works_fin_flag;
+				     						if(finFlag === 'N') {
+				     							notFinFlag++;
+				     						} else if(finFlag === 'Y') {
+				     							okFinFlag++;				     							
+				     						}
+				     					})
+				     					finFlagState.textContent = `미완료 업무 : \${notFinFlag} / 완료 업무 : \${okFinFlag}`;
+				     					
+				     					// TODO: 오른쪾 업무 리스트 렌더링
+				     					workRender(data);
+				     				});
 				     			}
 				     		});
 				     		calendarImpl.render();
@@ -134,86 +166,20 @@
       		});
       	})
       	
-      	function workRender(workInfo) {
-      		// TODO: 업무 리스트 렌더링
-      		const worklistEl = document.getElementById('worklist');
-      		worklistEl.innerHTML = `
-     			<tr>
-            <th>작성자</th>
-            <th>수행 시작일</th>
-            <th>수행 종료일</th>
-            <th>업무 내용</th>
-            <th>알람 시간</th>
-            <th>비고</th>
-          </tr>
-      		`;
-      		Array.from(workInfo).forEach(work => {
-      			const works_idx = work.works_idx;
-      			const memName = work.mem_name;
-      			const sdate = work.works_sdate.substring(0, 10);
-      			const edate = work.works_edate.substring(0, 10);
-      			const comment = work.works_comment;
-      			const alramState = work.works_alram;
-      			let alramDate = '알람 미등록';
-      			if(alramState === 'Y') {
-      				alramDate = work.works_alram_date;
-      			}
-      			const tr = document.createElement('tr');
-      			
-      			const innerHTML = `
-      			<td>\${memName}</td>
-      			<td>\${sdate}</td>
-      			<td>\${edate}</td>
-      			<td>\${comment}</td>
-      			<td>\${alramDate}</td>
-      			`;
-      			
-      			tr.innerHTML = innerHTML;
-      			
-      			const eventTd = document.createElement('td');
-      			
-      			// 완료 미완료 상태
-      			const finFlag = work.works_fin_flag;
-      			
-      			if (finFlag === 'N') {
-      				eventTd.classList.add('worklist-notComplete');
-      				eventTd.textContent = '미완료';
-      				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
-      				eventTd.addEventListener('click', (e) => {
-      					if(confirm('업무를 완료 처리 하시겠습니까?')) {
-      						// TODO: 완료 처리하는 컨트롤러와 로직
-      						const url = `/api/work/update/\${work.works_idx}`;
-      						console.log(url);
-      						
-      						/*
-      						fetch(url, { method: 'put' })
-      						.catch(err => console.err(err))
-      						.then(response => response.json())
-      						.then(data => {
-      							
-      						});
-      						*/
-      					} else {
-      						e.preventDefault();
-      					}
-      				})
-      				
-      			} else if (finFlag === 'Y') {
-      				eventTd.classList.add('worklist-complete');  				
-      				eventTd.textContent = '완료';
-      			}
-      			
-      			tr.appendChild(eventTd);
-      			
-      			tr.addEventListener('click', () => {
-      				// TODO: work-detail location
-      				const url = '/work/detail/' + works_idx;
-      				window.location.href = url;
-      			});
-      			
-      			worklistEl.appendChild(tr);
-      		});
-      	}
+      	function dateWorkRender(info) {
+	   			const teamIdx = info.event.extendedProps.team_idx;
+					const sdate = info.event.startStr;
+					const edate = info.event.endStr;
+					
+					const url = `/api/project/work/list/\${teamIdx}/\${sdate}/\${edate}`;
+					
+   				fetch(url)
+   				.catch(err => console.err(err))
+   				.then(response => response.json())
+   				.then(data => {
+   					workRender(data);
+   				});
+				}
       </script>
       <script src="/js/keyStore.js"></script>
 			<script src="/js/weather.js"></script>
@@ -221,8 +187,9 @@
       <!-- 날씨 Layer -->
       <div class="weather-container" id="weather-load">
       	<script>
-      	// init()
-      	// UI 다 만들어지면 주석 해제
+	      	// init()
+	      	// UI 다 만들어지면 주석 해제
+	      	// 날씨 데이터 캐싱
       	</script>
 				<div class="wrap">
 					<div class="weather">
@@ -262,7 +229,7 @@
             <h1>Work List</h1>
           </div>
           <div class="worklist-header-day">
-            <p>2025-11-05 (수)</p>
+            <p id="clicked-date">2025-11-05 (수)</p>
           </div>
         </div>
 
@@ -270,19 +237,11 @@
           <!-- AM -->
           <div class="worklist-content">
             <div class="worklist-content-header">
-              <p>미완료 업무 : 1 / 완료 업무 : 1</p>
+              <p id="finFlagState">미완료 업무 : 1 / 완료 업무 : 1</p>
               <a id="workCreate" href="/work/create/">업무 등록</a>
             </div>
             <div class="worklist-content-main">
               <table id="worklist" class="worklist-content-table">
-                <colgroup>
-                  <col style="width: 10%;">
-                  <col style="width: 15%;">
-                  <col style="width: 15%;">
-                  <col style="width: 30%;">
-                  <col style="width: 20%;">
-                  <col style="width: 10%;">
-                </colgroup>
                 <tr>
                   <th>작성자</th>
                   <th>수행 시작일</th>

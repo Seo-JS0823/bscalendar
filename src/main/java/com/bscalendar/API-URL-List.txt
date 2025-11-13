@@ -24,4 +24,6 @@ REST API Url List
     url   : /api/work/update/{works_idx}
     method: PATCH
     
-7. 
+7. 달력의 날짜칸을 눌렀을 때 클릭된 날짜와 team_idx에 해당하는 업무리스트 조회
+    url   : /api/work/list/date/${clickToDate}/{tema_idx}
+    method: GET

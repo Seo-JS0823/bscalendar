@@ -403,6 +403,7 @@
   width: 100%;
   border: 1px solid #ccc;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 .worklist-content-table tr:not(.worklist-content-table tr:first-child):hover {
   background-color: #d8e3eb;
