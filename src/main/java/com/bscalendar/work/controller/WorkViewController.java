@@ -14,9 +14,10 @@ public class WorkViewController {
 		return "work/work-create";
 	}
 	
-	@GetMapping("/work/read/{works_idx}")
+	@GetMapping("/work/detail/{works_idx}")
 	public String workRead(@PathVariable("works_idx") Integer works_idx, Model model) {
-		model.addAttribute("works_idx", works_idx);
+		
 		return "work/work-detail";
 	}
+	
 }

@@ -9,4 +9,13 @@
 		WHERE
 			WORKS_IDX = #{works_idx}
 	</update>
+	
+	<select id="findWorkToIdx" resultType="com.bscalendar.work.dto.WorkDTO">
+		SELECT
+			*
+		FROM
+			EG_WORKS
+		WHERE
+			WORKS_IDX = #{works_idx}
+	</select>
 </mapper>

@@ -137,8 +137,18 @@
       	function workRender(workInfo) {
       		// TODO: 업무 리스트 렌더링
       		const worklistEl = document.getElementById('worklist');
-      		
+      		worklistEl.innerHTML = `
+     			<tr>
+            <th>작성자</th>
+            <th>수행 시작일</th>
+            <th>수행 종료일</th>
+            <th>업무 내용</th>
+            <th>알람 시간</th>
+            <th>비고</th>
+          </tr>
+      		`;
       		Array.from(workInfo).forEach(work => {
+      			const works_idx = work.works_idx;
       			const memName = work.mem_name;
       			const sdate = work.works_sdate.substring(0, 10);
       			const edate = work.works_edate.substring(0, 10);
@@ -194,6 +204,12 @@
       			}
       			
       			tr.appendChild(eventTd);
+      			
+      			tr.addEventListener('click', () => {
+      				// TODO: work-detail location
+      				const url = '/work/detail/' + works_idx;
+      				window.location.href = url;
+      			});
       			
       			worklistEl.appendChild(tr);
       		});

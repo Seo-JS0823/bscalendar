@@ -8,14 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bscalendar.member.dto.MemberDTO;
 import com.bscalendar.project.dto.ProjectDTO;
 import com.bscalendar.project.dto.response.MemberWorkDTO;
 import com.bscalendar.project.dto.response.ProjectMemberDTO;
@@ -108,7 +107,7 @@ public class ProjectController {
 		return ResponseEntity.ok(dateToWorks);
 	}
 	
-	@PutMapping("/")
+	@PatchMapping("/")
 	@ResponseBody
 	public ResponseEntity<ProjectDTO> projectUpdate() {
 		// TODO: 프로젝트 수정
