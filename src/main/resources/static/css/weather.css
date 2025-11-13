@@ -1,0 +1,46 @@
+/* ===== wrap ===== */
+.wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.weather {
+    width: 100%;
+    height: 100%;
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+.weather > div {
+    width: 100%;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.weather > div:first-child { height: 3rem; } /* 오늘의 날씨 */
+.weather > div:first-child > div:last-child{ cursor: pointer; } /* 주간 날씨 */
+.weather > div:first-child h1 {
+	font-size: 1.5rem;
+	padding-left: 1rem;
+}
+/* ===== 날씨 상세내역 ===== */
+.weather > div:last-child { height: 17rem;} 
+.weather > div:last-child > .weather-icon {
+    width: 15rem;
+    background-color: white;
+}
+.weather > div:last-child > .weather-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.weather > div:last-child > .weather-detail {
+    width: calc(100% - 16rem);
+    padding-left: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    gap: 1rem 1rem;
+}

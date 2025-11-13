@@ -1,0 +1,27 @@
+REST API Url List
+
+1. 프로젝트 생성
+    url   : /api/project
+    method: POST
+
+2. member_id로 소속된 프로젝트 리스트 조회
+    url   : /api/project/{member_id}
+    method: GET
+    
+3. team_idx에 해당하는 멤버 이름 리스트 조회
+    url   : /api/project/members/{team_idx}
+    method: GET
+    
+4. 소속된 프로젝트내에서 멤버가 등록한 업무 리스트를 조회
+    url   : /api/project/members/work/list/{member_id}/{team_idx}
+    method: GET
+    
+5. 소속된 프로젝트내에서 날짜와 team_idx로 등록되어 있는 업무 조회
+    url   : /api/project/work/list/{teamIdx}/{sdate}/{edate}
+    method: GET
+
+6. works_idx에 해당하는 미완료 업무를 완료 처리
+    url   : /api/work/update/{works_idx}
+    method: PATCH
+    
+7. 

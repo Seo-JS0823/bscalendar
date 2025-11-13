@@ -24,19 +24,8 @@
         <br>
         <div id="project-list">
           <p>Scroll</p>
-          <ul>
-            <li class="project-off">
-              <div>
-                <p>Team</p><h2>루피 해적단</h2>
-                <p>인원</p><h2>5명</h2>
-              </div>
-              <div>
-                <p>권한자</p><h2>서주성</h2>
-              </div>
-              <div>
-                <p>기간</p><h2>2025-11-04 ~ 2026-01-24</h2>
-              </div>
-            </li>
+          <ul id="project-list-rendering">
+            
           </ul>
           <div id="project-create" data-role="close">
             <h1>프로젝트 생성</h1>
@@ -83,9 +72,9 @@
               const member = {
             		  team_name: projectName,
             		  team_sdate: projectStartDate,
-            		  team_edate: projectEndDate
+            		  team_edate: projectEndDate,
+            		  mem_id: 'inotske'
               }
-              console.log(member);
               fetch(url, {
             	  method: 'post',
             	  headers: {
@@ -96,7 +85,7 @@
               .catch(error => console.log(error))
               .then(response => response.json())
               .then(data => {
-            	  
+            	  console.log(data);
               });
               
             });
@@ -118,5 +107,52 @@
   </div>
 </div>
 
+<script> // 로그인한 유저의 프로젝트 리스트 렌더링
+	const url = '/api/project/inotske';
+	fetch(url)
+	.catch(error => console.log(error))
+	.then(response => response.json())
+	.then(data => {
+		// TODO: 프로젝트 리스트 렌더링
+		const renderingTarget = document.getElementById('project-list-rendering');
+	
+		Array.from(data).forEach(project => {
+			// TODO: innerHTML
+			
+			const li = document.createElement('li');
+			const team_con_flag = project.team_con_flag;
+			
+			if(team_con_flag === 'N') {
+				li.classList.add('project-on')
+			} else if(team_con_flag === 'Y') {
+				li.classList.add('project-off')
+			}
+			
+			const innerHTML = `
+				<div>
+					<p>Team</p><h2>\${project.team_name}</h2>
+					<p>인원</p><h2>\${project.member_count} 명</h2>
+				</div>
+				<div>
+					<p>권한자</p><h2>\${project.mem_name}</h2>
+				</div>
+				<div>
+					<p>기간</p><h2>\${project.team_sdate} ~ \${project.team_edate}</h2>
+				</div>
+			`;
+			
+			li.innerHTML = innerHTML;
+			
+			li.addEventListener('click', () => {
+				// TODO: window.location.href = URL
+				// TODO: '/project' URL을 받는 일반 컨트롤러에서 JWT 토큰에서 USERID를 추출해야하나??
+				window.location.href = `/project/\${project.team_idx}`;
+			})
+			
+			renderingTarget.appendChild(li);
+			
+		});
+	});
+</script>
 </body>
 </html>
