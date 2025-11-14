@@ -76,11 +76,11 @@
 			W.WORKS_COMMENT,
 			W.WORKS_HIDE,
 			W.WORKS_ARLAM,
-			IFNULL(W.WORKS_ALRAM_DATE, '미등록') AS WORKS_ALRAM_DATE,
+			IFNULL(W.WORKS_ARLAM_DATE, '미등록') AS WORKS_ALRAM_DATE,
 			W.WORKS_ARLAM_CONF,
-			DATE_FORMAT(W.WORKS_SDATE, '%y-%m-%d %H시 %m분') AS WORKS_SDATE,
-			DATE_FORMAT(W.WORKS_EDATE, '%y-%m-%d %H시 %m분') AS WORKS_EDATE,
-			W.WORKD_FIN_FLAG,
+			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') AS WORKS_SDATE,
+			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') AS WORKS_EDATE,
+			W.WORKS_FIN_FLAG,
 			W.WORKS_DEL_FLAG
 		FROM
 			EG_MEMBER MEMBER, EG_TEAM TEAM, EG_WORKS W
@@ -88,9 +88,23 @@
 			MEMBER.MEM_ID = W.MEM_ID AND
 			W.TEAM_IDX = TEAM.TEAM_IDX AND
 			W.MEM_ID = #{member_id} AND
-			W.TEAM_IDX = #{team_idx};
+			W.TEAM_IDX = #{team_idx} AND
+			W.WORKS_HIDE = 'N';
 	</select>
 	
-	<!--  -->
+	<!-- 달력에 클릭한 날짜에 해당하는 업무 리스트 가져오기, ID: projectDateToWorksRead -->
+	<select id="projectDateToWorksRead" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.*, M.MEM_NAME
+		FROM
+			EG_WORKS W, EG_TEAM T, EG_MEMBER M
+		WHERE
+			W.TEAM_IDX = T.TEAM_IDX AND
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{teamIdx} AND
+			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{sdate} AND
+			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{edate}
+	</select>
+	
 	<!--  -->
 </mapper>

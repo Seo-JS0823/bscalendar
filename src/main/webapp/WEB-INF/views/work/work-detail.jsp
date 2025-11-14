@@ -106,11 +106,19 @@
       <textarea class="detail-textarea">TODO: 작성자 본인이 들어오면 수정 / 삭제 / 알람 / 등을 설정할 수 있는 BOX 보이게</textarea>
       <p class="detail-header">업무 메모</p>
       <div class="work-reply-area">
-      	<div class="work-reply-member">
-      		<h3>이노스케</h3>
-      		<p>홍규형 잔다잔다 또잔다...</p>
-      	</div>
-      </div>
+      	<div class="col-box">
+      		<p><span class="reply-name">이노스케</span> 2025-11-06 11:51</p>
+	      	<div class="row-box">
+		      	<div class="work-reply-member">
+		      		<p>홍규형 잔다잔다 또잔다... 내가...왕이 될 상인가? 노는게 제일 좋아 친구들 모여라 언제나 즐거워 개구쟁이 뽀로로... 롤리폴리 롤리롤리 폴리</p>
+		      	</div>
+		      	<div class="work-reply-update">
+		      		<button>수정</button>
+		      		<button>삭제</button>
+		      	</div>
+	      	</div>
+	      </div>
+	    </div>
       <div class="work-reply">
 				<textarea id="reply-input"></textarea>
 				<button>메모 등록</button>

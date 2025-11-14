@@ -8,14 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bscalendar.member.dto.MemberDTO;
 import com.bscalendar.project.dto.ProjectDTO;
 import com.bscalendar.project.dto.response.MemberWorkDTO;
 import com.bscalendar.project.dto.response.ProjectMemberDTO;
@@ -91,11 +90,24 @@ public class ProjectController {
 		
 		// TODO: team_idx와 member_id에 해당하는 work 리스트 가져오기
 		List<MemberWorkDTO> memberToWorks = projectSvc.projectMemberWorkRead(member_id, team_idx);
-		
+		System.out.println(memberToWorks);
 		return ResponseEntity.ok(memberToWorks);
 	}
 	
-	@PutMapping("/")
+	// team_idx, sdate, edate로 업무조회 / 공유 업무만
+	@GetMapping("/work/list/{teamIdx}/{sdate}/{edate}")
+	@ResponseBody
+	public ResponseEntity<List<MemberWorkDTO>> dateToWorkList(
+			@PathVariable("teamIdx") Integer teamIdx,
+			@PathVariable("sdate") String sdate,
+			@PathVariable("edate") String edate) {
+		
+		// TODO: Service 호출
+		List<MemberWorkDTO> dateToWorks = projectSvc.dateToWorks(teamIdx, sdate, edate);
+		return ResponseEntity.ok(dateToWorks);
+	}
+	
+	@PatchMapping("/")
 	@ResponseBody
 	public ResponseEntity<ProjectDTO> projectUpdate() {
 		// TODO: 프로젝트 수정

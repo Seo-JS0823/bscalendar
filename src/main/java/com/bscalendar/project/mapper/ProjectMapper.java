@@ -28,4 +28,6 @@ public interface ProjectMapper {
 	
 	// 프로젝트에 소속된 멤버가 등록한 업무 조회 (param1 : member_id, param2: team_idx)
 	public List<MemberWorkDTO> projectMemberToWorksRead(String member_id, Integer team_idx);
+
+	public List<MemberWorkDTO> projectDateToWorksRead(Integer teamIdx, String sdate, String edate);
 }
