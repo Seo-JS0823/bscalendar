@@ -18,4 +18,24 @@
 		WHERE
 			WORKS_IDX = #{works_idx}
 	</select>
+	
+ 	<select id="getWorkDetail" resultType="com.bscalendar.work.dto.WorkDTO">
+	 SELECT 
+	 	 member.mem_name,
+	 	 member.mem_id,
+	 	 team.team_name,
+	 	 team.team_idx,
+	 	 DATE_FORMAT(team.team_regdate, '%Y-%m-%d') AS team_regdate,
+	 	 works.works_idx,
+	 	 works.works_comment,
+	 	 works.works_hide,
+	 	 works.works_arlam,
+	 	 works.works_arlam_date,
+	 	 works.works_sdate,
+	 	 works.works_edate
+	 FROM EG_WORKS works
+	 JOIN EG_TEAM team ON works.team_idx = team.team_idx
+	 JOIN EG_MEMBER member ON team.mem_id = member.mem_id 
+	 WHERE works_idx = #{works_idx}
+	</select> 
 </mapper>

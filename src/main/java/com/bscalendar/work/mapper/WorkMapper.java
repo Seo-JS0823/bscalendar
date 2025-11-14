@@ -10,4 +10,6 @@ public interface WorkMapper {
 	int workUpdate(Integer works_idx);
 	
 	WorkDTO findWorkToIdx(Integer works_idx);
+
+	WorkDTO getWorkDetail(Integer works_idx);
 }

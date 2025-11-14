@@ -134,7 +134,7 @@
       		});
       	})
       	
-      	function workRender(workInfo) {
+      	function workRender(workInfo) { // 위에 fetch로 불러온 data -> workInfo
       		// TODO: 업무 리스트 렌더링
       		const worklistEl = document.getElementById('worklist');
       		worklistEl.innerHTML = `
@@ -169,8 +169,9 @@
       			`;
       			
       			tr.innerHTML = innerHTML;
+      			console.log('ss',tr.innerHTML)
       			
-      			const eventTd = document.createElement('td');
+      			const eventTd = document.createElement('td'); // 완료/미완료
       			
       			// 완료 미완료 상태
       			const finFlag = work.works_fin_flag;
@@ -183,7 +184,6 @@
       					if(confirm('업무를 완료 처리 하시겠습니까?')) {
       						// TODO: 완료 처리하는 컨트롤러와 로직
       						const url = `/api/work/update/\${work.works_idx}`;
-      						console.log(url);
       						
       						/*
       						fetch(url, { method: 'put' })
@@ -195,6 +195,7 @@
       						*/
       					} else {
       						e.preventDefault();
+      						e.stopPropagation();
       					}
       				})
       				
