@@ -56,8 +56,7 @@ weather = {
         let xhr, params, url, serviceKey;
         xhr = new XMLHttpRequest();
         url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst';                              // url(단기예보조회URL)
-        serviceKey = SERVICE_KEY;     // servicekey(단기)
-
+        serviceKey = SERVICE_KEY;   // servicekey(단기)
         params = '?'  + encodeURIComponent('serviceKey') + '='+ encodeURIComponent(serviceKey);
         params += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent(weather.pageNo);
         params += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent(weather.numOfRows);

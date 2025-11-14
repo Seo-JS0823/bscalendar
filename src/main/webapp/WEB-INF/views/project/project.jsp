@@ -16,7 +16,14 @@
 <body>
 
 <nav class="top-menu-area">
-
+	<!-- JSP include -->
+	<!--
+	<script>
+		JWT MEMBER_ID Parsing
+		전역 변수로 MEMBER_ID 저장
+		모든 .jsp 파일에서 사용 가능
+	</script>
+	-->
 </nav>
 
 <div class="container">
@@ -95,22 +102,6 @@
 				     				minute: '2-digit',
 				     				hour12: false
 				     			},
-				     			// TODO: 업무 막대기를 누르면 발생하는 이벤트
-				     			eventClick: function(info) {
-				     				const teamIdx = info.event.extendedProps.team_idx;
-										const sdate = info.event.startStr;
-										const edate = info.event.endStr;
-										
-										const url = `/api/project/work/list/\${teamIdx}/\${sdate}/\${edate}`;
-										
-				     				fetch(url)
-				     				.catch(err => console.err(err))
-				     				.then(response => response.json())
-				     				.then(data => {
-				     					workRender(data);
-				     				});
-				     				
-				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
 				     				fetch('/api/project/members/work/list/jenits/1')
@@ -118,7 +109,6 @@
 				     				.then(response => response.json())
 				     				.then(data => {
 				     					let events = data.map(item => ({
-				     						title: item.works_comment,
 				     						start: item.works_sdate,
 				     						end: item.works_edate,
 				     						team_idx: item.team_idx
@@ -126,37 +116,8 @@
 					     				successCallback(events);
 				     				})
 				     			},
-				     			// TODO: 해당 날짜의 칸을 눌렀을 때 발생되는 이벤트
-				     			// TODO: eventClick과 마찬가지로 똑같은 로직
 				     			dateClick: function(info) {
-				     				// --> 날짜, team_idx로 worklist 가져오고 렌더링 하는것
-				     				const teamIdx = window.location.pathname.replace('/project/', '');
-				     				const date = info.dateStr;
-				     				const url = `/api/work/list/date/\${date}/` + teamIdx;
-				     				
-				     				fetch(url)
-				     				.catch(err => console.err(err))
-				     				.then(response => response.json())
-				     				.then(data => {
-				     					const clickedDate = document.getElementById('clicked-date');
-				     					clickedDate.textContent = date;
-				     					
-				     					const finFlagState = document.getElementById('finFlagState');
-				     					let notFinFlag = 0;
-				     					let okFinFlag = 0;
-				     					data.forEach(work => {
-				     						const finFlag = work.works_fin_flag;
-				     						if(finFlag === 'N') {
-				     							notFinFlag++;
-				     						} else if(finFlag === 'Y') {
-				     							okFinFlag++;				     							
-				     						}
-				     					})
-				     					finFlagState.textContent = `미완료 업무 : \${notFinFlag} / 완료 업무 : \${okFinFlag}`;
-				     					
-				     					// TODO: 오른쪾 업무 리스트 렌더링
-				     					workRender(data);
-				     				});
+				     				workAndDateRender(info);
 				     			}
 				     		});
 				     		calendarImpl.render();
@@ -187,7 +148,7 @@
       <!-- 날씨 Layer -->
       <div class="weather-container" id="weather-load">
       	<script>
-	      	// init()
+      		init()
 	      	// UI 다 만들어지면 주석 해제
 	      	// 날씨 데이터 캐싱
       	</script>
@@ -225,11 +186,10 @@
       <div class="worklist-container">
         <div class="worklist-header">
           <div class="worklist-header-project-name">
-            <p>TEAM: 귀멸의칼날</p>
-            <h1>Work List</h1>
+            <p>TEAM / 귀멸의칼날</p>
           </div>
           <div class="worklist-header-day">
-            <p id="clicked-date">2025-11-05 (수)</p>
+            <p id="clicked-date"></p>
           </div>
         </div>
 
@@ -237,7 +197,7 @@
           <!-- AM -->
           <div class="worklist-content">
             <div class="worklist-content-header">
-              <p id="finFlagState">미완료 업무 : 1 / 완료 업무 : 1</p>
+              <p id="finFlagState"></p>
               <a id="workCreate" href="/work/create/">업무 등록</a>
             </div>
             <div class="worklist-content-main">

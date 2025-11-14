@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
   const calendar = document.getElementById('calendar');
+  
+  // 달력에 날짜가 클릭됨을 저장하는 변수
+  let clickedDayEl = null;
   const calendarImpl = new FullCalendar.Calendar(calendar, {
     initialView : 'dayGridMonth',
     locale: 'ko',
@@ -16,11 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     events: function(fetchInfo, successCallback, failureCallback) {
 			// TODO: team_idx와 오늘날짜로 업무 리스트 요청하기
-			const now = new Date();
-			const year = now.getFullYear();
-			const month = String(now.getMonth() + 1).padStart(2, '0');
-			const day = String(now.getDate()).padStart(2, '0');
-			const date = `${year}-${month}-${day}`;
+			const date = getNowDateString();
 			
 			fetch(`/api/work/list/date/${date}/` + teamIdx)
 			.catch(err => console.err(err))
@@ -45,42 +44,25 @@ document.addEventListener('DOMContentLoaded', function() {
 						item.backgroundColor = '#6495ed';
 						item.color = '#6495ed';
 					}
-				})
+				});
+				workRender(data);
 				const mergedEvents = mergeEvents(events);
  				successCallback(mergedEvents);
 			})
 		},
 		dateClick: function(info) {
-			// --> 날짜, team_idx로 worklist 가져오고 렌더링 하는것
-			const teamIdx = window.location.pathname.replace('/project/', '');
-			const date = info.dateStr;
-			const url = `/api/work/list/date/${date}/` + teamIdx;
+			workAndDateRender(info);
+			if(clickedDayEl) {
+				clickedDayEl.classList.remove('fc-day-today');
+				clickedDayEl.classList.remove('clicked-day');
+			}
+			info.dayEl.classList.add('clicked-day');
 			
-			fetch(url)
-			.catch(err => console.err(err))
-			.then(response => response.json())
-			.then(data => {
-				const clickedDate = document.getElementById('clicked-date');
-				clickedDate.textContent = date;
-				
-				const finFlagState = document.getElementById('finFlagState');
-				let notFinFlag = 0;
-				let okFinFlag = 0;
-				data.forEach(work => {
-					const finFlag = work.works_fin_flag;
-					if(finFlag === 'N') {
-						notFinFlag++;
-					} else if(finFlag === 'Y') {
-						okFinFlag++;				     							
-					}
-				})
-				finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
-				
-				// TODO: 오른쪾 업무 리스트 렌더링
-				workRender(data);
-			});
+			clickedDayEl = info.dayEl;
 		}
   });
+  const nowDateEl = document.getElementById('clicked-date');
+	nowDateEl.textContent = getNowDateString();
   calendarImpl.render();
 });
 
@@ -97,6 +79,11 @@ function workRender(workInfo) {
     <th>비고</th>
   </tr>
 	`;
+	// TODO: 미완료, 완료 상태 렌더링
+	const finFlagState = document.getElementById('finFlagState');
+	let notFinFlag = 0;
+	let okFinFlag = 0;
+	
 	Array.from(workInfo).forEach(work => {
 		const works_idx = work.works_idx;
 		const memName = work.mem_name;
@@ -126,11 +113,15 @@ function workRender(workInfo) {
 		const finFlag = work.works_fin_flag;
 		
 		if (finFlag === 'N') {
+			notFinFlag++;
 			eventTd.classList.add('worklist-notComplete');
 			eventTd.textContent = '미완료';
 			// TODO: 미완료 상태일 때 이벤트 핸들러 등록
 			eventTd.addEventListener('click', (e) => {
 				if(confirm('업무를 완료 처리 하시겠습니까?')) {
+					e.stopPropagation();
+					e.preventDefault();
+					
 					// TODO: 완료 처리하는 컨트롤러와 로직
 					const url = `/api/work/update/${work.works_idx}`;
 					console.log(url);
@@ -144,25 +135,26 @@ function workRender(workInfo) {
 					});
 					*/
 				} else {
+					e.stopPropagation();
 					e.preventDefault();
 				}
 			})
 			
 		} else if (finFlag === 'Y') {
+			okFinFlag++;
 			eventTd.classList.add('worklist-complete');  				
 			eventTd.textContent = '완료';
 		}
-		
 		tr.appendChild(eventTd);
 		
 		tr.addEventListener('click', () => {
 			// TODO: work-detail location
 			const url = '/work/detail/' + works_idx;
 			window.location.href = url;
-		});
-		
+		});		
 		worklistEl.appendChild(tr);
 	});
+	finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
 }
 
 // 막대기 렌더링 날짜 병합 함수
@@ -199,6 +191,33 @@ function mergeEvents(events) {
 	}
 	merged.push(currentEvent);
 	return merged;
+}
+
+/* 날짜, 미완료, 완료업무 렌더링 */
+function workAndDateRender(info) {
+	const teamIdx = window.location.pathname.replace('/project/', '');
+	const date = info.dateStr;
+	const url = `/api/work/list/date/${date}/` + teamIdx;
+	
+	fetch(url)
+	.catch(err => console.err(err))
+	.then(response => response.json())
+	.then(data => {
+		const clickedDate = document.getElementById('clicked-date');
+		clickedDate.textContent = date;
+		workRender(data);
+	});
+}
+
+/* 오늘 날짜 문자열 반환 YYYY-MM-DD */
+function getNowDateString() {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = String(now.getMonth() + 1).padStart(2, '0');
+	const day = String(now.getDate()).padStart(2, '0');
+	const date = `${year}-${month}-${day}`;
+	
+	return date;
 }
 /*
 FullCalendar 재 렌더링 반응형 속성 깨짐 현상 해결법

@@ -1,11 +1,13 @@
 package com.bscalendar.project.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bscalendar.member.dto.MemberDTO;
 import com.bscalendar.project.dto.ProjectDTO;
 import com.bscalendar.project.dto.response.MemberWorkDTO;
 import com.bscalendar.project.dto.response.ProjectMemberDTO;
@@ -62,4 +64,56 @@ public class ProjectService {
 		List<MemberWorkDTO> dateToWorks = projectMapper.projectDateToWorksRead(teamIdx, sdate, edate);
 		return dateToWorks;
 	}
+	
+	// 멤버를 조회하는 메소드
+	public List<ProjectMemberDTO> projectMembersSearch(String search) {
+		List<ProjectMemberDTO> searchToMembers = projectMapper.projectMembersSearch(search);
+		return searchToMembers;
+	}
+	
+	// 전체 멤버 조회
+	public List<ProjectMemberDTO> projectMemberAll() {
+		List<ProjectMemberDTO> projectMemberAll = projectMapper.projectMemberAll();
+		return projectMemberAll;
+	}
+
+	@Transactional
+	public Map<String, Object> projectMemberAdd(List<String> memberIds, Integer team_idx) {
+		// TODO: memberIds 배열에서 멤버 ID를 하나씩 추출해서 INSERT문 날리기 + 트랜잭션
+		// TODO: EG_MAPP에 team_idx + mem_id 같은 값 Key가 적용되어 있지 않으므로 전체를 들고와 비교할 것
+		List<ProjectMemberDTO> projectTeamMemberValid = projectMapper.projectSosocMember(team_idx);
+		
+		// TODO: 중복 방지
+		for(int i = 0; i < projectTeamMemberValid.size(); i++) {
+			String sosocId = projectTeamMemberValid.get(i).getMem_name();
+			String delFlag = projectTeamMemberValid.get(i).getMapp_del_flag();
+			for(int j = 0; j < memberIds.size(); j++) {
+				String targetId = memberIds.get(j);
+				if(sosocId.equals(targetId)) {
+					return Map.of(
+						"errorMessage", targetId + " 님은 이미 등록되어 있는 사람입니다."
+					);
+				}
+			}
+		}
+		
+		String response = "";
+		int targetSize = 0;
+		for(int i = 0; i < memberIds.size(); i++) {
+			String id = memberIds.get(i);
+			ProjectMemberDTO projectAddTarget = projectMapper.memberToMemId(id);
+			projectAddTarget.setTeam_idx(team_idx);
+			
+			int inserted = projectMapper.projectMemberAdd(projectAddTarget);
+			if(inserted > 0) {
+				response += projectAddTarget.getMem_name() + ", ";
+				targetSize++;
+			}
+		}
+		
+		return Map.of(
+			"successMessage", response + " 멤버 총" + targetSize + "명 투입되었습니다."
+		);
+	}
+	
 }
