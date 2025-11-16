@@ -43,4 +43,11 @@ public class ProjectMemberDTO {
 	
 	public String getMapp_del_flag() { return mapp_del_flag; }
 	public void setMapp_del_flag(String mapp_del_flag) { this.mapp_del_flag = mapp_del_flag; }
+
+	@Override
+	public String toString() {
+		return "ProjectMemberDTO [mem_idx=" + mem_idx + ", team_idx=" + team_idx + ", mem_name=" + mem_name
+				+ ", mem_id=" + mem_id + ", mem_position=" + mem_position + ", mem_depart=" + mem_depart
+				+ ", mapp_del_flag=" + mapp_del_flag + "]";
+	}
 }
