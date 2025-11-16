@@ -1,31 +1,24 @@
-package com.bscalendar.reply.dto;
+package com.bscalendar.reply.mapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import com.bscalendar.reply.dto.ReplyCreateDTO;
+import com.bscalendar.reply.dto.ReplyResponseDTO;
+import com.bscalendar.reply.dto.ReplyUpdateDTO;
 
+@Mapper
+public interface ReplyMapper {
 
-@Data 
-@NoArgsConstructor
-@AllArgsConstructor 
-public class ReplyCreateDTO {
-
-<<<<<<< Updated upstream
-    private int works_idx; // 어느 업무에 달린 댓글인지
-
-    private String reply_comment; // 댓글 내용
+    int insertReply(ReplyCreateDTO createDto);
     
-    private String mem_id; //작성자 아이디
-    
-    private int reply_idx;
-=======
-    private int worksIdx; // 어느 업무에 달린 댓글인지
+    ReplyResponseDTO getReplyByIdx(int reply_idx);
 
-    private String replyComment; // 댓글 내용
-    
-    private String memId; //작성자 아이디
-    
-    private int replyIdx;
->>>>>>> Stashed changes
+    List<ReplyResponseDTO> getRepliesByWorksIdx(int works_idx);
 
+    int updateReply(ReplyUpdateDTO updateDto);
+
+    int deleteReply(int reply_idx);
+
+    String getAuthorMemIdByReplyIdx(int reply_idx);
+    
 }
