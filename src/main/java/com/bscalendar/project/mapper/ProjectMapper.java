@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.bscalendar.member.dto.MemberDTO;
 import com.bscalendar.project.dto.ProjectDTO;
 import com.bscalendar.project.dto.response.MemberWorkDTO;
 import com.bscalendar.project.dto.response.ProjectMemberDTO;
@@ -30,4 +31,14 @@ public interface ProjectMapper {
 	public List<MemberWorkDTO> projectMemberToWorksRead(String member_id, Integer team_idx);
 
 	public List<MemberWorkDTO> projectDateToWorksRead(Integer teamIdx, String sdate, String edate);
+
+	public List<ProjectMemberDTO> projectMembersSearch(String search);
+
+	public List<ProjectMemberDTO> projectMemberAll();
+
+	public ProjectMemberDTO memberToMemId(String id);
+
+	public int projectMemberAdd(ProjectMemberDTO projectAddTarget);
+
+	public List<ProjectMemberDTO> projectSosocMember(Integer team_idx);
 }

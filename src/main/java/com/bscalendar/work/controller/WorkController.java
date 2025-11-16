@@ -46,6 +46,16 @@ public class WorkController {
 		return null;
 	}
 	
+	@GetMapping("/list/date/{date}/{team_idx}")
+	@ResponseBody
+	public ResponseEntity<List<WorkDTO>> dateToWorkRead(
+			@PathVariable("date") String date,
+			@PathVariable("team_idx") Integer team_idx) {
+		
+		List<WorkDTO> works = workMapper.findToDateWorks(date, team_idx);
+		
+		return ResponseEntity.ok(works);
+	}
 	
 	@PatchMapping("/update/{works_idx}")
 	@ResponseBody

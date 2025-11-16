@@ -25,7 +25,14 @@ server:
         development: true
 
 mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
 
 jwt:
-  secret: ${SECERT_KEY}
+  secret: ${SECRET_KEY}
+
+#
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

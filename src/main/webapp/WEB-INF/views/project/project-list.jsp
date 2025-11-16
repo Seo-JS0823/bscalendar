@@ -10,10 +10,7 @@
   <title>부성카렌다</title>
 </head>
 <body>
-<nav class="top-menu-area">
-
-</nav>
-
+<%@ include file="../layout/nav.jsp" %>
 <div class="container">
   <div class="projectList-area">
     <div class="projectList-container">
@@ -23,7 +20,7 @@
         <button id="project-create-btn">프로젝트 생성</button>
         <br>
         <div id="project-list">
-          <p>Scroll</p>
+          <p id="projectCount">Scroll</p>
           <ul id="project-list-rendering">
             
           </ul>
@@ -73,21 +70,16 @@
             		  team_name: projectName,
             		  team_sdate: projectStartDate,
             		  team_edate: projectEndDate,
-            		  mem_id: 'inotske'
+            		  mem_id: getTokenFromInfo('id')
               }
-              fetch(url, {
-            	  method: 'post',
-            	  headers: {
-            		  'Content-Type':'application/json'
-            	  },
-            	  body: JSON.stringify(member)
-              })
-              .catch(error => console.log(error))
-              .then(response => response.json())
-              .then(data => {
-            	  console.log(data);
-              });
-              
+              authFetchToBody(
+            		url,
+            		member,
+            		(data) => {
+            			console.log(data);
+            		},
+            		'post'
+            	);
             });
 
             const closeBtn = document.getElementById('create-btn-close');
@@ -108,25 +100,87 @@
 </div>
 
 <script> // 로그인한 유저의 프로젝트 리스트 렌더링
-	const url = '/api/project/inotske';
-	fetch(url)
-	.catch(error => console.log(error))
-	.then(response => response.json())
+	const url = '/api/project/' + getTokenFromInfo('id');
+	authFetch(
+		url,
+		(data) => {
+			projectListRender(data);
+		},
+		'get'
+	);
+	/*
+	fetch(url, {
+		method: 'get',
+		headers: {
+			'Authorization': `Bearer \${getToken()}`
+		}
+	})
+	.then(response => {
+		const status = response.status;
+		if(status === 400) {
+			// TODO: 소속된 프로젝트가 없을 경우
+			const projectCount = document.getElementById('projectCount');
+			projectCount.textContent = '소속된 프로젝트가 없습니다.';
+			return null;
+		} else if(status === 403) {
+			const accessUrl = '/api/member/auth/re';
+			fetch(accessUrl, {
+				method: 'get',
+				headers: {
+					'Authorization': `Bearer \${getReToken()}`
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				localStorage.setItem('calendarToken', data.token);
+				localStorage.setItem('refresh_token', data.refresh_token);
+				fetch(url, {
+					method: 'get',
+					headers: {
+						'Authorization': `Bearer \${getToken()}`
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+					projectListRender(data);
+				})
+			})
+		}
+		return response.json();
+	})
 	.then(data => {
+		projectListRender(data);
+	});
+	*/
+	
+	function projectListRender(data) {
+		if(data === null) {
+			return;
+		}
 		// TODO: 프로젝트 리스트 렌더링
 		const renderingTarget = document.getElementById('project-list-rendering');
 	
 		Array.from(data).forEach(project => {
 			// TODO: innerHTML
-			
+			const team_idx = project.team_idx;
 			const li = document.createElement('li');
 			const team_con_flag = project.team_con_flag;
 			
+			// TODO: Member 초대, Project 수정 mouseup rendering
+			const inviteAndUpdate = document.createElement('div');
+			inviteAndUpdate.classList.add('inviteAndUpdate');
+			inviteAndUpdate.style.display = 'none';
 			if(team_con_flag === 'N') {
-				li.classList.add('project-on')
+				li.classList.add('project-on');
 			} else if(team_con_flag === 'Y') {
-				li.classList.add('project-off')
+				li.classList.add('project-off');
 			}
+			
+			// TODO inviteAndUpdate 버블링 방지
+			inviteAndUpdate.addEventListener('click', (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+			});
 			
 			const innerHTML = `
 				<div>
@@ -143,16 +197,409 @@
 			
 			li.innerHTML = innerHTML;
 			
-			li.addEventListener('click', () => {
+			li.addEventListener('click', (e) => {
 				// TODO: window.location.href = URL
 				// TODO: '/project' URL을 받는 일반 컨트롤러에서 JWT 토큰에서 USERID를 추출해야하나??
 				window.location.href = `/project/\${project.team_idx}`;
-			})
+			});
 			
-			renderingTarget.appendChild(li);
+			// TODO 멤버 초대 버튼
+			// JWT 완성 후 MEMID 비교해서 if문으로 생성한 사람만 할당
+			const inviteMember = document.createElement('div');
+			inviteMember.classList.add('inviteClick');
+			inviteMember.style.backgroundColor = '#00aa00';
+			inviteMember.style.color = 'white';
+			inviteMember.textContent = '멤버 설정';
 			
+			const inviteMemberModal = inviteMemberModalElement(team_idx);
+			inviteMemberModal.classList.add('close');
+			
+			// TODO 멤버 초대 버튼 이벤트 핸들러 & 버블링 방지
+			inviteMember.addEventListener('click', (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+				modalCloseOpen(inviteMemberModal);
+			});
+			
+			li.addEventListener('mouseover', () => {
+				inviteAndUpdate.style.display = 'flex';
+				inviteAndUpdate.style.zIndex = 899;
+			});
+			
+			// TODO 프로젝트 수정 버튼
+			const projectUpdate = document.createElement('div');
+			projectUpdate.classList.add('inviteClick');
+			projectUpdate.style.backgroundColor = '#6495ed';
+			projectUpdate.style.color = 'white';
+			projectUpdate.textContent = '설정 변경';
+			
+			// TODO 프로젝트 수정 버튼 이벤트 핸들러 & 버블링 방지
+			projectUpdate.addEventListener('click', (e) => {
+				e.stopPropagation();
+				e.preventDefault();
+			});
+			
+			li.addEventListener('mouseout', () => {
+				inviteAndUpdate.style.display = 'none';
+			});
+			
+			inviteAndUpdate.appendChild(inviteMember);
+			inviteAndUpdate.appendChild(projectUpdate);
+			
+			li.appendChild(inviteAndUpdate);
+			
+			renderingTarget.appendChild(li);			
 		});
-	});
+	}
+	
+	function modalCloseOpen(element) {
+		document.body.appendChild(element);
+		const modalState = element.className.split(' ')[1];
+		if(modalState === 'close') {
+			element.classList.remove('close');
+			element.classList.add('open');
+		} else if(modalState === 'open') {
+			element.classList.remove('open');
+			element.classList.add('close');
+			document.body.removeChild(element);
+		}
+	}
+	
+	// 중복 렌더링 방지해야함 TODO
+	function inviteMemberModalElement(team_idx) {
+		const inviteMemberModal = document.createElement('div');
+		inviteMemberModal.classList.add('inviteMember');
+		
+		// header
+		const inviteMemberHeader = document.createElement('p');
+		inviteMemberHeader.classList.add('inviteMember-header');
+		inviteMemberHeader.textContent = '멤버 초대';
+		inviteMemberModal.appendChild(inviteMemberHeader);
+		
+		// search input
+		const inviteMemberSearch = document.createElement('div');
+		inviteMemberSearch.classList.add('inviteMember-search')
+		const searchDiv = document.createElement('div');
+		const search = document.createElement('input');
+		search.type = 'text';
+		searchDiv.appendChild(search);
+		
+		const searchLabelDiv = document.createElement('div');
+		const searchLabel = document.createElement('label');
+		searchLabel.textContent = '검 색';
+		searchLabelDiv.appendChild(searchLabel);
+		
+		const inviteLabelDiv = document.createElement('div');
+		const inviteLabel = document.createElement('label');
+		inviteLabel.textContent = '투 입';
+		inviteLabelDiv.appendChild(inviteLabel);
+		
+		// search Response Binding
+		const inviteMemberBinding = document.createElement('div');
+		inviteMemberBinding.classList.add('inviteMember-binding');
+		
+		// bindingArea 첫 번째 = fetch로 불러온 바인딩 영역
+		const inviteFetchToBind = document.createElement('div');
+		inviteFetchToBind.classList.add('bindingArea');
+		
+		// bindingArea 두 번째 = 바인딩된 이름 클릭시 바인딩
+		const inviteNameClickBind = document.createElement('div');
+		inviteNameClickBind.classList.add('bindingArea');
+		inviteNameClickBind.id = 'clicked-bindArea';
+		
+		const inviteNameHeader = document.createElement('div');
+		inviteNameHeader.classList.add('sosocHeader');
+		inviteNameHeader.textContent = '추가된 멤버';
+		inviteNameClickBind.appendChild(inviteNameHeader);
+		
+		// bindingArea 세 번째 = 이미 프로젝트에 소속된 인원 표시
+		const projectSosocMembers = document.createElement('div');
+		projectSosocMembers.classList.add('bindingArea');
+		projectSosocMembers.id = 'sosoc-bindArea';
+		
+		const sosocHeader = document.createElement('div');
+		sosocHeader.classList.add('sosocHeader');
+		sosocHeader.textContent = '소속되어 있는 멤버';
+		projectSosocMembers.appendChild(sosocHeader);
+		
+		const sosocUrl = '/api/project/members/' + team_idx;
+		authFetch(
+			sosocUrl,
+			(data) => {
+				data.forEach(member => {
+					const sosocName = document.createElement('div');
+					sosocName.classList.add('clicked-name');
+					sosocName.textContent = member.mem_name;
+					sosocName.addEventListener('click', () => {
+						// TODO 선택하고 confirm해서 확인누르면 추방 로직하고 reload
+						console.log(member.mem_id)
+						
+					});
+					projectSosocMembers.appendChild(sosocName);
+				})	
+			},
+			'get'
+		);
+		/*
+		fetch(sosocUrl, {})
+		.then(response => response.json())
+		.then(data => {
+			data.forEach(member => {
+				const sosocName = document.createElement('div');
+				sosocName.classList.add('clicked-name');
+				sosocName.textContent = member.mem_name;
+				sosocName.addEventListener('click', () => {
+					// TODO 선택하고 confirm해서 확인누르면 추방 로직하고 reload
+					console.log(member.mem_id)
+					
+				});
+				projectSosocMembers.appendChild(sosocName);
+			})
+		});
+		*/
+		
+		// TODO searchLabel Click Event fetch url /api/member/read/{mem_name}
+		const bindEl = document.createElement('ul');
+		bindEl.classList.add('memberBind');
+		// TODO bindEl 초기값 세팅 fetch All members
+		// TODO binding ClickEvent 함수로 빼기
+		authFetch(
+			'/api/project/member/read-all',
+			(data) => {
+				data.forEach(member => {
+					const li = memberSearchBind(member);
+					bindEl.appendChild(li);
+				});	
+			},
+			'get'
+		);
+		/*
+		fetch('/api/project/member/read-all')
+		.catch(err => console.err(err))
+		.then(response => response.json())
+		.then(data => {
+			data.forEach(member => {
+				const li = memberSearchBind(member);
+				bindEl.appendChild(li);
+			});
+		});
+		*/
+		
+		searchLabel.addEventListener('click', (e) => {
+			const memName = search.value;
+			if(!memName) {
+				e.stopPropagation();
+				e.preventDefault();
+				alert('검색어를 입력하세요.');
+				return;
+			}
+			const url = `/api/project/member/read/\${memName}`;
+			
+			// TODO: inviteFetchToBind에 fetch로 불러온 값 바인딩
+			authFetch(
+				url,
+				(data) => {
+					if(data.length < 1) {
+						alert('검색된 정보가 존재하지 않습니다.');
+						return;
+					}
+					bindEl.innerHTML = '';
+					data.forEach(member => {
+						const li = memberSearchBind(member);
+						bindEl.appendChild(li);
+					});	
+				},
+				'get'
+			);
+			/*
+			fetch(url)
+			.catch(err => console.err(err))
+			.then(response => response.json())
+			.then(data => {
+				if(data.length < 1) {
+					alert('검색된 정보가 존재하지 않습니다.');
+					return;
+				}
+				bindEl.innerHTML = '';
+				data.forEach(member => {
+					const li = memberSearchBind(member);
+					bindEl.appendChild(li);
+				});
+			});
+			*/
+		});
+		
+		inviteLabel.addEventListener('click', (e) => {
+			// TODO: fetch 선택된 멤버 초대하기 여기에 TEAM_IDX 필요함.
+			const clickedMembers = getClickedMembers();
+			const members = {
+				members: clickedMembers
+			}
+			// TODO: members 객체를 body에 담아서 프로젝트 투입 컨트롤러로 연결
+			// TODO: URL /api/project/member/add
+			
+			if(confirm('선택하신 멤버를 투입하시겠습니까?')) {
+				const url = '/api/project/member/add/' + team_idx;
+				authFetchToBody(
+					url,
+					members,
+					(data) => {
+						if(data.errorMessage) {
+							alert(data.errorMessage);
+							return;
+						};
+						if(data.successMessage) {
+							alert(data.successMessage);
+							window.location.reload();
+						}
+					},
+					'post'
+				);
+				/*
+				fetch(url, {
+					method: 'post',
+					headers: {
+						'Content-Type':'application/json'
+					},
+					body: JSON.stringify(members)
+				})
+				.then(response => response.json())
+				.then(data => {
+					if(data.errorMessage) {
+						alert(data.errorMessage);
+						return;
+					};
+					if(data.successMessage) {
+						alert(data.successMessage);
+						window.location.reload();
+					}
+				});
+				*/
+			} else {
+				e.preventDefault();
+				return;
+			}
+		});
+		
+		inviteMemberSearch.appendChild(searchDiv);
+		inviteMemberSearch.appendChild(searchLabelDiv);
+		inviteMemberSearch.appendChild(inviteLabelDiv);
+		
+		
+		inviteFetchToBind.appendChild(bindEl);
+		inviteMemberBinding.appendChild(inviteFetchToBind);
+		inviteMemberBinding.appendChild(inviteNameClickBind);
+		inviteMemberBinding.appendChild(projectSosocMembers);
+		inviteMemberModal.appendChild(inviteMemberSearch);
+		inviteMemberModal.appendChild(inviteMemberBinding);
+		
+		return inviteMemberModal;
+	}
+	
+	function memberSearchBind(member) {
+		const nameEl = document.createElement('p');
+		nameEl.textContent = member.mem_name;
+		const posiEl = document.createElement('p');
+		posiEl.textContent = member.mem_position;
+		const partEl = document.createElement('p');
+		partEl.textContent = member.mem_depart;
+		const idEl = member.mem_id;
+		
+		const li = document.createElement('li');
+		li.setAttribute('data-role', 'no');
+		const uuid = window.crypto.randomUUID().substring(0, 7);
+		li.setAttribute('data-id', uuid)
+		li.appendChild(nameEl);
+		li.appendChild(posiEl);
+		li.appendChild(partEl);
+		
+		// 멤버 추가, 취소 동시에
+		li.addEventListener('click', () => {
+			const role = li.getAttribute('data-role');
+			const bindArea = document.getElementById('clicked-bindArea');
+			if(role === 'no') {
+				li.setAttribute('data-role', 'ok');
+				li.style.border = '2px solid #6495ed';
+				li.style.boxShadow = '0 0 3px #ccc';
+				
+				// TODO 파라미터에 바인딩할 영역 추가하고 클릭시 바인딩
+				const bindName = document.createElement('div')
+				bindName.classList.add('clicked-name');
+				
+				const clicked_uuid = li.getAttribute('data-id');
+				bindName.setAttribute('data-id', clicked_uuid);
+				bindName.setAttribute('data-member', encodingMemId(idEl));
+				bindName.textContent = nameEl.textContent;
+				
+				// TODO 바인딩된 이름도 클릭시 삭제되게
+				bindName.addEventListener('click', () => {
+					const binding_uuid = bindName.getAttribute('data-id');
+					console.log(binding_uuid);
+					const mappered_uuid = li.getAttribute('data-id');
+					console.log(mappered_uuid)
+					if(binding_uuid === mappered_uuid) {
+						li.setAttribute('data-role', 'no');
+						li.style.border = '1px solid #ccc';
+						li.style.boxShadow = 'none';
+						bindArea.removeChild(bindName);
+					}
+				});
+				bindArea.appendChild(bindName);
+				
+			} else if(role === 'ok') {
+				li.setAttribute('data-role', 'no');
+				li.style.border = '1px solid #ccc';
+				li.style.boxShadow = 'none';
+				
+				const bindAreaChildren = bindArea.children;
+				Array.from(bindAreaChildren).forEach(member => {
+					const target_uuid = li.getAttribute('data-id');
+					const clicked_uuid = member.getAttribute('data-id');
+					if(target_uuid === clicked_uuid) {
+						bindArea.removeChild(member);
+					}
+				})
+			}
+		});
+		
+		return li;
+	}
+	
+	// member_id encoding
+	function encodingMemId(mem_id) {
+		const utf8 = encodeURIComponent(mem_id).replace(/%([0-9A-F]{2})/g,
+			function(match, p1) {
+				return String.fromCharCode('0x' + p1);
+			}
+		);
+		return btoa(utf8);
+	}
+	
+	// member_id decoding
+	function decodingMemId(mem_id) {
+		const binary = atob(mem_id);
+		const utf8 = binary.split('').map(function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join('');
+		return decodeURIComponent(utf8);
+	}
+	
+	// 배열 리턴
+	function getClickedMembers() {
+		const bindArea = document.getElementById('clicked-bindArea');
+		const bindedMembers = Array.from(bindArea.children);
+		const members = [];
+		for(let i = 1; i < bindedMembers.length; i++) {
+			const binaryMemName = bindedMembers[i].getAttribute('data-member');
+			const memName = decodingMemId(binaryMemName);
+			members.push(memName);			
+		}
+		if(members.length < 1) {
+			alert('투입할 직원을 선택하세요.');
+			return;
+		}
+		return members;
+	}
 </script>
 </body>
 </html>
