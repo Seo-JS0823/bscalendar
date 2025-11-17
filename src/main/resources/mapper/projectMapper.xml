@@ -132,11 +132,13 @@
 	<!-- 멤버 ID로 검색 -->
 	<select id="memberToMemId" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
 		SELECT
-			MEM_ID, MEM_NAME
+			M.MEM_ID, M.MEM_NAME, MP.MAPP_DEL_FLAG
 		FROM
-			EG_MEMBER
+			EG_MEMBER M, EG_MAPP MP
 		WHERE
-			MEM_ID = #{id}
+			M.MEM_ID = MP.MEM_ID AND
+			MEM_ID = #{id} AND
+			MP.MAPP_DEL_FLAG = 'N'
 	</select>
 	
 	<!-- 프로젝트에 멤버 추가 -->

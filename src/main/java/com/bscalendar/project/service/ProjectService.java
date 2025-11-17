@@ -82,14 +82,14 @@ public class ProjectService {
 		// TODO: memberIds 배열에서 멤버 ID를 하나씩 추출해서 INSERT문 날리기 + 트랜잭션
 		// TODO: EG_MAPP에 team_idx + mem_id 같은 값 Key가 적용되어 있지 않으므로 전체를 들고와 비교할 것
 		List<ProjectMemberDTO> projectTeamMemberValid = projectMapper.projectSosocMember(team_idx);
-		System.out.println(projectTeamMemberValid);
+		
 		// TODO: 중복 방지
 		for(int i = 0; i < projectTeamMemberValid.size(); i++) {
-			String sosocId = projectTeamMemberValid.get(i).getMem_id();
+			String sosocId = projectTeamMemberValid.get(i).getMem_name();
 			String delFlag = projectTeamMemberValid.get(i).getMapp_del_flag();
 			for(int j = 0; j < memberIds.size(); j++) {
 				String targetId = memberIds.get(j);
-				if(sosocId.equals(targetId) && delFlag.toLowerCase().equals("n")) {
+				if(sosocId.equals(targetId)) {
 					return Map.of(
 						"errorMessage", targetId + " 님은 이미 등록되어 있는 사람입니다."
 					);
@@ -103,6 +103,7 @@ public class ProjectService {
 			String id = memberIds.get(i);
 			ProjectMemberDTO projectAddTarget = projectMapper.memberToMemId(id);
 			projectAddTarget.setTeam_idx(team_idx);
+			
 			int inserted = projectMapper.projectMemberAdd(projectAddTarget);
 			if(inserted > 0) {
 				response += projectAddTarget.getMem_name() + ", ";

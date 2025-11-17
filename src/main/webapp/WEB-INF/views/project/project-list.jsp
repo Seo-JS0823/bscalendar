@@ -10,7 +10,10 @@
   <title>부성카렌다</title>
 </head>
 <body>
-<%@ include file="../layout/nav.jsp" %>
+<nav class="top-menu-area">
+
+</nav>
+
 <div class="container">
   <div class="projectList-area">
     <div class="projectList-container">
@@ -20,7 +23,7 @@
         <button id="project-create-btn">프로젝트 생성</button>
         <br>
         <div id="project-list">
-          <p id="projectCount">Scroll</p>
+          <p>Scroll</p>
           <ul id="project-list-rendering">
             
           </ul>
@@ -70,16 +73,21 @@
             		  team_name: projectName,
             		  team_sdate: projectStartDate,
             		  team_edate: projectEndDate,
-            		  mem_id: getTokenFromInfo('id')
+            		  mem_id: 'inotske'
               }
-              authFetchToBody(
-            		url,
-            		member,
-            		(data) => {
-            			console.log(data);
-            		},
-            		'post'
-            	);
+              fetch(url, {
+            	  method: 'post',
+            	  headers: {
+            		  'Content-Type':'application/json'
+            	  },
+            	  body: JSON.stringify(member)
+              })
+              .catch(error => console.log(error))
+              .then(response => response.json())
+              .then(data => {
+            	  console.log(data);
+              });
+              
             });
 
             const closeBtn = document.getElementById('create-btn-close');
@@ -100,63 +108,11 @@
 </div>
 
 <script> // 로그인한 유저의 프로젝트 리스트 렌더링
-	const url = '/api/project/' + getTokenFromInfo('id');
-	authFetch(
-		url,
-		(data) => {
-			projectListRender(data);
-		},
-		'get'
-	);
-	/*
-	fetch(url, {
-		method: 'get',
-		headers: {
-			'Authorization': `Bearer \${getToken()}`
-		}
-	})
-	.then(response => {
-		const status = response.status;
-		if(status === 400) {
-			// TODO: 소속된 프로젝트가 없을 경우
-			const projectCount = document.getElementById('projectCount');
-			projectCount.textContent = '소속된 프로젝트가 없습니다.';
-			return null;
-		} else if(status === 403) {
-			const accessUrl = '/api/member/auth/re';
-			fetch(accessUrl, {
-				method: 'get',
-				headers: {
-					'Authorization': `Bearer \${getReToken()}`
-				}
-			})
-			.then(response => response.json())
-			.then(data => {
-				localStorage.setItem('calendarToken', data.token);
-				localStorage.setItem('refresh_token', data.refresh_token);
-				fetch(url, {
-					method: 'get',
-					headers: {
-						'Authorization': `Bearer \${getToken()}`
-					}
-				})
-				.then(response => response.json())
-				.then(data => {
-					projectListRender(data);
-				})
-			})
-		}
-		return response.json();
-	})
+	const url = '/api/project/inotske';
+	fetch(url)
+	.catch(error => console.log(error))
+	.then(response => response.json())
 	.then(data => {
-		projectListRender(data);
-	});
-	*/
-	
-	function projectListRender(data) {
-		if(data === null) {
-			return;
-		}
 		// TODO: 프로젝트 리스트 렌더링
 		const renderingTarget = document.getElementById('project-list-rendering');
 	
@@ -250,7 +206,7 @@
 			
 			renderingTarget.appendChild(li);			
 		});
-	}
+	});
 	
 	function modalCloseOpen(element) {
 		document.body.appendChild(element);
@@ -323,25 +279,7 @@
 		projectSosocMembers.appendChild(sosocHeader);
 		
 		const sosocUrl = '/api/project/members/' + team_idx;
-		authFetch(
-			sosocUrl,
-			(data) => {
-				data.forEach(member => {
-					const sosocName = document.createElement('div');
-					sosocName.classList.add('clicked-name');
-					sosocName.textContent = member.mem_name;
-					sosocName.addEventListener('click', () => {
-						// TODO 선택하고 confirm해서 확인누르면 추방 로직하고 reload
-						console.log(member.mem_id)
-						
-					});
-					projectSosocMembers.appendChild(sosocName);
-				})	
-			},
-			'get'
-		);
-		/*
-		fetch(sosocUrl, {})
+		fetch(sosocUrl)
 		.then(response => response.json())
 		.then(data => {
 			data.forEach(member => {
@@ -356,24 +294,12 @@
 				projectSosocMembers.appendChild(sosocName);
 			})
 		});
-		*/
 		
 		// TODO searchLabel Click Event fetch url /api/member/read/{mem_name}
 		const bindEl = document.createElement('ul');
 		bindEl.classList.add('memberBind');
 		// TODO bindEl 초기값 세팅 fetch All members
 		// TODO binding ClickEvent 함수로 빼기
-		authFetch(
-			'/api/project/member/read-all',
-			(data) => {
-				data.forEach(member => {
-					const li = memberSearchBind(member);
-					bindEl.appendChild(li);
-				});	
-			},
-			'get'
-		);
-		/*
 		fetch('/api/project/member/read-all')
 		.catch(err => console.err(err))
 		.then(response => response.json())
@@ -383,7 +309,6 @@
 				bindEl.appendChild(li);
 			});
 		});
-		*/
 		
 		searchLabel.addEventListener('click', (e) => {
 			const memName = search.value;
@@ -396,22 +321,6 @@
 			const url = `/api/project/member/read/\${memName}`;
 			
 			// TODO: inviteFetchToBind에 fetch로 불러온 값 바인딩
-			authFetch(
-				url,
-				(data) => {
-					if(data.length < 1) {
-						alert('검색된 정보가 존재하지 않습니다.');
-						return;
-					}
-					bindEl.innerHTML = '';
-					data.forEach(member => {
-						const li = memberSearchBind(member);
-						bindEl.appendChild(li);
-					});	
-				},
-				'get'
-			);
-			/*
 			fetch(url)
 			.catch(err => console.err(err))
 			.then(response => response.json())
@@ -426,7 +335,6 @@
 					bindEl.appendChild(li);
 				});
 			});
-			*/
 		});
 		
 		inviteLabel.addEventListener('click', (e) => {
@@ -440,22 +348,6 @@
 			
 			if(confirm('선택하신 멤버를 투입하시겠습니까?')) {
 				const url = '/api/project/member/add/' + team_idx;
-				authFetchToBody(
-					url,
-					members,
-					(data) => {
-						if(data.errorMessage) {
-							alert(data.errorMessage);
-							return;
-						};
-						if(data.successMessage) {
-							alert(data.successMessage);
-							window.location.reload();
-						}
-					},
-					'post'
-				);
-				/*
 				fetch(url, {
 					method: 'post',
 					headers: {
@@ -474,7 +366,6 @@
 						window.location.reload();
 					}
 				});
-				*/
 			} else {
 				e.preventDefault();
 				return;

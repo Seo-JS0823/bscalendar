@@ -21,8 +21,6 @@ MEM_DEL_FLAG	CHAR		Default N		삭제 여부(Y: 삭제, N: 사용중)
 	private String mem_regdate;
 	private String mem_del_flag;
 	
-	private final String role = "BSC";
-	
 	public MemberDTO() {}
 
 	public MemberDTO(Integer mem_idx,
@@ -67,7 +65,5 @@ MEM_DEL_FLAG	CHAR		Default N		삭제 여부(Y: 삭제, N: 사용중)
 
 	public String getMem_del_flag() { return mem_del_flag; }
 	public void setMem_del_flag(String mem_del_flag) { this.mem_del_flag = mem_del_flag; }
-
-	public String getRole() { return role; }
 	
 }
