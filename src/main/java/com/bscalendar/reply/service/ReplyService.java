@@ -72,5 +72,9 @@ public class ReplyService {
             throw new RuntimeException("댓글 삭제 실패");
         }
     }
+    /*댓글 알림 works_idx의 mem_id 조회*/
+    public String getTaskAuthorId(int works_idx) {
+    	return replyMapper.getTaskAuthorId(works_idx);
+    }
 
 }

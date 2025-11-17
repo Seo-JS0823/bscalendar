@@ -88,5 +88,12 @@
         FROM EG_REPLY
         WHERE REPLY_IDX = #{reply_idx}
     </select>
+    
+    <!--  7. 댓글 알림 -->
+    <select id="getTaskAuthorId" resultType="String">
+        SELECT MEM_ID
+        FROM EG_WORKS 
+        WHERE WORKS_IDX = #{works_idx}
+    </select>
 
 </mapper>

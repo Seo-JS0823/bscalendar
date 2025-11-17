@@ -65,7 +65,7 @@
     return JSON.parse(jsonPayload);
 	}
 	
-	/* 바디에 넣어서 GET 요청 보내는 함수 */
+	/* 바디에 넣어서 요청 보내는 함수 */
 	function authFetchToBody(url, bodyObject, callback, method) {
 		console.log("authFetchToBody" + url);
 		fetch(url, {

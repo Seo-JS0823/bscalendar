@@ -1,4 +1,4 @@
-package com.bscalendar.reply.service; 
+package com.bscalendar.redis.service; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit; 
 
 @Service
-public class RedisTestService {
+public class RedisService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;

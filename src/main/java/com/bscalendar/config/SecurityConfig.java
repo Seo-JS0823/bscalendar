@@ -61,9 +61,10 @@ public class SecurityConfig {
 					"/api/member/auth/re",
 					// 에러
 					"/error",
-					
 					// 추가 :  Redis 테스트 URL 허용
-					"/redis-test/**"
+					"/redis-test/**",
+					// FCM 서비스 워커 파일 허용
+					"/firebase-messaging-sw.js"
 				).permitAll()
 				// 인증 필요 경로
 				.requestMatchers(
