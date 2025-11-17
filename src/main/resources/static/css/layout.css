@@ -125,11 +125,22 @@
   border: 2px solid #00aa00;
   cursor: pointer;
 }
+.project-on .master,
+.project-off .master {
+	background: #6495edaa;
+	border-top-left-radius: 1rem;
+	border-top-right-radius: 1rem;
+}
+.project-on .master h2,
+.project-off .master h2 {
+	text-shadow: 0 0 3px #fff;
+}
 .project-on:hover {
   box-shadow: 0 0 3px #00aa00;
   background-color: #fff;
 }
 .project-off {
+	position: relative;
   cursor: pointer;
   border: 2px solid #dc3545;
 }
@@ -143,7 +154,7 @@
 	height: 100%;
 	display: flex;
 	top: 0;
-	left: 101%;
+	left: 100%;
 	align-items: center;
 	justify-content: space-around;
 	background: #333;
@@ -162,6 +173,90 @@
 	box-shadow: 0 0 2px #fff;
 	transform: scale(1.05);
 }
+
+/* 프로젝트 설정 모달창 */
+.projectSetting {
+	position: absolute;
+	overflow: hidden;
+	width: 70rem;
+	height: auto;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #fff;
+	border-radius: 1rem;
+	box-shadow: 0 0 1px #000, 0 0 6px #ccc;
+	z-index: 901;
+}
+.projectSettingHeader {
+	width: 100%;
+	height: 5rem;
+	text-align: center;
+	align-content: center;
+	color: white;
+	font-size: 2rem;
+	background: #6495ed;
+}
+.projectSettingInput {
+	width: 100%;
+	height: auto;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.settingBox {
+	width: 100%;
+	height: 4rem;
+	padding: 0 1rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+.settingBox:nth-of-type(4) {
+	justify-content: flex-end;
+}
+.settingBox label {
+	width: 15rem;
+	font-size: 1.5rem;
+	text-align: center;
+}
+.settingBox input[type=text] {
+	width: calc(100% - 15rem);
+	height: 3rem;
+	font-size: 1.4rem;
+	padding-left: 1rem;
+	outline: none;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+}
+.settingBox input[type=date] {
+	width: calc(calc(100% - 15rem) / 2);
+	height: 3rem;
+	font-size: 1.4rem;
+	outline: none;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+	padding: 0 1rem;
+}
+.settingBox button {
+	padding: 1rem 2rem;
+	font-size: 1.5rem;
+	color: white;
+	outline: none;
+	border: none;
+	border-radius: 1.2rem;
+}
+/*.settingBox button:nth-of-type(1) { background: #00aa00; }*/
+.settingBox button:nth-of-type(1) { background: #dc3545; }
+.settingBox button:nth-of-type(2) { background: #6495ed; }
+.settingBox button:nth-of-type(3) { background: #aaa; }
+.settingBox button:hover {
+	text-shadow: 0 0 3px #fff;
+	box-shadow: 0 0 5px #ccc;
+	transform: scale(1.05);
+}
+
 
 /* 멤버 초대 모달창 */
 .inviteMember {

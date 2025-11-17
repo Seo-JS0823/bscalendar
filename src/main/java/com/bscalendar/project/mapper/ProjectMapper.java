@@ -34,11 +34,17 @@ public interface ProjectMapper {
 
 	public List<ProjectMemberDTO> projectMembersSearch(String search);
 
-	public List<ProjectMemberDTO> projectMemberAll();
+	public List<ProjectMemberDTO> projectMemberAll(Integer team_idx);
 
 	public ProjectMemberDTO memberToMemId(String id);
 
 	public int projectMemberAdd(ProjectMemberDTO projectAddTarget);
 
 	public List<ProjectMemberDTO> projectSosocMember(Integer team_idx);
+
+	public ProjectDTO projectSettingRead(Integer team_idx);
+
+	public int projectSettingUpdate(Integer team_idx, String team_edate, String team_name);
+
+	public int projectDelete(Integer team_idx);
 }

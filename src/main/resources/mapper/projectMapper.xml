@@ -32,6 +32,7 @@
 	<!-- 프로젝트 조회(EG_MAPP), ID: projectRead -->
 	<select id="projectRead" resultType="com.bscalendar.project.dto.ProjectDTO">
 		SELECT
+			MEMBER.MEM_ID,
 			MEMBER.MEM_NAME,
 			DATE_FORMAT(TEAM.TEAM_SDATE, '%y-%m-%d') AS TEAM_SDATE,
 			DATE_FORMAT(TEAM.TEAM_EDATE, '%y-%m-%d') AS TEAM_EDATE,
@@ -127,18 +128,18 @@
 			*
 		FROM
 			EG_MEMBER
+		WHERE
+			MEM_ID Not In (SELECT MEM_ID FROM EG_MAPP WHERE TEAM_IDX = #{team_idx} AND MAPP_DEL_FLAG = 'N')
 	</select>
 	
 	<!-- 멤버 ID로 검색 -->
 	<select id="memberToMemId" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
 		SELECT
-			M.MEM_ID, M.MEM_NAME, MP.MAPP_DEL_FLAG
+			MEM_ID, MEM_NAME
 		FROM
-			EG_MEMBER M, EG_MAPP MP
+			EG_MEMBER
 		WHERE
-			M.MEM_ID = MP.MEM_ID AND
-			MEM_ID = #{id} AND
-			MP.MAPP_DEL_FLAG = 'N'
+			MEM_ID = #{id};
 	</select>
 	
 	<!-- 프로젝트에 멤버 추가 -->
@@ -154,8 +155,35 @@
 			EG_MAPP
 		WHERE
 			TEAM_IDX = #{team_idx} AND
-			MAPP_DEL_FLAG = 'N'
+			MAPP_DEL_FLAG = 'N' AND
 		ORDER BY
 			MAPP_DEL_FLAG desc
 	</select>
+	
+	<!-- 프로젝트 Update를 위한 기존 데이터 -->
+	<select id="projectSettingRead" resultType="com.bscalendar.project.dto.ProjectDTO">
+		SELECT
+			*
+		FROM
+			EG_TEAM
+		WHERE
+			TEAM_IDX = #{team_idx}
+	</select>
+	
+	<!-- 프로젝트 업데이트 (기본 프로젝트 정보만) -->
+	<update id="projectSettingUpdate">
+		UPDATE EG_TEAM SET
+			TEAM_EDATE = #{team_edate},
+			TEAM_NAME = #{team_name}
+		WHERE
+			TEAM_IDX = #{team_idx}
+	</update>
+	
+	<!-- 프로젝트 Delete -->
+	<update id="projectDelete">
+		UPDATE EG_TEAM SET
+			TEAM_CON_FLAG = 'Y'
+		WHERE
+			TEAM_IDX = #{team_idx}
+	</update>
 </mapper>

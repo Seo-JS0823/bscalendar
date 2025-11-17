@@ -72,8 +72,8 @@ public class ProjectService {
 	}
 	
 	// 전체 멤버 조회
-	public List<ProjectMemberDTO> projectMemberAll() {
-		List<ProjectMemberDTO> projectMemberAll = projectMapper.projectMemberAll();
+	public List<ProjectMemberDTO> projectMemberAll(Integer team_idx) {
+		List<ProjectMemberDTO> projectMemberAll = projectMapper.projectMemberAll(team_idx);
 		return projectMemberAll;
 	}
 
@@ -85,7 +85,7 @@ public class ProjectService {
 		
 		// TODO: 중복 방지
 		for(int i = 0; i < projectTeamMemberValid.size(); i++) {
-			String sosocId = projectTeamMemberValid.get(i).getMem_name();
+			String sosocId = projectTeamMemberValid.get(i).getMem_id();
 			String delFlag = projectTeamMemberValid.get(i).getMapp_del_flag();
 			for(int j = 0; j < memberIds.size(); j++) {
 				String targetId = memberIds.get(j);
@@ -114,6 +114,22 @@ public class ProjectService {
 		return Map.of(
 			"successMessage", response + " 멤버 총" + targetSize + "명 투입되었습니다."
 		);
+	}
+
+	// EG_TEAM 데이터
+	public ProjectDTO projectSettingRead(Integer team_idx) {
+		ProjectDTO targetProject = projectMapper.projectSettingRead(team_idx);
+		return targetProject;
+	}
+
+	public boolean projectSettingUpdate(Integer team_idx, String team_edate, String team_name) {
+		int projectUpdated = projectMapper.projectSettingUpdate(team_idx, team_edate, team_name);
+		return projectUpdated > 0;
+	}
+
+	public boolean projectDelete(Integer team_idx) {
+		int projectDeleted = projectMapper.projectDelete(team_idx);
+		return projectDeleted > 0;
 	}
 	
 }
