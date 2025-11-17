@@ -60,7 +60,10 @@ public class SecurityConfig {
 					// 토큰 재생성,
 					"/api/member/auth/re",
 					// 에러
-					"/error"
+					"/error",
+					
+					// 추가 :  Redis 테스트 URL 허용
+					"/redis-test/**"
 				).permitAll()
 				// 인증 필요 경로
 				.requestMatchers(

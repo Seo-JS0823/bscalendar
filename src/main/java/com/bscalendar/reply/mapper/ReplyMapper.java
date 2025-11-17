@@ -8,11 +8,7 @@ import com.bscalendar.reply.dto.ReplyUpdateDTO;
 
 @Mapper
 public interface ReplyMapper {
-    int insertReply(ReplyCreateDTO createDto);
-    
-    ReplyResponseDTO getReplyByIdx(int replyIdx);
 
-<<<<<<< Updated upstream
     int insertReply(ReplyCreateDTO createDto);
     
     ReplyResponseDTO getReplyByIdx(int reply_idx);
@@ -24,14 +20,5 @@ public interface ReplyMapper {
     int deleteReply(int reply_idx);
 
     String getAuthorMemIdByReplyIdx(int reply_idx);
-=======
-    List<ReplyResponseDTO> getRepliesByWorksIdx(int worksIdx);
-
-    int updateReply(ReplyUpdateDTO updateDto);
-
-    int deleteReply(int replyIdx);
-
-	String getAuthorMemIdByReplyIdx(int replyIdx);
->>>>>>> Stashed changes
     
 }
