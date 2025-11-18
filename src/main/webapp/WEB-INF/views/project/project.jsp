@@ -16,7 +16,14 @@
 <body>
 
 <nav class="top-menu-area">
-
+	<!-- JSP include -->
+	<!--
+	<script>
+		JWT MEMBER_ID Parsing
+		전역 변수로 MEMBER_ID 저장
+		모든 .jsp 파일에서 사용 가능
+	</script>
+	-->
 </nav>
 
 <div class="container">
@@ -96,22 +103,6 @@
 				     				minute: '2-digit',
 				     				hour12: false
 				     			},
-				     			// TODO: 업무 막대기를 누르면 발생하는 이벤트
-				     			eventClick: function(info) {
-				     				const teamIdx = info.event.extendedProps.team_idx;
-										const sdate = info.event.startStr;
-										const edate = info.event.endStr;
-										
-										const url = `/api/project/work/list/\${teamIdx}/\${sdate}/\${edate}`;
-										
-				     				fetch(url)
-				     				.catch(err => console.err(err))
-				     				.then(response => response.json())
-				     				.then(data => {
-				     					workRender(data);
-				     				});
-				     				
-				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
 				     				fetch('/api/project/members/work/list/jenits/1')
@@ -119,13 +110,15 @@
 				     				.then(response => response.json())
 				     				.then(data => {
 				     					let events = data.map(item => ({
-				     						title: item.works_comment,
 				     						start: item.works_sdate,
 				     						end: item.works_edate,
 				     						team_idx: item.team_idx
 				     					}));
 					     				successCallback(events);
 				     				})
+				     			},
+				     			dateClick: function(info) {
+				     				workAndDateRender(info);
 				     			}
 				     		});
 				     		calendarImpl.render();
@@ -216,6 +209,20 @@
       			worklistEl.appendChild(tr);
       		});
       	}
+      	function dateWorkRender(info) {
+	   			const teamIdx = info.event.extendedProps.team_idx;
+					const sdate = info.event.startStr;
+					const edate = info.event.endStr;
+					
+					const url = `/api/project/work/list/\${teamIdx}/\${sdate}/\${edate}`;
+					
+   				fetch(url)
+   				.catch(err => console.err(err))
+   				.then(response => response.json())
+   				.then(data => {
+   					workRender(data);
+   				});
+				}
       </script>
       <script src="/js/keyStore.js"></script>
 			<script src="/js/weather.js"></script>
@@ -223,8 +230,9 @@
       <!-- 날씨 Layer -->
       <div class="weather-container" id="weather-load">
       	<script>
-      	// init()
-      	// UI 다 만들어지면 주석 해제
+      		init()
+	      	// UI 다 만들어지면 주석 해제
+	      	// 날씨 데이터 캐싱
       	</script>
 				<div class="wrap">
 					<div class="weather">
@@ -260,11 +268,10 @@
       <div class="worklist-container">
         <div class="worklist-header">
           <div class="worklist-header-project-name">
-            <p>TEAM: 귀멸의칼날</p>
-            <h1>Work List</h1>
+            <p>TEAM / 귀멸의칼날</p>
           </div>
           <div class="worklist-header-day">
-            <p>2025-11-05 (수)</p>
+            <p id="clicked-date"></p>
           </div>
         </div>
 
@@ -272,19 +279,11 @@
           <!-- AM -->
           <div class="worklist-content">
             <div class="worklist-content-header">
-              <p>미완료 업무 : 1 / 완료 업무 : 1</p>
+              <p id="finFlagState"></p>
               <a id="workCreate" href="/work/create/">업무 등록</a>
             </div>
             <div class="worklist-content-main">
               <table id="worklist" class="worklist-content-table">
-                <colgroup>
-                  <col style="width: 10%;">
-                  <col style="width: 15%;">
-                  <col style="width: 15%;">
-                  <col style="width: 30%;">
-                  <col style="width: 20%;">
-                  <col style="width: 10%;">
-                </colgroup>
                 <tr>
                   <th>작성자</th>
                   <th>수행 시작일</th>

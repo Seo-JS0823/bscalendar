@@ -44,7 +44,8 @@
 				FROM
 					EG_MAPP SUB
 				WHERE
-					SUB.TEAM_IDX = TEAM.TEAM_IDX
+					SUB.TEAM_IDX = TEAM.TEAM_IDX AND
+					SUB.MAPP_DEL_FLAG = 'N'
 			) AS MEMBER_COUNT
 		FROM
 			EG_MAPP MAPP, EG_TEAM TEAM, EG_MEMBER MEMBER
@@ -64,7 +65,8 @@
 		WHERE
 			MEMBER.MEM_ID = MAPP.MEM_ID AND
 			MAPP.TEAM_IDX = TEAM.TEAM_IDX AND
-			MAPP.TEAM_IDX = #{team_idx}
+			MAPP.TEAM_IDX = #{team_idx} AND
+			MAPP.MAPP_DEL_FLAG = 'N'
 	</select>
 	
 	<!-- 프로젝트에 소속된 멤버가 등록한 업무 리스트 조회, ID: projectMemberToWorksRead -->
@@ -103,8 +105,57 @@
 			W.MEM_ID = M.MEM_ID AND
 			W.TEAM_IDX = #{teamIdx} AND
 			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{sdate} AND
-			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{edate}
+			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{edate} AND
+			W.WORKS_HIDE = 'N'
 	</select>
 	
-	<!--  -->
+	<!-- 멤버 이름 Search -->
+	<select id="projectMembersSearch" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
+		SELECT
+			*
+		FROM
+			EG_MEMBER
+		WHERE
+			MEM_NAME LIKE '${search}%' OR
+			MEM_POSITION LIKE '${search}%' OR
+			MEM_DEPART LIKE '${search}%'
+	</select>
+	
+	<!-- 멤버 전원 검색 -->
+	<select id="projectMemberAll" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
+		SELECT
+			*
+		FROM
+			EG_MEMBER
+	</select>
+	
+	<!-- 멤버 ID로 검색 -->
+	<select id="memberToMemId" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
+		SELECT
+			M.MEM_ID, M.MEM_NAME, MP.MAPP_DEL_FLAG
+		FROM
+			EG_MEMBER M, EG_MAPP MP
+		WHERE
+			M.MEM_ID = MP.MEM_ID AND
+			MEM_ID = #{id} AND
+			MP.MAPP_DEL_FLAG = 'N'
+	</select>
+	
+	<!-- 프로젝트에 멤버 추가 -->
+	<insert id="projectMemberAdd">
+		INSERT INTO EG_MAPP (TEAM_IDX, MEM_ID) VALUES (#{team_idx}, #{mem_id})
+	</insert>
+	
+	<!-- 프로젝트에 소속된 멤버들 가져오기 -->
+	<select id="projectSosocMember" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
+		SELECT
+			MEM_ID, MAPP_DEL_FLAG
+		FROM
+			EG_MAPP
+		WHERE
+			TEAM_IDX = #{team_idx} AND
+			MAPP_DEL_FLAG = 'N'
+		ORDER BY
+			MAPP_DEL_FLAG desc
+	</select>
 </mapper>

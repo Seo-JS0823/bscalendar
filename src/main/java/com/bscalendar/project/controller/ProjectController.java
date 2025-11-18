@@ -1,6 +1,7 @@
 package com.bscalendar.project.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -105,6 +106,40 @@ public class ProjectController {
 		// TODO: Service 호출
 		List<MemberWorkDTO> dateToWorks = projectSvc.dateToWorks(teamIdx, sdate, edate);
 		return ResponseEntity.ok(dateToWorks);
+	}
+	
+	// project Member 검색
+	@GetMapping("/member/read/{search}")
+	@ResponseBody
+	public ResponseEntity<List<ProjectMemberDTO>> projectMembersSearch(
+			@PathVariable("search") String search) {
+		System.out.println("SEARCH : " + search);
+		// TODO: member name read service
+		List<ProjectMemberDTO> searchToMembers = projectSvc.projectMembersSearch(search);
+		System.out.println("SIZE: " + searchToMembers.size());
+		return ResponseEntity.ok(searchToMembers);
+	}
+	
+	// project Member All Read
+	@GetMapping("/member/read-all")
+	@ResponseBody
+	public ResponseEntity<List<ProjectMemberDTO>> projectMembersAll() {
+		// TODO: member all service
+		List<ProjectMemberDTO> allMember = projectSvc.projectMemberAll();
+		return ResponseEntity.ok(allMember);
+	}
+	
+	// 선택한 멤버를 body로 받아서 Member를 프로젝트 팀에 투입
+	@PostMapping("/member/add/{team_idx}")
+	@ResponseBody
+	public ResponseEntity<Object> projectMemberAdd(
+			@RequestBody Map<String, List<String>> mem_ids,
+			@PathVariable("team_idx") Integer team_idx) {
+		List<String> memberIds = mem_ids.get("members");
+		
+		// TODO: service insert
+		Map<String, Object> inserted = projectSvc.projectMemberAdd(memberIds, team_idx);
+		return ResponseEntity.ok(inserted);
 	}
 	
 	@PatchMapping("/")
