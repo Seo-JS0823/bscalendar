@@ -28,4 +28,13 @@ mybatis:
   mapper-locations: classpath:mapper/**/*.xml
 
 jwt:
-  secret: ${SECERT_KEY}
+  issuer: eg.com
+  expiration: 86400000
+  refresh: 86400000
+  secret: ${SECRET_KEY}
+  
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

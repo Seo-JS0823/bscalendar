@@ -10,16 +10,17 @@
   <title>부성카렌다</title>
 </head>
 <body>
-<nav class="top-menu-area">
-
-</nav>
+<%@ include file="../nav.jsp" %>
 
 <div class="container">
   <div class="projectList-area">
     <div class="projectList-container">
       <div class="projectList-content">
         <h1>Team Calendar List</h1>
-        <h2><span style="color: #00aa00">● 진행중</span> <span style="color: #dc3545">● 종료됨</span></h2>
+        <h2>
+        	<span style="color: #00aa00">● 진행중</span>
+        	<span style="color: #dc3545">● 종료됨</span>
+        </h2>
         <button id="project-create-btn">프로젝트 생성</button>
         <br>
         <div id="project-list">
@@ -108,7 +109,8 @@
 </div>
 
 <script> // 로그인한 유저의 프로젝트 리스트 렌더링
-	const url = '/api/project/inotske';
+	const mem_id = getTokenFromInfo('username');
+	const url = '/api/project/' + mem_id;
 	fetch(url)
 	.catch(error => console.log(error))
 	.then(response => response.json())
@@ -138,17 +140,31 @@
 				e.preventDefault();
 			});
 			
-			const innerHTML = `
+			let innerHTML = '';
+			if(mem_id === project.mem_id) {
+				innerHTML = `
+				<div class="master">
+					<p>Team</p><h2>\${project.team_name}</h2>
+					<p>인원</p><h2>\${project.member_count} 명</h2>
+				</div>
+				`;
+			} else {
+				innerHTML = `
 				<div>
 					<p>Team</p><h2>\${project.team_name}</h2>
 					<p>인원</p><h2>\${project.member_count} 명</h2>
 				</div>
-				<div>
-					<p>권한자</p><h2>\${project.mem_name}</h2>
-				</div>
-				<div>
-					<p>기간</p><h2>\${project.team_sdate} ~ \${project.team_edate}</h2>
-				</div>
+				`;
+			}
+			
+			//<p>권한자</p><h2>\${project.mem_name}</h2>
+			innerHTML += `
+			<div>
+				<p>권한자</p><h2>\${project.mem_name}</h2>
+			</div>
+			<div>
+				<p>기간</p><h2>\${project.team_sdate} ~ \${project.team_edate}</h2>
+			</div>
 			`;
 			
 			li.innerHTML = innerHTML;
@@ -160,7 +176,7 @@
 			});
 			
 			// TODO 멤버 초대 버튼
-			// JWT 완성 후 MEMID 비교해서 if문으로 생성한 사람만 할당
+			// JWT 완성 후 MEM_ID 비교해서 if문으로 생성한 사람만 할당
 			const inviteMember = document.createElement('div');
 			inviteMember.classList.add('inviteClick');
 			inviteMember.style.backgroundColor = '#00aa00';
@@ -189,22 +205,26 @@
 			projectUpdate.style.color = 'white';
 			projectUpdate.textContent = '설정 변경';
 			
+			const projectSettingUpdateModal = projectSettingUpdateElement(team_idx);
+			projectSettingUpdateModal.classList.add('close');
+			
 			// TODO 프로젝트 수정 버튼 이벤트 핸들러 & 버블링 방지
 			projectUpdate.addEventListener('click', (e) => {
 				e.stopPropagation();
 				e.preventDefault();
+				modalCloseOpen(projectSettingUpdateModal);
 			});
 			
 			li.addEventListener('mouseout', () => {
 				inviteAndUpdate.style.display = 'none';
 			});
 			
-			inviteAndUpdate.appendChild(inviteMember);
-			inviteAndUpdate.appendChild(projectUpdate);
-			
-			li.appendChild(inviteAndUpdate);
-			
-			renderingTarget.appendChild(li);			
+			if(mem_id === project.mem_id) {
+				inviteAndUpdate.appendChild(inviteMember);
+				inviteAndUpdate.appendChild(projectUpdate);
+				li.appendChild(inviteAndUpdate);	
+			}
+				renderingTarget.appendChild(li);			
 		});
 	});
 	
@@ -219,6 +239,137 @@
 			element.classList.add('close');
 			document.body.removeChild(element);
 		}
+	}
+	
+	function projectSettingUpdateElement(team_idx) {
+		const projectSetting = document.createElement('div');
+		projectSetting.classList.add('projectSetting');
+		
+		const projectSettingHeader = document.createElement('div');
+		projectSettingHeader.classList.add('projectSettingHeader');
+		projectSettingHeader.textContent = '프로젝트 설정';
+		
+		const projectSettingInput = document.createElement('div');
+		projectSettingInput.classList.add('projectSettingInput');
+			
+			const settingBox1 = document.createElement('div');
+			settingBox1.classList.add('settingBox');
+			const labelProjectName = document.createElement('label');
+			labelProjectName.textContent = '프로젝트 명';
+			const inputProjectName = document.createElement('input');
+			inputProjectName.type = 'text';
+			settingBox1.appendChild(labelProjectName);
+			
+			const settingBox2 = document.createElement('div');
+			settingBox2.classList.add('settingBox');
+			const labelProjectStartDate = document.createElement('label');
+			labelProjectStartDate.textContent = '프로젝트 시작 날짜';
+			const inputProjectStartDate = document.createElement('input');
+			inputProjectStartDate.type = 'date';
+			inputProjectStartDate.setAttribute('readonly', true);
+			settingBox2.appendChild(labelProjectStartDate);
+			
+			const settingBox3 = document.createElement('div');
+			settingBox3.classList.add('settingBox');
+			const labelProjectEndDate = document.createElement('label');
+			labelProjectEndDate.textContent = '프로젝트 종료 날짜';
+			const inputProjectEndDate = document.createElement('input');
+			inputProjectEndDate.type = 'date';
+			settingBox3.appendChild(labelProjectEndDate);
+			
+			const settingBox4 = document.createElement('div');
+			settingBox4.classList.add('settingBox');
+			const updateSettingBtn = document.createElement('button');
+			updateSettingBtn.textContent = '저 장';
+			updateSettingBtn.addEventListener('click', () => {
+				// TODO: 변경 내용이 실제로 저장되도록 fetch 요청 patch
+				const projectName = inputProjectName.value;
+				const projectSdate = inputProjectStartDate.value;
+				const projectEdate = inputProjectEndDate.value;
+				
+				const startDate = new Date(projectSdate);
+				const endDate = new Date(projectEdate);
+				
+				// TODO: 종료 날짜가 시작 날짜보다 이르면 경고창
+				if(startDate > endDate) {
+					alert('종료 날짜를 시작 날짜 보다 이르게 설정할 수 없습니다.');
+					return;
+				}
+				
+				const projectUpdateUrl = `/api/project/setting/\${team_idx}/\${projectEdate}/\${projectName}`;
+				const headers = { method: 'PATCH' }
+				fetch(projectUpdateUrl, headers)
+				.then(response => {
+					return response.json();
+				})
+				.then(data => {
+					
+				});
+				
+			});
+			const projectWorkEndBtn = document.createElement('button');
+			projectWorkEndBtn.textContent = '프로젝트 완료';
+			projectWorkEndBtn.addEventListener('click', () => {
+				// TODO: 프로젝트가 종료되도록 fetch 요청 delete
+				const projectWorkEndUrl = '/api/project/endProject/' + team_idx;
+				const headers = { method: 'DELETE' }
+				fetch(projectWorkEndUrl, headers)
+				.then(response => response.json())
+				.then(data => {
+					alert(data.message);
+					window.location.reload();
+				});
+			});
+			/*
+			const projectMasterUpdateBtn = document.createElement('button');
+			projectMasterUpdateBtn.textContent = '관리자 변경';
+			projectMasterUpdateBtn.addEventListener('click', () => {
+				alert(team_idx);
+			});
+			*/
+			const modalCloseBtn = document.createElement('button');
+			modalCloseBtn.textContent = '닫 기';
+			modalCloseBtn.addEventListener('click', () => {
+				modalCloseOpen(projectSetting);
+			});
+			//settingBox4.appendChild(projectMasterUpdateBtn);
+			settingBox4.appendChild(projectWorkEndBtn);
+			settingBox4.appendChild(updateSettingBtn);
+			settingBox4.appendChild(modalCloseBtn);
+			
+			
+			
+			// TODO: fetch API return 프로젝트 설정
+			const settingDataUrl = `/api/project/setting/\${team_idx}`;
+			fetch(settingDataUrl)
+			.then(response => {
+				const status = response.status;
+				if(status === 204) {
+					console.log(settingDataUrl + ' ' + status)
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log(data);
+				
+				inputProjectName.value = data.project.team_name;
+				settingBox1.appendChild(inputProjectName);
+				
+				inputProjectStartDate.value = data.project.team_sdate;
+				settingBox2.appendChild(inputProjectStartDate);
+				
+				inputProjectEndDate.value = data.project.team_edate;
+				settingBox3.appendChild(inputProjectEndDate);
+			});
+		projectSettingInput.appendChild(settingBox1);
+		projectSettingInput.appendChild(settingBox2);
+		projectSettingInput.appendChild(settingBox3);
+		projectSettingInput.appendChild(settingBox4);
+		
+		projectSetting.appendChild(projectSettingHeader);
+		projectSetting.appendChild(projectSettingInput);
+		
+		return projectSetting;
 	}
 	
 	// 중복 렌더링 방지해야함 TODO
@@ -300,7 +451,7 @@
 		bindEl.classList.add('memberBind');
 		// TODO bindEl 초기값 세팅 fetch All members
 		// TODO binding ClickEvent 함수로 빼기
-		fetch('/api/project/member/read-all')
+		fetch('/api/project/member/read-all/' + team_idx)
 		.catch(err => console.err(err))
 		.then(response => response.json())
 		.then(data => {

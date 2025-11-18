@@ -121,11 +121,11 @@ public class ProjectController {
 	}
 	
 	// project Member All Read
-	@GetMapping("/member/read-all")
+	@GetMapping("/member/read-all/{team_idx}")
 	@ResponseBody
-	public ResponseEntity<List<ProjectMemberDTO>> projectMembersAll() {
+	public ResponseEntity<List<ProjectMemberDTO>> projectMembersAll(@PathVariable("team_idx") Integer team_idx) {
 		// TODO: member all service
-		List<ProjectMemberDTO> allMember = projectSvc.projectMemberAll();
+		List<ProjectMemberDTO> allMember = projectSvc.projectMemberAll(team_idx);
 		return ResponseEntity.ok(allMember);
 	}
 	
@@ -142,19 +142,57 @@ public class ProjectController {
 		return ResponseEntity.ok(inserted);
 	}
 	
-	@PatchMapping("/")
+	// 프로젝트 설정을 위한 프로젝트 설정 데이터
+	@GetMapping("/setting/{team_idx}")
 	@ResponseBody
-	public ResponseEntity<ProjectDTO> projectUpdate() {
-		// TODO: 프로젝트 수정
-		
-		return null;
+	public ResponseEntity<Map<String, Object>> projectSettingData(@PathVariable("team_idx") Integer team_idx) {
+		// TODO: team_idx로 EG_TEAM 데이터 가져오기
+		ProjectDTO targetProject = projectSvc.projectSettingRead(team_idx);
+		if(targetProject == null) {
+			System.out.println("왓아유 두잉 왓!? " + targetProject);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of(
+				"message", "요청 에러로 인해 프로젝트 설정 정보를 찾을 수 없습니다. 다시 시도하여 주세요."
+			));
+		}
+		return ResponseEntity.ok(Map.of(
+			"project", targetProject
+		));
 	}
 	
-	@DeleteMapping("/")
+	@PatchMapping("/setting/{team_idx}/{team_edate}/{team_name}")
 	@ResponseBody
-	public ResponseEntity<ProjectDTO> projectDelete() {
-		// TODO: 프로젝트 삭제
+	public ResponseEntity<Map<String, Object>> projectUpdate(
+			@PathVariable("team_idx") Integer team_idx,
+			@PathVariable("team_edate") String team_edate,
+			@PathVariable("team_name") String team_name) {
+		// TODO: 프로젝트 수정
+		boolean projectUpdated = projectSvc.projectSettingUpdate(team_idx, team_edate, team_name);
 		
-		return null;
+		// TODO: true  : 업데이트 O
+		// TODO: false : 업데이트 X
+		if(!projectUpdated) {
+			return ResponseEntity.ok(Map.of(
+				"message", "예기치 않은 오류로 인해 설정 변경에 실패하였습니다. 다시 시도해주세요."
+			));
+		}
+		return ResponseEntity.ok(Map.of(
+			"message", "프로젝트 설정이 정상적으로 변경되었습니다."
+		));
+	}
+	
+	@DeleteMapping("/endProject/{team_idx}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> projectDelete(
+			@PathVariable("team_idx") Integer team_idx) {
+		// TODO: 프로젝트 삭제이지만 TEAM_DEL_FLAG 만 Y로 변경
+		boolean projectDeleted = projectSvc.projectDelete(team_idx);
+		if(!projectDeleted) {
+			return ResponseEntity.ok(Map.of(
+				"message", "예기치 않은 오류로 인해 프로젝트를 종료 상태로 변경하는 것에 실패하였습니다. 다시 시도해주세요."
+			));
+		}
+		return ResponseEntity.ok(Map.of(
+			"message", "프로젝트가 정상적으로 종료되었습니다."
+		));
 	}
 }
