@@ -1,8 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <nav class="top-menu-area">
-
+	<div class="menuItem">
+		<button onclick="homeLocation()">Project Home</button>
+	</div>
+	<div class="menuItem">
+		<button onclick="myPageLocation()">마이페이지</button>
+	</div>
 </nav>
 <script>
+	function homeLocation() {
+		const url = '/project/list';
+		window.location.href = url;
+	}
+	function myPageLocation() {
+		const url = '/member/mypage';
+		window.location.href = url;
+	}
+
 	function getTokenFromInfo(info) {
 		if(!info) {
 			console.err('getTokenFromInfo Function Parameter Not Found');
@@ -17,7 +31,6 @@
 		const base64Url = token.split('.')[1];
 		const infomation = decodeJwt(base64Url); 
 		
-		console.log(infomation[info]);
 		return infomation[info];
 	}
 	

@@ -10,22 +10,11 @@
   <link rel="stylesheet" href="/css/layout.css">
   <title>부성카렌다</title>
   
-	<script src="/js/index.global.min.js"></script>
-	<script src="/js/calendar.js"></script>
 </head>
 <body>
-
-<nav class="top-menu-area">
-	<!-- JSP include -->
-	<!--
-	<script>
-		JWT MEMBER_ID Parsing
-		전역 변수로 MEMBER_ID 저장
-		모든 .jsp 파일에서 사용 가능
-	</script>
-	-->
-</nav>
-
+<%@ include file="../nav.jsp" %>
+<script src="/js/index.global.min.js"></script>
+<script src="/js/calendar.js"></script>
 <div class="container">
   <div class="content-area">
 
@@ -58,7 +47,6 @@
       	.catch(error => console.error(error))
       	.then(response => response.json())
       	.then(data => {
-      		console.log(data);
       		memberList.innerHTML = '';
       		data.forEach(member => {
       			const memId = member.mem_id;
@@ -80,6 +68,7 @@
 				     		const dataSize = data.length;
 				     		if(dataSize <= 0) {
 				     			alert(memName + ' 님은 해당 달에 등록된 업무가 없습니다.');
+				     			return;
 				     		}
 				     		
 				     		// TODO: Calendar 위쪽에 이름 렌더링
@@ -105,11 +94,12 @@
 				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
-				     				fetch('/api/project/members/work/list/jenits/1')
+				     				fetch(`/api/project/members/work/list/\${memId}/1`)
 				     				.catch(err => console.err(err))
 				     				.then(response => response.json())
 				     				.then(data => {
 				     					let events = data.map(item => ({
+				     						title: memName + '님 등록 업무',
 				     						start: item.works_sdate,
 				     						end: item.works_edate,
 				     						team_idx: item.team_idx
@@ -128,7 +118,7 @@
       		});
       	})
       	
-      	function workRender(workInfo) { // 위에 fetch로 불러온 data -> workInfo
+      	function workRender2(workInfo) { // 위에 fetch로 불러온 data -> workInfo
       		// TODO: 업무 리스트 렌더링
       		const worklistEl = document.getElementById('worklist');
       		worklistEl.innerHTML = `
@@ -179,6 +169,7 @@
       						// TODO: 완료 처리하는 컨트롤러와 로직
       						const url = `/api/work/update/\${work.works_idx}`;
       						
+      						
       						/*
       						fetch(url, { method: 'put' })
       						.catch(err => console.err(err))
@@ -208,6 +199,7 @@
       			
       			worklistEl.appendChild(tr);
       		});
+      		
       	}
       	function dateWorkRender(info) {
 	   			const teamIdx = info.event.extendedProps.team_idx;
@@ -220,7 +212,7 @@
    				.catch(err => console.err(err))
    				.then(response => response.json())
    				.then(data => {
-   					workRender(data);
+   					workRender2(data);
    				});
 				}
       </script>

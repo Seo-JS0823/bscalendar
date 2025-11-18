@@ -91,7 +91,7 @@ public class WorkController {
 		int updated = workMapper.workUpdate(workIdx);
 		if(updated < 1) {
 			Map<String, Object> notUpdated = Map.of(
-				"message", "업무를 업데이트하지 못했습니다."
+				"message", "업무를 완료 처리하지 못했습니다."
 			);
 			return ResponseEntity.badRequest().body(notUpdated);
 		}

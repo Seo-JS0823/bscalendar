@@ -57,6 +57,7 @@ public class MemberController {
 		
 		b = memsvc.addMember(json);
 		if(b) result = new JSONObject("{\"result\":\"ok\"}");
+		else result = new JSONObject("{\"result\":\"no\"}");
 		
 		response.setContentType("application/json");
 		response.setHeader("X-exitgreen", "OK!!");

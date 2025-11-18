@@ -46,7 +46,7 @@
 	 JOIN EG_MEMBER member ON team.mem_id = member.mem_id 
 	 WHERE works_idx = #{works_idx}
 	</select> 
-	<select id="findToDateWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+	<select id="findToDateWorks" resultType="com.bscalendar.work.dto.WorkDTO">
 		SELECT
 			W.*, M.MEM_NAME
 		FROM

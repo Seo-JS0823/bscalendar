@@ -155,7 +155,7 @@
 			EG_MAPP
 		WHERE
 			TEAM_IDX = #{team_idx} AND
-			MAPP_DEL_FLAG = 'N' AND
+			MAPP_DEL_FLAG = 'N'
 		ORDER BY
 			MAPP_DEL_FLAG desc
 	</select>
@@ -186,4 +186,87 @@
 		WHERE
 			TEAM_IDX = #{team_idx}
 	</update>
+	
+	<!-- 프로젝트 멤버 Delete -->
+	<update id="projectMemberDelete">
+		UPDATE EG_MAPP SET
+			MAPP_DEL_FLAG = 'Y'
+		WHERE
+			TEAM_IDX = #{team_idx} AND
+			MEM_ID = #{mem_id}
+	</update>
+	
+	<!-- 멤버 개인의 비공유 업무 데이터 -->
+	<select id="hideWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			M.MEM_NAME, W.*
+		FROM
+			EG_WORKS W, EG_MEMBER M
+		WHERE
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{team_idx} AND
+			W.MEM_ID = #{mem_id}
+	</select>
+	
+	<!-- 달력 렌더링용 소속 프로젝트내의 등록된 공유업무들 -->
+	<select id="nohideCalendar" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.*, M.MEM_NAME
+		FROM
+			EG_WORKS W, EG_MEMBER M, EG_TEAM T
+		WHERE
+			W.TEAM_IDX = T.TEAM_IDX AND
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{team_idx} AND
+			#{sdate} <![CDATA[<=]]> DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') AND
+			#{edate} <![CDATA[>=]]> DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') AND
+			W.WORKS_HIDE = 'N'
+	</select>
+	
+	<!-- 달력 렌더링용 소속 프로젝트내의 등록된 비공유업무들 -->
+	<select id="hideCalendar" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.*, M.MEM_NAME
+		FROM
+			EG_WORKS W, EG_MEMBER M, EG_TEAM T
+		WHERE
+			W.TEAM_IDX = T.TEAM_IDX AND
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{team_idx} AND
+			W.MEM_ID = #{mem_id} AND
+			#{sdate} <![CDATA[<=]]> DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') AND
+			#{edate} <![CDATA[>=]]> DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') AND
+			W.WORKS_HIDE = 'Y'
+	</select>
+	
+	<!-- 업무리스트 소속 프로젝트내 등록된 공유 업무들을 지정 날짜 기준으로 조회 -->
+	<select id="dateToNoHideWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.*, M.MEM_NAME
+		FROM
+			EG_WORKS W, EG_TEAM T, EG_MEMBER M
+		WHERE
+			W.TEAM_IDX = T.TEAM_IDX AND
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{team_idx} AND
+			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{nowDate} AND
+			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{nowDate} AND
+			W.WORKS_HIDE = 'N'
+	</select>
+	
+	<!-- 업무리스트 소속 프로젝트내 자신이 등록한 개인 업무를 지정 날짜 기준으로 조회 -->
+	<select id="dateToHideWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
+		SELECT
+			W.*, M.MEM_NAME
+		FROM
+			EG_WORKS W, EG_TEAM T, EG_MEMBER M
+		WHERE
+			W.TEAM_IDX = T.TEAM_IDX AND
+			W.MEM_ID = M.MEM_ID AND
+			W.TEAM_IDX = #{team_idx} AND
+			W.MEM_ID = #{mem_id} AND
+			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{nowDate} AND
+			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{nowDate} AND
+			W.WORKS_HIDE = 'Y'
+	</select>
 </mapper>

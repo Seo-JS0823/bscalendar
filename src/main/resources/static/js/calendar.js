@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+	const memberId = getTokenFromInfo('username');
   const calendar = document.getElementById('calendar');
   
   // 달력에 날짜가 클릭됨을 저장하는 변수
@@ -19,39 +20,28 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     events: function(fetchInfo, successCallback, failureCallback) {
 			// TODO: team_idx와 오늘날짜로 업무 리스트 요청하기
-			const date = getNowDateString();
+			const startDate = fetchInfo.startStr.substring(0, 10);
+			const endDate = fetchInfo.endStr.substring(0, 10);
+			const nowDate = getNowDateString();
 			
-			fetch(`/api/work/list/date/${date}/` + teamIdx)
+			fetch(`/api/project/work/cal/${startDate}/${endDate}/${teamIdx}/${memberId}`)
 			.catch(err => console.err(err))
 			.then(response => response.json())
 			.then(data => {
-				console.log(data)
-				let events = data.map(item => ({
-					start: item.works_sdate.substring(0, 10),
-					end: item.works_edate.substring(0, 10),
-					team_idx: item.team_idx,
-					hideFlag: item.works_hide
-				}));
-				// color 설정
-				events.forEach(item => {
-					const hideFlag = item.hideFlag;
-					if(hideFlag === 'N') {
-						item.title = '팀 업무';
-						item.backgroundColor = 'lightpink';
-						item.color = 'lightpink';
-					} else if(hideFlag === 'Y') {
-						item.title = '개인 업무';
-						item.backgroundColor = '#6495ed';
-						item.color = '#6495ed';
-					}
-				});
-				workRender(data);
+				let events = workDataSetting(data);
 				const mergedEvents = mergeEvents(events);
  				successCallback(mergedEvents);
+
+ 				fetch(`/api/project/work/cal/${nowDate}/${teamIdx}/${memberId}`)
+ 				.then(response => response.json())
+ 				.then(data => {
+					console.log(data);
+					workRender(data);
+				})
+ 				
 			})
 		},
 		dateClick: function(info) {
-			workAndDateRender(info);
 			if(clickedDayEl) {
 				clickedDayEl.classList.remove('fc-day-today');
 				clickedDayEl.classList.remove('clicked-day');
@@ -59,12 +49,38 @@ document.addEventListener('DOMContentLoaded', function() {
 			info.dayEl.classList.add('clicked-day');
 			
 			clickedDayEl = info.dayEl;
+			workAndDateRender(info);
 		}
   });
   const nowDateEl = document.getElementById('clicked-date');
 	nowDateEl.textContent = getNowDateString();
   calendarImpl.render();
 });
+
+const memberTokenId = getTokenFromInfo('username');
+
+function workDataSetting(data) {
+	let events = data.map(item => ({
+		start: item.works_sdate.substring(0, 10),
+		end: item.works_edate.substring(0, 10),
+		team_idx: item.team_idx,
+		hideFlag: item.works_hide
+	}));
+	
+	events.forEach(item => {
+		const hideFlag = item.hideFlag;
+		if(hideFlag === 'N') {
+			item.title = '팀 업무';
+			item.backgroundColor = 'lightpink';
+			item.color = 'lightpink';
+		} else if(hideFlag === 'Y') {
+			item.title = '개인 업무';
+			item.backgroundColor = '#6495ed';
+			item.color = '#6495ed';
+		}
+	});
+	return events;
+}
 
 function workRender(workInfo) {
 	// TODO: 업무 리스트 렌더링
@@ -111,7 +127,6 @@ function workRender(workInfo) {
 		
 		// 완료 미완료 상태
 		const finFlag = work.works_fin_flag;
-		
 		if (finFlag === 'N') {
 			notFinFlag++;
 			eventTd.classList.add('worklist-notComplete');
@@ -124,7 +139,6 @@ function workRender(workInfo) {
 					
 					// TODO: 완료 처리하는 컨트롤러와 로직
 					const url = `/api/work/update/${work.works_idx}`;
-					console.log(url);
 					
 					/*
 					fetch(url, { method: 'put' })
@@ -197,7 +211,7 @@ function mergeEvents(events) {
 function workAndDateRender(info) {
 	const teamIdx = window.location.pathname.replace('/project/', '');
 	const date = info.dateStr;
-	const url = `/api/work/list/date/${date}/` + teamIdx;
+	const url = `/api/project/work/cal/${date}/${teamIdx}/${memberTokenId}`;
 	
 	fetch(url)
 	.catch(err => console.err(err))
