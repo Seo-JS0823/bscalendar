@@ -176,17 +176,28 @@
       				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
       				eventTd.addEventListener('click', (e) => {
       					if(confirm('업무를 완료 처리 하시겠습니까?')) {
+      						e.stopPropagation();
+      						e.preventDefault();
       						// TODO: 완료 처리하는 컨트롤러와 로직
       						const url = `/api/work/update/\${work.works_idx}`;
-      						
-      						/*
-      						fetch(url, { method: 'put' })
-      						.catch(err => console.err(err))
-      						.then(response => response.json())
-      						.then(data => {
-      							
-      						});
-      						*/
+      						fetch(url, {
+      							method: 'PATCH'
+      						})
+     							.catch( error => console.log(error))
+     							.then( response => {
+     								const status = response.status;
+     								if(status === 400) {
+     									const message = response.json().message;
+     									alert(message);
+     									return;
+     								}
+     								return response.json();
+     							} )
+     							.then(data => {
+     								const workInfo = data.work;
+     								alert(workInfo.mem_name + '님의 업무가 완료 처리 되었습니다.')
+     								return;
+     							})
       					} else {
       						e.preventDefault();
       						e.stopPropagation();
@@ -196,6 +207,7 @@
       			} else if (finFlag === 'Y') {
       				eventTd.classList.add('worklist-complete');  				
       				eventTd.textContent = '완료';
+      				// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
       			}
       			
       			tr.appendChild(eventTd);
@@ -208,8 +220,9 @@
       			
       			worklistEl.appendChild(tr);
       		});
-      	}
+      	} // function workRender(workInfo) {}
       	function dateWorkRender(info) {
+      		
 	   			const teamIdx = info.event.extendedProps.team_idx;
 					const sdate = info.event.startStr;
 					const edate = info.event.endStr;
@@ -222,7 +235,7 @@
    				.then(data => {
    					workRender(data);
    				});
-				}
+				} // function dateWorkRender(info) {}
       </script>
       <script src="/js/keyStore.js"></script>
 			<script src="/js/weather.js"></script>

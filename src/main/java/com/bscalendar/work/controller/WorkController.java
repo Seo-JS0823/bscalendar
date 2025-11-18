@@ -1,5 +1,6 @@
 package com.bscalendar.work.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,19 +35,22 @@ public class WorkController {
 	
 	@PostMapping("/insertWork")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> workCreate(@RequestBody WorkDTO workDTO) {
+	public ResponseEntity<Map<String,Object>> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
 		if(workDTO.getWorks_arlam_date().equals("")) {
 			workDTO.setWorks_arlam_date(null);
 		}
-		System.out.println("뭐지?" + workDTO);
 		int work = workMapper.workCreate(workDTO);
 		
-		ResponseEntity<WorkDTO> result =
-			(work > 0)
-			? ResponseEntity.status(HttpStatus.OK).body(workDTO)
-			: ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		return result;
+		Map<String,Object> result = new HashMap<>();
+		if( work>0 ) {
+			result.put("status","ok");
+			result.put("work", workDTO);
+			result.put("redirectUrl", "/project/" + workDTO.getTeam_idx());
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 	
 	@GetMapping("")
@@ -78,7 +82,7 @@ public class WorkController {
 			return ResponseEntity.badRequest().body(null);
 		}
 		
-		String finFlag = target.getWorkd_fin_flag();
+		String finFlag = target.getWorks_fin_flag();
 		if(finFlag.toLowerCase().equals("y")) {
 			Map<String, Object> errResponse = Map.of(
 				"message", "이미 완료된 업무입니다."

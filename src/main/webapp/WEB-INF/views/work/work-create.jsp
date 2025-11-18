@@ -10,6 +10,9 @@
   <title>부성카렌다</title>
   <script> // Alram Date
     document.addEventListener('DOMContentLoaded', function() {
+    	const mem_id = getTokenFromInfo('username');
+    	console.log(mem_id);
+    	
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -87,19 +90,25 @@
     				works_edate: endDateEl.value,
     		  }),
     	  })
-    	  .then( response => response.json() )
+    	  .then( response => {
+    		  const status = response.status;
+    		  if(status === 400) {
+    			  alert('네트워크 오류로 인해 업무 등록이 실패하였습니다. 다시 시도해주세요.');
+    			  return;
+    		  }
+    		  return response.json();
+    	  })
     	  .then( data => {
-    		  
-    	  } )
+    		  if(data.status === 'ok')
+    				window.location.href = data.redirectUrl;
+    	  })
     	  
       }); // 업무등록 클릭 이벤트
     }) // DOMContentLoaded
   </script>
 </head>
 <body>
-<nav class="top-menu-area">
-
-</nav>
+<%@ include file="../nav.jsp" %>
 
 <div class="container">
 	<input type="hidden" value="${team_idx}">

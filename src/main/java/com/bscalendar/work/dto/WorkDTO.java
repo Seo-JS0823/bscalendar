@@ -37,6 +37,6 @@ WORKS_DEL_FLAG		CHAR		Default N
 	private String  works_arlam_conf;
 	private String  works_sdate;
 	private String  works_edate;
-	private String  workd_fin_flag;
+	private String  works_fin_flag;
 	private String  works_del_flag;
 }
