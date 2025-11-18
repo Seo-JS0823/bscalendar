@@ -26,7 +26,10 @@ WORKS_DEL_FLAG		CHAR		Default N
  */
 	private Integer works_idx;
 	private Integer team_idx;
+	private String  team_name;
+	private String  team_regdate;
 	private String  mem_id;
+	private String  mem_name;
 	private String  works_comment;
 	private String  works_hide;
 	private String  works_arlam;

@@ -15,16 +15,18 @@
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
 
-      const startDate = document.getElementById('startDate');
+      const startDate = document.getElementById('startDate'); // 업무시작 날짜
       startDate.value = `${year}-${month}-${day}`;
 
-      const endDate = document.getElementById('endDate');
+      const endDate = document.getElementById('endDate'); // 업무 종료날짜
       endDate.value = `${year}-${month}-${day}`;
 
-      const alramControl = document.getElementById('alram-control');
-      alramControl.addEventListener('click', () => {
-        const element = document.getElementById('alram');
-        const descript = document.getElementById('alram-descript');
+      const alarmControl = document.getElementById('alarm-control'); // 알람 설정 버튼
+      
+  	  // 알람설정 버튼 누르면 날짜선택 뜸 아니면 placeholder내용 뜸
+      alarmControl.addEventListener('click', () => { 
+        const element = document.getElementById('alarm');
+        const descript = document.getElementById('alarm-descript');
         const state = element.className;
         console.log(state)
         if(state === 'close') {
@@ -42,11 +44,56 @@
         }
       });
 
-      const createBtn = document.getElementById('work-create-btn');
+      const createBtn = document.getElementById('work-create-btn'); // 등록 버튼
       createBtn.addEventListener('click', () => {
-        alert('TODO: 등록 이벤트');
-      });
-    })
+    	  
+    	  const openEl    		 = document.querySelector('#open'); // 공개 버튼
+    	  const privateEl 		 = document.querySelector('#private'); // 비공개 버튼
+    	  const alarmControlEl = document.querySelector('#alarm-control') // 알람 설정
+    	  const alarmEl 			 = document.querySelector('#alarm'); // 알람 날짜
+    	  const startDateEl 	 = document.querySelector('#startDate') // 업무 시작일
+    	  const endDateEl 		 = document.querySelector('#endDate') // 업무 종료일
+    	  const workCommentEl  = document.querySelector('#work-comment') // 업무 내용
+    	  
+    	  const alarmDescript = document.getElementById('alarm-descript');
+    	  
+    	  const teamIdx = ${team_idx}; // Model 에서 보내준 값
+    	  const memId   = '${mem_id}'; // Model 에서 보내준 값
+    	  
+    	  const url = '/api/work/insertWork';
+    	  
+    	  let hideCheck  = 'N';
+    	  let alarmCheck = 'N'
+    	  
+    	  if(alarmEl.value) {
+    		  alarmCheck = 'Y';
+    	  } 
+    	  
+    	  if(privateEl.checked) {
+    		  hideCheck = 'Y';
+    	  }
+
+    	  fetch(url, {
+    		  method: 'POST',
+    		  headers: {'Content-type':'application/json; charset=UTF-8'},
+    		  body: JSON.stringify({
+    			  team_idx: teamIdx,
+    		  	mem_id: memId,
+    			  works_comment: workCommentEl.value,
+    			  works_hide: hideCheck,
+    			  works_arlam: alarmCheck,
+    			  works_arlam_date: alarmEl.value,
+    			  works_sdate: startDateEl.value, 
+    				works_edate: endDateEl.value,
+    		  }),
+    	  })
+    	  .then( response => response.json() )
+    	  .then( data => {
+    		  
+    	  } )
+    	  
+      }); // 업무등록 클릭 이벤트
+    }) // DOMContentLoaded
   </script>
 </head>
 <body>
@@ -63,14 +110,14 @@
     <div class="work-create-content">
       <div class="work-create-content-box">
         <div class="work-create-content-row">
-          <input type="radio" name="WORKS_HIDE"><label for="WORKS_HIDE">공유 (팀 업무)</label>
-          <input type="radio" name="WORKS_HIDE" checked><label for="WORKS_HIDE">비공유 (개인 업무)</label>
+          <label for="open"><input type="radio" id="open" name="alarm" value="">공개 (팀 공개)</label>
+          <label for="private"><input type="radio" id="private" name="alarm" value="">비공개 (개인)</label>
         </div>
         <hr>
         <div class="work-create-content-row gap1">
-          <label class="work-create-content-label pointer" id="alram-control" for="alram">알람 설정</label>
-          <input class="close" type="datetime-local" id="alram">
-          <input class="open" type="text" id="alram-descript" placeholder="알람 설정을 눌러주세요." readonly>
+          <label class="work-create-content-label pointer" id="alarm-control" for="alarm">알람 설정</label>
+          <input class="close" type="datetime-local" id="alarm">
+          <input class="open" type="text" id="alarm-descript" placeholder="알람 설정을 눌러주세요." readonly>
         </div>
         <div class="work-create-content-row mg1 gap1">
           <label class="work-create-content-label" for="startDate">업무 시작날짜</label>
