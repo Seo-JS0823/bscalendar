@@ -88,7 +88,12 @@
    	    .catch(error => console.dir(error))
    	    .then(response => response.json())
    	    .then(data => {
-   	        if(data.result === "ok") location.href="/index"; //** ===== 로그인 후 메인페이지로 이동해야 함 ** //
+   	    	console.log(data.token)
+   	    	
+   	        if(data.result === "ok") {
+   	        	localStorage.setItem('token', data.token);
+   	        	location.href="/project/list"; //** ===== 로그인 후 메인페이지로 이동해야 함 ** //
+   	        }
    	        else {
    	        	el =  els[1].children[0];
    	        	let msg = el.parentElement.nextElementSibling;

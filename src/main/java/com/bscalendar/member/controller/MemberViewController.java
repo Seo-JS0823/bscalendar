@@ -20,14 +20,9 @@ public class MemberViewController {
 		return "member/joinForm";
 	}
 	
-	@GetMapping("/loginForm")
+	@GetMapping("/")
 	public String loginForm() {
 		return "member/loginForm";
-	}
-	
-	@GetMapping("/index")
-	public String main() {
-		return "index";
 	}
 	
 	@GetMapping("/member/mypage")
