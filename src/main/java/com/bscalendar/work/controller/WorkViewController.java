@@ -1,6 +1,8 @@
 package com.bscalendar.work.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +17,14 @@ public class WorkViewController {
 	@Autowired
 	private WorkMapper workMapper;
 
-	@GetMapping("/work/create/{team_idx}")
-	public String workCreate(@PathVariable("team_idx") Integer team_idx, Model model) {
+	@GetMapping("/work/create/{mem_id}/{team_idx}")
+	public String workCreate(
+			@PathVariable("team_idx") Integer team_idx, 
+			@PathVariable("mem_id") String mem_id,
+			Model model
+			) {
 		model.addAttribute("team_idx", team_idx);
-		model.addAttribute("mem_id", "tengen");
+		model.addAttribute("mem_id", mem_id);
 		return "work/work-create";
 	}
 	

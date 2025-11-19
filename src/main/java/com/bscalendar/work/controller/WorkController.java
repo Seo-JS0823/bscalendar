@@ -73,26 +73,30 @@ public class WorkController {
 		return ResponseEntity.ok(works);
 	}
 	
-	@PatchMapping("/update/{works_idx}")
+	@PatchMapping("/update/{works_idx}/{finFlagChange}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> readUpdate(@PathVariable("works_idx") Integer works_idx) {
+	public ResponseEntity<Map<String, Object>> readUpdate(
+			@PathVariable("works_idx") Integer works_idx,
+			@PathVariable("finFlagChange") String works_fin_flag
+			) {
 		// TODO: 멱등성 방어를 위해 SELECT하고 works_fin_flag 확인
 		WorkDTO target = workMapper.findWorkToIdx(works_idx);
 		if(target == null) {
 			return ResponseEntity.badRequest().body(null);
 		}
-		
-		String finFlag = target.getWorks_fin_flag();
+		/*
 		if(finFlag.toLowerCase().equals("y")) {
 			Map<String, Object> errResponse = Map.of(
 				"message", "이미 완료된 업무입니다."
 			);
 			return ResponseEntity.badRequest().body(errResponse);
 		}
+		*/
 		
+		String finFlag = target.getWorks_fin_flag();
 		// TODO: 업무 수정
 		int workIdx = target.getWorks_idx();
-		int updated = workMapper.workUpdate(workIdx);
+		int updated = workMapper.workUpdate(workIdx, works_fin_flag);
 		if(updated < 1) {
 			Map<String, Object> notUpdated = Map.of(
 				"message", "업무를 업데이트하지 못했습니다."

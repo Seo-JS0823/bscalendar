@@ -13,7 +13,7 @@
 		UPDATE
 			EG_WORKS
 		SET
-			WORKS_FIN_FLAG = 'Y'
+			WORKS_FIN_FLAG = #{works_fin_flag}
 		WHERE
 			WORKS_IDX = #{works_idx}
 	</update>

@@ -14,17 +14,7 @@
 	<script src="/js/calendar.js"></script>
 </head>
 <body>
-
-<nav class="top-menu-area">
-	<!-- JSP include -->
-	<!--
-	<script>
-		JWT MEMBER_ID Parsing
-		전역 변수로 MEMBER_ID 저장
-		모든 .jsp 파일에서 사용 가능
-	</script>
-	-->
-</nav>
+<%@ include file="../nav.jsp" %>
 
 <div class="container">
   <div class="content-area">
@@ -169,6 +159,7 @@
       			
       			// 완료 미완료 상태
       			const finFlag = work.works_fin_flag;
+      			let finFlagChange = 'Y'; // 완/미완 클릭했을때 바껴야할 상태
       			
       			if (finFlag === 'N') {
       				eventTd.classList.add('worklist-notComplete');
@@ -179,7 +170,7 @@
       						e.stopPropagation();
       						e.preventDefault();
       						// TODO: 완료 처리하는 컨트롤러와 로직
-      						const url = `/api/work/update/\${work.works_idx}`;
+      						const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
       						fetch(url, {
       							method: 'PATCH'
       						})
@@ -196,6 +187,7 @@
      							.then(data => {
      								const workInfo = data.work;
      								alert(workInfo.mem_name + '님의 업무가 완료 처리 되었습니다.')
+     								window.location.reload();
      								return;
      							})
       					} else {
@@ -208,10 +200,37 @@
       				eventTd.classList.add('worklist-complete');  				
       				eventTd.textContent = '완료';
       				// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
-      			}
+      				finFlagChange = 'N';
+      				eventTd.addEventListener('click', (e) => {
+      					if(confirm('업무를 다시 미완료 처리 하시겠습니까?')) {
+	      					e.preventDefault();
+	      					e.stopPropagation();
+	      					const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
+	      					fetch(url, {
+	      						method: 'PATCH'
+	      					})
+	      					.then( response => {
+	      						if(response.status === 400) {
+	      							alert('다시 시도 해주십쇼')
+	      							return;
+	      						}
+	      						return response.json();
+	      					})
+	      					.catch(error => console.log(error))
+	      					.then( data => {
+	      						alert(`\${data.work.mem_name} 님의 업무가 다시 미완료 처리 되었습니다 `)
+	      						window.location.reload();
+	      						return;
+	      					}) // last then
+      					} else {
+      						e.stopPropagation();
+      						e.preventDefault();
+      					}
+      				}) // eventTd.addEventListener('click', (e) => {}
+      			} 
       			
       			tr.appendChild(eventTd);
-      			
+      				
       			tr.addEventListener('click', () => {
       				// TODO: work-detail location
       				const url = '/work/detail/' + works_idx;
@@ -318,10 +337,12 @@
 <script>
   // 업무 등록 버튼 (a Tag)
 	const workCreateLocation = document.getElementById('workCreate');
+  
+  const mem_id = getTokenFromInfo('username');
 	workCreateLocation.addEventListener('click', (e) => {
 		e.preventDefault();
 		const teamIdx = document.getElementById('team_idx').value;
-		const url = workCreateLocation.href;
+		const url = workCreateLocation.href + mem_id + '/';
 		window.open(url + teamIdx, '_blank');
 	});
 	

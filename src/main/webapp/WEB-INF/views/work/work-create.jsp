@@ -99,8 +99,8 @@
     		  return response.json();
     	  })
     	  .then( data => {
-    		  if(data.status === 'ok')
-    				window.location.href = data.redirectUrl;
+    		  //if(data.status === 'ok')
+    				//window.location.href = data.redirectUrl;
     	  })
     	  
       }); // 업무등록 클릭 이벤트
