@@ -13,7 +13,10 @@ spring:
     url: ${MARIA_URL}
     username: ${MARIA_USERNAME}
     password: ${MARIA_PASSWORD}
-    
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   port: 9090
   servlet:

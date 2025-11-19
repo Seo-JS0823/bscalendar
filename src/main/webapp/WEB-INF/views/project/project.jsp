@@ -10,12 +10,11 @@
   <link rel="stylesheet" href="/css/layout.css">
   <title>부성카렌다</title>
   
-	<script src="/js/index.global.min.js"></script>
-	<script src="/js/calendar.js"></script>
 </head>
 <body>
 <%@ include file="../nav.jsp" %>
-
+<script src="/js/index.global.min.js"></script>
+<script src="/js/calendar.js"></script>
 <div class="container">
   <div class="content-area">
 
@@ -48,7 +47,6 @@
       	.catch(error => console.error(error))
       	.then(response => response.json())
       	.then(data => {
-      		console.log(data);
       		memberList.innerHTML = '';
       		data.forEach(member => {
       			const memId = member.mem_id;
@@ -70,6 +68,7 @@
 				     		const dataSize = data.length;
 				     		if(dataSize <= 0) {
 				     			alert(memName + ' 님은 해당 달에 등록된 업무가 없습니다.');
+				     			return;
 				     		}
 				     		
 				     		// TODO: Calendar 위쪽에 이름 렌더링
@@ -79,6 +78,9 @@
 				     		// TODO: Calendar 렌더링
 				     		const calendar = document.getElementById('calendar');
 				     		
+				     		
+				     		// 클릭저장 변수
+				     		let clickedDayEl = null;
 				     		const calendarImpl = new FullCalendar.Calendar(calendar, {
 				     			initialView : 'dayGridMonth',
 				     			locale: 'ko',
@@ -95,19 +97,28 @@
 				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
-				     				fetch('/api/project/members/work/list/jenits/1')
+				     				fetch(`/api/project/members/work/list/\${memId}/1`)
 				     				.catch(err => console.err(err))
 				     				.then(response => response.json())
 				     				.then(data => {
 				     					let events = data.map(item => ({
+				     						title: memName + '님이 등록하신 공유 업무',
 				     						start: item.works_sdate,
-				     						end: item.works_edate,
+				     						end: endDatePlusOne(item.works_edate),
 				     						team_idx: item.team_idx
 				     					}));
-					     				successCallback(events);
+				     					const merged = mergeEvents(events);
+					     				successCallback(merged);
 				     				})
 				     			},
 				     			dateClick: function(info) {
+				     				if(clickedDayEl) {
+				     					clickedDayEl.classList.remove('fc-day-today');
+				     					clickedDayEl.classList.remove('clicked-day');
+				     				}
+				     				info.dayEl.classList.add('clicked-day');
+				     				
+				     				clickedDayEl = info.dayEl;
 				     				workAndDateRender(info);
 				     			}
 				     		});
@@ -121,6 +132,17 @@
       	function workRender(workInfo) { // 위에 fetch로 불러온 data -> workInfo
       		// TODO: 업무 리스트 렌더링
       		const worklistEl = document.getElementById('worklist');
+      		const worklisthideEl = document.getElementById('worklisthide');
+      		worklisthideEl.innerHTML = `
+      		<tr>
+      			<th>작성자</th>
+      			<th>수행 시작일</th>
+      			<th>수행 종료일</th>
+      			<th>업무 내용</th>
+      			<th>알람 시간</th>
+      			<th>비고</th>
+      		</tr>
+      		`;
       		worklistEl.innerHTML = `
      			<tr>
             <th>작성자</th>
@@ -131,7 +153,13 @@
             <th>비고</th>
           </tr>
       		`;
+      		// TODO: 미완료, 완료 상태 렌더링
+      		const finFlagState = document.getElementById('finFlagState');
+      		let notFinFlag = 0;
+      		let okFinFlag = 0;
+      		
       		Array.from(workInfo).forEach(work => {
+      			const mem_id = work.mem_id;
       			const works_idx = work.works_idx;
       			const memName = work.mem_name;
       			const sdate = work.works_sdate.substring(0, 10);
@@ -153,7 +181,6 @@
       			`;
       			
       			tr.innerHTML = innerHTML;
-      			console.log('ss',tr.innerHTML)
       			
       			const eventTd = document.createElement('td'); // 완료/미완료
       			
@@ -199,7 +226,7 @@
       			} else if (finFlag === 'Y') {
       				eventTd.classList.add('worklist-complete');  				
       				eventTd.textContent = '완료';
-      				// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
+      			// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
       				finFlagChange = 'N';
       				eventTd.addEventListener('click', (e) => {
       					if(confirm('업무를 다시 미완료 처리 하시겠습니까?')) {
@@ -227,21 +254,25 @@
       						e.preventDefault();
       					}
       				}) // eventTd.addEventListener('click', (e) => {}
-      			} 
+      			}
       			
       			tr.appendChild(eventTd);
-      				
+      			
       			tr.addEventListener('click', () => {
       				// TODO: work-detail location
       				const url = '/work/detail/' + works_idx;
       				window.location.href = url;
       			});
-      			
-      			worklistEl.appendChild(tr);
+      			const hideState = work.works_hide;
+      			if(hideState === 'N') {
+      				worklistEl.appendChild(tr);
+      			} else if(hideState === 'Y') {
+      				worklisthideEl.appendChild(tr);
+      			}
       		});
-      	} // function workRender(workInfo) {}
+      		finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
+      	}
       	function dateWorkRender(info) {
-      		
 	   			const teamIdx = info.event.extendedProps.team_idx;
 					const sdate = info.event.startStr;
 					const edate = info.event.endStr;
@@ -252,9 +283,9 @@
    				.catch(err => console.err(err))
    				.then(response => response.json())
    				.then(data => {
-   					workRender(data);
+   					workRender2(data);
    				});
-				} // function dateWorkRender(info) {}
+				}
       </script>
       <script src="/js/keyStore.js"></script>
 			<script src="/js/weather.js"></script>
@@ -308,13 +339,14 @@
         </div>
 
         <div class="worklist-content-container">
-          <!-- AM -->
+          <!-- 팀 공유 업무 -->
           <div class="worklist-content">
             <div class="worklist-content-header">
               <p id="finFlagState"></p>
               <a id="workCreate" href="/work/create/">업무 등록</a>
             </div>
             <div class="worklist-content-main">
+            	<h1>팀 공유 업무</h1>
               <table id="worklist" class="worklist-content-table">
                 <tr>
                   <th>작성자</th>
@@ -324,6 +356,17 @@
                   <th>알람 시간</th>
                   <th>비고</th>
                 </tr>
+              </table>
+              <h1>개인 업무</h1>
+              <table id="worklisthide" class="worklist-content-table">
+              	<tr>
+              		<th>작성자</th>
+              		<th>수행 시작일</th>
+              		<th>수행 종료일</th>
+              		<th>업무 내용</th>
+              		<th>알람 시간</th>
+              		<th>비고</th>
+              	</tr>
               </table>
             </div>
           </div>

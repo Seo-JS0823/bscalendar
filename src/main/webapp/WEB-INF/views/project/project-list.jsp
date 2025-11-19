@@ -65,6 +65,7 @@
               const projectName = document.getElementById('team_name').value;
               const projectStartDate = document.getElementById('team_sdate').value;
               const projectEndDate = document.getElementById('team_edate').value;
+              const memberId = getTokenFromInfo('username');
               
               if(!projectName) {
             	  alert('프로젝트 제목은 필수입니다.')
@@ -74,7 +75,7 @@
             		  team_name: projectName,
             		  team_sdate: projectStartDate,
             		  team_edate: projectEndDate,
-            		  mem_id: 'inotske'
+            		  mem_id: memberId
               }
               fetch(url, {
             	  method: 'post',
@@ -378,10 +379,16 @@
 		inviteMemberModal.classList.add('inviteMember');
 		
 		// header
-		const inviteMemberHeader = document.createElement('p');
+		const inviteMemberHeader = document.createElement('div');
 		inviteMemberHeader.classList.add('inviteMember-header');
 		inviteMemberHeader.textContent = '멤버 초대';
 		inviteMemberModal.appendChild(inviteMemberHeader);
+		const inviteModalCloseBtn = document.createElement('button');
+		inviteModalCloseBtn.textContent = '닫 기';
+		inviteModalCloseBtn.addEventListener('click', () => {
+			modalCloseOpen(inviteMemberModal);
+		});
+		inviteMemberHeader.appendChild(inviteModalCloseBtn);
 		
 		// search input
 		const inviteMemberSearch = document.createElement('div');
@@ -426,7 +433,7 @@
 		
 		const sosocHeader = document.createElement('div');
 		sosocHeader.classList.add('sosocHeader');
-		sosocHeader.textContent = '소속되어 있는 멤버';
+		sosocHeader.textContent = '소속 멤버';
 		projectSosocMembers.appendChild(sosocHeader);
 		
 		const sosocUrl = '/api/project/members/' + team_idx;
@@ -439,10 +446,36 @@
 				sosocName.textContent = member.mem_name;
 				sosocName.addEventListener('click', () => {
 					// TODO 선택하고 confirm해서 확인누르면 추방 로직하고 reload
-					console.log(member.mem_id)
 					
+					if(confirm(member.mem_name + '님을 프로젝트에서 내보내겠습니까?')) {
+						// TODO: fetch API -> 프로젝트에서 멤버 추방 기능 API 만들기
+						// TODO: /api/project/member/del/{team_idx}/{mem_id} method: delete
+						const memberDelUrl = '/api/project/member/del/' + team_idx + '/' + member.mem_id;
+						const headers = { method: 'DELETE' }
+						fetch(memberDelUrl, headers)
+						.then(response => {
+							const status = response.status;
+							if(status === 400) {
+								alert(response.json().message);
+								window.location.reload();
+							}
+							return response.json();
+						})
+						.then(data => {
+							const message = data.message;
+							if(message) {
+								alert(message);
+							}
+							window.location.reload();
+						})
+					} else {
+						return;
+					}
 				});
-				projectSosocMembers.appendChild(sosocName);
+				if(mem_id === member.mem_id) {}
+				else {
+					projectSosocMembers.appendChild(sosocName);
+				}
 			})
 		});
 		
