@@ -13,7 +13,10 @@ spring:
     url: ${MARIA_URL}
     username: ${MARIA_USERNAME}
     password: ${MARIA_PASSWORD}
-    
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   port: 9090
   servlet:
@@ -28,4 +31,13 @@ mybatis:
   mapper-locations: classpath:mapper/**/*.xml
 
 jwt:
-  secret: ${SECERT_KEY}
+  issuer: eg.com
+  expiration: 86400000
+  refresh: 86400000
+  secret: ${SECRET_KEY}
+  
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

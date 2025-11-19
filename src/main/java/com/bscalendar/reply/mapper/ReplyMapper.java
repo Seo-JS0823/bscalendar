@@ -21,4 +21,6 @@ public interface ReplyMapper {
 
     String getAuthorMemIdByReplyIdx(int reply_idx);
     
+    String getTaskAuthorId(int works_idx);
+    
 }

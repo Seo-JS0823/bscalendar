@@ -26,7 +26,10 @@ WORKS_DEL_FLAG		CHAR		Default N
  */
 	private Integer works_idx;
 	private Integer team_idx;
+	private String  team_name;
+	private String  team_regdate;
 	private String  mem_id;
+	private String  mem_name;
 	private String  works_comment;
 	private String  works_hide;
 	private String  works_arlam;
@@ -34,6 +37,6 @@ WORKS_DEL_FLAG		CHAR		Default N
 	private String  works_arlam_conf;
 	private String  works_sdate;
 	private String  works_edate;
-	private String  workd_fin_flag;
+	private String  works_fin_flag;
 	private String  works_del_flag;
 }

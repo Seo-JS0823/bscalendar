@@ -1,16 +1,19 @@
 package com.bscalendar.work.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -20,6 +23,9 @@ import com.bscalendar.work.mapper.WorkMapper;
 @Controller
 @RequestMapping("/api/work")
 public class WorkController {
+	
+	@Autowired
+	private WorkMapper workMapper;
 	/* REST API URL
 	 * 업무 생성: POST,     /api/work
 	 * 업무 조회: GET,      /api/work
@@ -27,15 +33,24 @@ public class WorkController {
 	 * 업무 삭제: DELETE,   /api/work
 	 */
 	
-	@Autowired
-	private WorkMapper workMapper;
-	
-	@PostMapping("/")
+	@PostMapping("/insertWork")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> workCreate() {
+	public ResponseEntity<Map<String,Object>> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
+		if(workDTO.getWorks_arlam_date().equals("")) {
+			workDTO.setWorks_arlam_date(null);
+		}
+		int work = workMapper.workCreate(workDTO);
 		
-		return null;
+		Map<String,Object> result = new HashMap<>();
+		if( work>0 ) {
+			result.put("status","ok");
+			result.put("work", workDTO);
+			result.put("redirectUrl", "/project/" + workDTO.getTeam_idx());
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 	
 	@GetMapping("")
@@ -46,6 +61,7 @@ public class WorkController {
 		return null;
 	}
 	
+	// TODO: works_idx 
 	@GetMapping("/list/date/{date}/{team_idx}")
 	@ResponseBody
 	public ResponseEntity<List<WorkDTO>> dateToWorkRead(
@@ -66,7 +82,7 @@ public class WorkController {
 			return ResponseEntity.badRequest().body(null);
 		}
 		
-		String finFlag = target.getWorkd_fin_flag();
+		String finFlag = target.getWorks_fin_flag();
 		if(finFlag.toLowerCase().equals("y")) {
 			Map<String, Object> errResponse = Map.of(
 				"message", "이미 완료된 업무입니다."

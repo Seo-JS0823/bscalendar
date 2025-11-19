@@ -68,7 +68,7 @@ input {
 	box-shadow: 0 0 1rem rgba(0, 92, 230, 0.2); /* 은은한 그림자 효과 */
 }
 /**=== btn회원가입 ===**/
-input[type="submit"] {
+button {
 	background: linear-gradient(45deg, #6495ED, #76a0ef); /* 그라데이션 배경 */
 	border: none;
 	border-radius: 5rem;
@@ -84,15 +84,32 @@ input[type="submit"] {
 	box-shadow: 0 1rem 2.2rem rgba(0, 92, 230, 0.5); /* 그림자 */
 	transition: all 0.35s cubic-bezier(.25,.8,.25,1); /* 부드러운 애니메이션 */
 }
-input[type="submit"]:hover {
+button:hover {
 	transform: translateY(-0.5rem); /* 호버 시 살짝 위로 */
-	box-shadow: 0 1.4rem 2.8rem rgba(100, 149, 237, 0.7); /* 그림자 더 강조 */
+	box-shadow: 0 1.4rem 2.8rem rgba(0, 92, 230, 0.5); /* 그림자 더 강조 */
 	background: linear-gradient(45deg, #76a0ef, #6495ED); /* 그라데이션 반전 */
 }
 /**=== btn회원가입: 비활성화 ==**/  
-input[type="submit"]:disabled{
+button:disabled{
 	background-color: #cccccc;
 	box-shadow: none; /* 그림자 제거 */
 	cursor: not-allowed; /* 커서 변경 */
 	transform: translateY(0); /* 호버 효과 제거 */
+}
+
+.main-link {
+  margin-top: 3rem;
+  font-size: 1.6rem;
+  color: #666;
+}
+
+.main-link a {
+  color: #1858cd;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.main-link a:hover {
+  text-decoration: underline;
 }
