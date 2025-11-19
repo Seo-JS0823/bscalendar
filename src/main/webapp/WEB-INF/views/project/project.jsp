@@ -129,9 +129,20 @@
       		});
       	})
       	
-      	function workRender2(workInfo) { // 위에 fetch로 불러온 data -> workInfo
+      	function workRender(workInfo) { // 위에 fetch로 불러온 data -> workInfo
       		// TODO: 업무 리스트 렌더링
       		const worklistEl = document.getElementById('worklist');
+      		const worklisthideEl = document.getElementById('worklisthide');
+      		worklisthideEl.innerHTML = `
+      		<tr>
+      			<th>작성자</th>
+      			<th>수행 시작일</th>
+      			<th>수행 종료일</th>
+      			<th>업무 내용</th>
+      			<th>알람 시간</th>
+      			<th>비고</th>
+      		</tr>
+      		`;
       		worklistEl.innerHTML = `
      			<tr>
             <th>작성자</th>
@@ -142,6 +153,11 @@
             <th>비고</th>
           </tr>
       		`;
+      		// TODO: 미완료, 완료 상태 렌더링
+      		const finFlagState = document.getElementById('finFlagState');
+      		let notFinFlag = 0;
+      		let okFinFlag = 0;
+      		
       		Array.from(workInfo).forEach(work => {
       			const mem_id = work.mem_id;
       			const works_idx = work.works_idx;
@@ -165,12 +181,12 @@
       			`;
       			
       			tr.innerHTML = innerHTML;
-      			console.log('ss',tr.innerHTML)
       			
       			const eventTd = document.createElement('td'); // 완료/미완료
       			
       			// 완료 미완료 상태
       			const finFlag = work.works_fin_flag;
+      			let finFlagChange = 'Y'; // 완/미완 클릭했을때 바껴야할 상태
       			
       			if (finFlag === 'N') {
       				eventTd.classList.add('worklist-notComplete');
@@ -178,18 +194,29 @@
       				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
       				eventTd.addEventListener('click', (e) => {
       					if(confirm('업무를 완료 처리 하시겠습니까?')) {
+      						e.stopPropagation();
+      						e.preventDefault();
       						// TODO: 완료 처리하는 컨트롤러와 로직
-      						const url = `/api/work/update/\${work.works_idx}`;
-      						
-      						
-      						/*
-      						fetch(url, { method: 'put' })
-      						.catch(err => console.err(err))
-      						.then(response => response.json())
-      						.then(data => {
-      							
-      						});
-      						*/
+      						const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
+      						fetch(url, {
+      							method: 'PATCH'
+      						})
+     							.catch( error => console.log(error))
+     							.then( response => {
+     								const status = response.status;
+     								if(status === 400) {
+     									const message = response.json().message;
+     									alert(message);
+     									return;
+     								}
+     								return response.json();
+     							} )
+     							.then(data => {
+     								const workInfo = data.work;
+     								alert(workInfo.mem_name + '님의 업무가 완료 처리 되었습니다.')
+     								window.location.reload();
+     								return;
+     							})
       					} else {
       						e.preventDefault();
       						e.stopPropagation();
@@ -199,6 +226,34 @@
       			} else if (finFlag === 'Y') {
       				eventTd.classList.add('worklist-complete');  				
       				eventTd.textContent = '완료';
+      			// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
+      				finFlagChange = 'N';
+      				eventTd.addEventListener('click', (e) => {
+      					if(confirm('업무를 다시 미완료 처리 하시겠습니까?')) {
+	      					e.preventDefault();
+	      					e.stopPropagation();
+	      					const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
+	      					fetch(url, {
+	      						method: 'PATCH'
+	      					})
+	      					.then( response => {
+	      						if(response.status === 400) {
+	      							alert('다시 시도 해주십쇼')
+	      							return;
+	      						}
+	      						return response.json();
+	      					})
+	      					.catch(error => console.log(error))
+	      					.then( data => {
+	      						alert(`\${data.work.mem_name} 님의 업무가 다시 미완료 처리 되었습니다 `)
+	      						window.location.reload();
+	      						return;
+	      					}) // last then
+      					} else {
+      						e.stopPropagation();
+      						e.preventDefault();
+      					}
+      				}) // eventTd.addEventListener('click', (e) => {}
       			}
       			
       			tr.appendChild(eventTd);
@@ -208,10 +263,14 @@
       				const url = '/work/detail/' + works_idx;
       				window.location.href = url;
       			});
-      			
-      			worklistEl.appendChild(tr);
+      			const hideState = work.works_hide;
+      			if(hideState === 'N') {
+      				worklistEl.appendChild(tr);
+      			} else if(hideState === 'Y') {
+      				worklisthideEl.appendChild(tr);
+      			}
       		});
-      		
+      		finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
       	}
       	function dateWorkRender(info) {
 	   			const teamIdx = info.event.extendedProps.team_idx;
@@ -321,10 +380,12 @@
 <script>
   // 업무 등록 버튼 (a Tag)
 	const workCreateLocation = document.getElementById('workCreate');
+  
+  const mem_id = getTokenFromInfo('username');
 	workCreateLocation.addEventListener('click', (e) => {
 		e.preventDefault();
 		const teamIdx = document.getElementById('team_idx').value;
-		const url = workCreateLocation.href;
+		const url = workCreateLocation.href + mem_id + '/';
 		window.open(url + teamIdx, '_blank');
 	});
 	

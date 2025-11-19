@@ -9,7 +9,7 @@ import com.bscalendar.work.dto.WorkDTO;
 @Mapper
 public interface WorkMapper {
 	
-	int workUpdate(Integer works_idx);
+	int workUpdate(Integer works_idx, String works_fin_flag);
 	
 	WorkDTO findWorkToIdx(Integer works_idx);
 

@@ -40,4 +40,4 @@ out/
 .env
 
 ### google ###
-!**/src/main/resources/bscalendar-cf0df-firebase-adminsdk-fbsvc-fa1adef11f.json
+src/main/resources/bscalendar-cf0df-firebase-adminsdk-fbsvc-fa1adef11f.json
