@@ -1,22 +1,20 @@
 package com.bscalendar.member.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-
+import org.apache.ibatis.annotations.Delete;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bscalendar.jwt.JwtUtil;
 import com.bscalendar.member.service.MemberService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -57,7 +55,6 @@ public class MemberController {
 		
 		b = memsvc.addMember(json);
 		if(b) result = new JSONObject("{\"result\":\"ok\"}");
-		else result = new JSONObject("{\"result\":\"no\"}");
 		
 		response.setContentType("application/json");
 		response.setHeader("X-exitgreen", "OK!!");
@@ -83,12 +80,13 @@ public class MemberController {
 		return result.toString();
 	}
 	
-	@GetMapping("/getMember")
+	@PostMapping("getMember")
 	public String getMember(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject json = null, result = new JSONObject("{\"result\":\"error\",\"msg\":\"An error occured.\"}");
-		// String token = (String) request.getAttribute("token");
-		String token = request.getHeader("Authorization").substring(7);
-		String mem_id = jwtUtil.getUsername(token);
+		String token = null, mem_id = null;
+		
+		token = request.getHeader("Authorization").split(" ")[1];
+		mem_id = jwtUtil.getUsername(token);
 		HashMap<String, Object> member = memsvc.getMember(mem_id);
 		
 		try {
@@ -108,7 +106,7 @@ public class MemberController {
 	public String updateMember(HttpServletRequest request, HttpServletResponse response, @RequestBody String rBody) {
 		JSONObject json = null, result = new JSONObject("{\"result\":\"error\",\"msg\":\"An error occured.\"}");
 		boolean b = false;
-		
+				
 		try {
 			json = new JSONObject(rBody);
 		} catch (Exception e) {
@@ -125,16 +123,15 @@ public class MemberController {
 	
 	@DeleteMapping("/delete") 
 	public void deleteMember(HttpServletResponse response, HttpServletRequest request) {
-		/* 토큰에서 userId 가져오기 */
-		String token = (String) request.getAttribute("token");
+		String token = (String)request.getAttribute("token");
 		jwtUtil.getUsername(token);
-		
 	}
 	
 	@PostMapping("/login")
 	public String login(HttpServletRequest request, HttpServletResponse response, @RequestBody String rBody) {
 		JSONObject json = null, result = new JSONObject("{\"result\":\"error\", \"msg\":\"An error occured.\"}");
 		String token = null;
+		
 		try {
 			json = new JSONObject(rBody);
 		} catch (Exception e) {
@@ -144,23 +141,13 @@ public class MemberController {
 		if(json == null) return result.toString();
 		token = memsvc.loginMember(json);
 		
-		/*if(token != null){
-			response.setHeader("Authentication", token);
-			result = new JSONObject("{\"result\":\"ok\"}");
-		} else{
-			result = new JSONObject("{\"result\":\"fail\"}");
-		}
-		
-		response.setContentType("application/json");
-		return result.toString();*/
-		
-		// token이 null이 아니면 생성되었다는 뜻이므로 응답 파라미터로 token을 추가하여
-		// 생성한 토큰을 넣음. JS 에서는 data.token을 localStorage에 setItem 하여 넣음.
 		if(token != null){
+			response.setHeader("Authorization", token);
 			result = new JSONObject("{\"result\":\"ok\", \"token\":\"" + token + "\"}");
 		} else{
 			result = new JSONObject("{\"result\":\"fail\"}");
 		}
+		response.setContentType("application/json");
 		return result.toString();
 	}	
 }

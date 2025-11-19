@@ -24,7 +24,7 @@ public class JwtFilter extends OncePerRequestFilter{
   @Autowired private JwtUtil jwtUtil;
   @Value("${jwt.secret}") private String secretKey;
   private Logger accessLogger = LoggerFactory.getLogger("accessLogger");
-  
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		String auth = null, token = null, id = null, pw = null;
@@ -41,21 +41,20 @@ public class JwtFilter extends OncePerRequestFilter{
 			return;
 		}
 
-		
 		auth = request.getHeader("Authorization");
 
 		// ====================================== 필터 적용 후 다시 실행시켜야 함 ===== 토큰 있는지 검사 ================================
-		//if (auth == null || !auth.startsWith("Bearer ")) { filterChain.doFilter(request, response); return; }
+		if (auth == null || !auth.startsWith("Bearer ")) { filterChain.doFilter(request, response); return; }
 
 		// ====================================== 필터 적용 후 다시 실행시켜야 함 ===== 토큰 형식 검사 ================================
-		//token = auth.split(" ")[1]; // Bearer 부분 제거 후 순수 토큰만 획득
-		//log.info(token);
+		token = auth.split(" ")[1]; // Bearer 부분 제거 후 순수 토큰만 획득
+		log.info(token);
 		
 		// ====================================== 필터 적용 후 다시 실행시켜야 함 ===== 토큰 유효시간 검사 ================================
-		// if(jwtUtil.isExpired(token)) { // 토큰 소멸 시간 검증
-		// 	filterChain.doFilter(request, response);
-		// 	return;
-		// }
+		 if(jwtUtil.isExpired(token)) { // 토큰 소멸 시간 검증
+		 	filterChain.doFilter(request, response);
+		 	return;
+		 }
 
 		// ====================================== 필터 적용 후 다시 실행시켜야 함 ===== 토큰 시큐리티 토큰을 위한 스프링 시큐리티 유조 생성 ================================
 		user = new SecurityUser();
