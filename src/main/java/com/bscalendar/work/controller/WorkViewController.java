@@ -31,6 +31,7 @@ public class WorkViewController {
 	@GetMapping("/work/detail/{works_idx}")
 	public String workRead(@PathVariable("works_idx") Integer works_idx, Model model) {
 		WorkDTO workDTO = workMapper.getWorkDetail(works_idx);
+		model.addAttribute("works_idx",works_idx);
 		
 		return "work/work-detail";
 	}

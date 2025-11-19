@@ -61,6 +61,16 @@ public class WorkController {
 		return null;
 	}
 	
+	@GetMapping("/detail/{works_idx}")
+	public ResponseEntity<WorkDTO> getWorkDetail(@PathVariable("works_idx") Integer works_idx) {
+		WorkDTO workDTO = workMapper.getWorkDetail(works_idx);
+		
+		if(workDTO == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.ok(workDTO);
+	}
+	
 	// TODO: works_idx 
 	@GetMapping("/list/date/{date}/{team_idx}")
 	@ResponseBody

@@ -45,7 +45,7 @@
 	 FROM EG_WORKS works
 	 JOIN EG_TEAM team ON works.team_idx = team.team_idx
 	 JOIN EG_MEMBER member ON team.mem_id = member.mem_id 
-	 WHERE works_idx = #{works_idx}
+	 WHERE works.works_idx = #{works_idx}
 	</select> 
 	<select id="findToDateWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
 		SELECT

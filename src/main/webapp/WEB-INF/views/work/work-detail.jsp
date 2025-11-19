@@ -11,9 +11,7 @@
   
 </head>
 <body>
-<nav class="top-menu-area">
-
-</nav>
+<%@ include file="../nav.jsp" %>
 
 <div class="container">
   <div class="detail-container">
@@ -50,6 +48,21 @@
 	      	<button id="setAlramBtn">알람 설정</button>
 	      	<input id="setAlram" type="datetime-local" class="detail-setAlram close">
 	      	<script>
+	      		const ptags = document.querySelectorAll('.row-box > :nth-child(2)');
+	      		const works_idx = ${works_idx};
+	      		const mem_id = getTokenFromInfo('username');
+	      		
+	      		fetch(`/api/work/detail/\${works_idx}`)
+	      			.then( response => response.json() )
+	      			.then( data => {
+	      				console.log(data)
+	      				ptags[0].textContent = data.team_name;
+	      				ptags[1].textContent = data.works_sdate.substring(0,10);
+	      				ptags[2].textContent = data.mem_name;
+	      				
+	      				
+	      				
+	      			})
 	      		const detailUpdate = document.getElementById('detail-update');
 	      		let btnState = false;
 	      		detailUpdate.addEventListener('click', () => {
