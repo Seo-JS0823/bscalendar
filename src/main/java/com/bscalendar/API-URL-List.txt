@@ -1,5 +1,54 @@
 API Url List
 
+-----<< startsWith >>-----
+/api/member/**
+/api/project/**
+/api/work/**
+/api/reply/**
+
+-----<< Flutter URL List >>-----
+/api/Login/**
+/api/PrjList/**
+/api/PrjView/**
+/api/PrjComplete/**
+/api/PrjInsert/**
+/api/PrjUpdateData/**
+/api/PrjUpdate/**
+/api/PrjDelete/**
+/api/PrjAllMember/**
+/api/PrjMember/**
+/api/PrjMemberUpdate/**
+/api/WorkInsert/**
+/api/WorkComplete/**
+/api/PrjDetail/**
+
+-----<< JWT 미 인증 경로 >>----- permitAll
+"/js/**", "/css/**", "/img/**", "/WEB-INF/views/**", "/error"
+"/"
+"/joinForm"
+"/member/mypage"
+"/api/fcm/**"
+"/redis-test/**"
+"/project/**"
+"/work/**"
+"/api/Login/**"
+"/api/PrjList/**"
+"/api/PrjView/**"
+"/api/PrjComplete/**"
+"/api/PrjInsert/**"
+"/api/PrjUpdateData/**"
+"/api/PrjUpdate/**"
+"/api/PrjDelete/**"
+"/api/PrjAllMember/**"
+"/api/PrjMember/**"
+"/api/PrjMemberUpdate/**"
+"/api/WorkInsert/**"
+"/api/WorkComplete/**"
+"/api/PrjDetail/**"
+
+-----<< JWT 인증 필요 경로 >>----- hasRole("USER")
+"/api/**"
+
 -----<< /api/member/** URL List >>-----
 
 ● 회원가입

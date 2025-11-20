@@ -91,9 +91,10 @@ function workDataSetting(data) {
 	});
 	return events;
 }
+
+/*
 // 막대기 렌더링 날짜 병합 함수
 function mergeEvents(events) {
-	console.log(events);
 	if(!events || events.length === 0) {
 		return [];
 	}
@@ -107,13 +108,16 @@ function mergeEvents(events) {
 	let currentEvent = { ...events[0] };
 	for(let i = 1; i < events.length; i++) {
 		const nextEvent = events[i];
+		const hideFlag = events[i].hideFlag;
+		
+		// hideFlag = 'Y' IF hideFlag = 'N'
+		// 'Y' = #6495ed AND 'N' = lightpink
 		
 		const currentEnd = new Date(currentEvent.end);
 		const nextStart = new Date(nextEvent.start);
 		
 		// 현재 이벤트의 종료 날짜가 다음 이벤트의 시작 날짜보다 늦을 경우
 		if(currentEnd > nextStart) {
-			
 			// 병합: 더 늦은 종료날짜로 현재 이벤트의 종료일을 갱신
 			const nextEnd = new Date(nextEvent.end);
 			if(nextEnd > currentEnd) {
@@ -123,8 +127,71 @@ function mergeEvents(events) {
 			merged.push(currentEvent);
 			currentEvent = { ...nextEvent };
 		}
+		
 	}
 	merged.push(currentEvent);
+	return merged;
+}
+*/
+function mergeEvents(events) {
+	if(!events || events.length === 0) {
+		return [];
+	}
+	
+	// 이벤트 시작 날짜 기준 오름차순 정렬
+	events.sort((a, b) => new Date(a.start) - new Date(b.start));
+	
+  const hideMerged = [];
+  const noHideMerged = [];
+  for(let i = 0; i < events.length; i++) {
+		const hideFlag = events[i].hideFlag;
+		if(hideFlag === 'Y') {
+			hideMerged.push(events[i]);
+		} else if(hideFlag === 'N') {
+			noHideMerged.push(events[i]);
+		}
+	}
+	
+	hideMerged.sort((a, b) => new Date(a.start) - new Date(b.start));
+	noHideMerged.sort((a, b) => new Date(a.start) - new Date(b.start));
+	
+	const merged = [];
+	
+	let currentHideEvent = { ...hideMerged[0] };
+	for(let i = 1; i < hideMerged.length; i++) {
+		const nextEvent = hideMerged[i];
+		const currentEnd = new Date(currentHideEvent.end);
+		const nextStart = new Date(nextEvent.start);
+		
+		if(currentEnd > nextStart) {
+			const nextEnd = new Date(nextEvent.end);
+			if(nextEnd > currentEnd) {
+				currentHideEvent.end = nextEvent.end;
+			}
+		} else {
+			merged.push(currentHideEvent);
+			currentHideEvent = { ...nextEvent };
+		}
+	}
+	merged.push(currentHideEvent);
+	
+	let currentNoHideEvent = { ...noHideMerged[0] };
+	for(let i = 1; i < noHideMerged.length; i++) {
+		const nextEvent = noHideMerged[i];
+		const currentEnd = new Date(currentNoHideEvent.end);
+		const nextStart = new Date(nextEvent.start);
+		
+		if(currentEnd > nextStart) {
+			const nextEnd = new Date(nextEvent.end);
+			if(nextEnd > currentEnd) {
+				currentHideEvent.end = nextEvent.end;
+			}
+		} else {
+			merged.push(currentNoHideEvent);
+			currentNoHideEvent = { ...nextEvent };
+		}
+	}
+	merged.push(currentNoHideEvent);
 	return merged;
 }
 
@@ -133,6 +200,9 @@ function workAndDateRender(info) {
 	const teamIdx = window.location.pathname.replace('/project/', '');
 	const date = info.dateStr;
 	const url = `/api/project/work/cal/${date}/${teamIdx}/${memberTokenId}`;
+	const finFlagState = document.getElementById('finFlagState');
+	let yFlag = 0;
+	let nFlag = 0;
 	
 	fetch(url)
 	.catch(err => console.err(err))
@@ -151,8 +221,7 @@ function workAndDateRender(info) {
 			  <th>해당 날짜에 조회된 개인 업무가 존재하지 않습니다.</th>
 			</tr>
 			`;
-			const finFlagStateNoContent = document.getElementById('finFlagState');
-			finFlagStateNoContent.innerHTML = '';
+			finFlagState.innerHTML = '';
 			
 			const clickedDateNoContent = document.getElementById('clicked-date');
 			clickedDateNoContent.innerHTML = date;
@@ -166,6 +235,7 @@ function workAndDateRender(info) {
 		}
 		const clickedDate = document.getElementById('clicked-date');
 		clickedDate.textContent = date;
+		
 		workRender(data);
 	});
 }

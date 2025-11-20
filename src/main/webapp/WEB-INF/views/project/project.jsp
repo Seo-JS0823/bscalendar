@@ -105,7 +105,9 @@
 				     						title: memName + '님이 등록하신 공유 업무',
 				     						start: item.works_sdate,
 				     						end: endDatePlusOne(item.works_edate),
-				     						team_idx: item.team_idx
+				     						team_idx: item.team_idx,
+				     						color: 'lightpink',
+				     						hideFlag: item.works_hide
 				     					}));
 				     					const merged = mergeEvents(events);
 					     				successCallback(merged);
@@ -191,6 +193,7 @@
       			if (finFlag === 'N') {
       				eventTd.classList.add('worklist-notComplete');
       				eventTd.textContent = '미완료';
+      				notFinFlag++;
       				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
       				eventTd.addEventListener('click', (e) => {
       					if(confirm('업무를 완료 처리 하시겠습니까?')) {
@@ -226,6 +229,7 @@
       			} else if (finFlag === 'Y') {
       				eventTd.classList.add('worklist-complete');  				
       				eventTd.textContent = '완료';
+      				okFinFlag++;
       			// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
       				finFlagChange = 'N';
       				eventTd.addEventListener('click', (e) => {
@@ -270,7 +274,7 @@
       				worklisthideEl.appendChild(tr);
       			}
       		});
-      		finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
+      		finFlagState.textContent = `미완료 업무 : \${notFinFlag} / 완료 업무 : \${okFinFlag}`;
       	}
       	function dateWorkRender(info) {
 	   			const teamIdx = info.event.extendedProps.team_idx;
@@ -283,7 +287,7 @@
    				.catch(err => console.err(err))
    				.then(response => response.json())
    				.then(data => {
-   					workRender2(data);
+   					workRender(data);
    				});
 				}
       </script>
