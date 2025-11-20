@@ -274,7 +274,7 @@
       				worklisthideEl.appendChild(tr);
       			}
       		});
-      		finFlagState.textContent = `미완료 업무 : \${notFinFlag} / 완료 업무 : \${okFinFlag}`;
+      		finFlagState.textContent = `완료 업무 : \${okFinFlag} / 미완료 업무 : \${notFinFlag}`;
       	}
       	function dateWorkRender(info) {
 	   			const teamIdx = info.event.extendedProps.team_idx;

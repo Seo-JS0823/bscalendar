@@ -57,8 +57,9 @@ public class JwtFilter extends OncePerRequestFilter{
 		 }
 
 		// ====================================== 필터 적용 후 다시 실행시켜야 함 ===== 토큰 시큐리티 토큰을 위한 스프링 시큐리티 유조 생성 ================================
+		String userId = jwtUtil.getUsername(token);
 		user = new SecurityUser();
-		user.setUserId("id");
+		user.setUserId(userId);
 		user.setName("name");
 		user.setRole("USER");
 

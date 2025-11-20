@@ -87,7 +87,6 @@
               .catch(error => console.log(error))
               .then(response => response.json())
               .then(data => {
-            	  console.log(data);
               });
               
             });
@@ -351,8 +350,6 @@
 				return response.json();
 			})
 			.then(data => {
-				console.log(data);
-				
 				inputProjectName.value = data.project.team_name;
 				settingBox1.appendChild(inputProjectName);
 				
@@ -488,9 +485,11 @@
 		.catch(err => console.err(err))
 		.then(response => response.json())
 		.then(data => {
+			let indexKey = 0;
 			data.forEach(member => {
-				const li = memberSearchBind(member);
+				const li = memberSearchBind(member, indexKey);
 				bindEl.appendChild(li);
+				indexKey++;
 			});
 		});
 		
@@ -571,7 +570,7 @@
 		return inviteMemberModal;
 	}
 	
-	function memberSearchBind(member) {
+	function memberSearchBind(member, indexKey) {
 		const nameEl = document.createElement('p');
 		nameEl.textContent = member.mem_name;
 		const posiEl = document.createElement('p');
@@ -582,7 +581,7 @@
 		
 		const li = document.createElement('li');
 		li.setAttribute('data-role', 'no');
-		const uuid = window.crypto.randomUUID().substring(0, 7);
+		const uuid = indexKey;
 		li.setAttribute('data-id', uuid)
 		li.appendChild(nameEl);
 		li.appendChild(posiEl);
@@ -609,9 +608,7 @@
 				// TODO 바인딩된 이름도 클릭시 삭제되게
 				bindName.addEventListener('click', () => {
 					const binding_uuid = bindName.getAttribute('data-id');
-					console.log(binding_uuid);
 					const mappered_uuid = li.getAttribute('data-id');
-					console.log(mappered_uuid)
 					if(binding_uuid === mappered_uuid) {
 						li.setAttribute('data-role', 'no');
 						li.style.border = '1px solid #ccc';
