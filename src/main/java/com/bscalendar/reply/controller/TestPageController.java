@@ -20,6 +20,3 @@ public class TestPageController {
         return "reply/test";
     }
 }
-
-// http://localhost:9090/redis-test/set?key=mykey&value=hello 저장 테스트
-// http://localhost:9090/redis-test/get?key=mykey 조회 테스트

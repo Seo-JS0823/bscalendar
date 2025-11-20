@@ -1,28 +1,33 @@
 package com.bscalendar.member.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.bscalendar.member.service.MemberService;
+
 @Controller
 public class MemberViewController {
-
-	@GetMapping("/")
+	
+	@Autowired private MemberService memsvc;
+	
+	@GetMapping("/joinForm")
+	public String memberForm() {
+		return "member/joinForm";
+	}
+	
+	@GetMapping("/loginForm")
 	public String loginForm() {
-		return "member/login";
+		return "member/loginForm";
 	}
 	
-	@GetMapping("/join")
-	public String joinForm() {
-		return "member/join";
+	@GetMapping("/index")
+	public String main() {
+		return "index";
 	}
 	
-	@GetMapping("/find")
-	public String findForm() {
-		return "member/find";
-	}
-	
-	@GetMapping("/mypage")
-	public String myPageForm() {
+	@GetMapping("/member/mypage")
+	public String mypage() {		
 		return "member/mypage";
 	}
 }

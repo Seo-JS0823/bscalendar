@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication; 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.bscalendar.fcm.service.FcmPushService; 
-
+import com.bscalendar.fcm.service.FcmPushService;
+import com.bscalendar.member.dto.MemberDetails;
 import com.bscalendar.reply.dto.ReplyCreateDTO;
-import com.bscalendar.reply.dto.ReplyUpdateDTO;
 import com.bscalendar.reply.dto.ReplyResponseDTO;
+import com.bscalendar.reply.dto.ReplyUpdateDTO;
 import com.bscalendar.reply.service.ReplyService;
 
 @Controller
@@ -42,7 +42,12 @@ public class ReplyController {
 			@RequestBody ReplyCreateDTO createDto,
 			Authentication authentication) {
 		
-		String loginMemberId = authentication.getName(); 
+		Object target = authentication.getPrincipal();
+		String loginMemberId = "";
+		if(target instanceof UserDetails) {
+			loginMemberId = ((MemberDetails) target).getUsername();
+			System.out.println("멤버 아디 : " + loginMemberId);
+		}
 		
 		ReplyResponseDTO response = replyService.createReply(createDto, loginMemberId);
 		
@@ -92,6 +97,7 @@ public class ReplyController {
 			Authentication authentication) {
 		
 		String loginMemberId = authentication.getName();
+		System.out.println("타깃 아이디 : " + loginMemberId);
 		updateDto.setReply_idx(reply_idx);
 		
 		try {

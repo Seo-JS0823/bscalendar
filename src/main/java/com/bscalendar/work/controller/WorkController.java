@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -20,6 +22,9 @@ import com.bscalendar.work.mapper.WorkMapper;
 @Controller
 @RequestMapping("/api/work")
 public class WorkController {
+	
+	@Autowired
+	private WorkMapper workMapper;
 	/* REST API URL
 	 * 업무 생성: POST,     /api/work
 	 * 업무 조회: GET,      /api/work
@@ -27,15 +32,21 @@ public class WorkController {
 	 * 업무 삭제: DELETE,   /api/work
 	 */
 	
-	@Autowired
-	private WorkMapper workMapper;
-	
-	@PostMapping("/")
+	@PostMapping("/insertWork")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> workCreate() {
+	public ResponseEntity<WorkDTO> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
+		if(workDTO.getWorks_arlam_date().equals("")) {
+			workDTO.setWorks_arlam_date(null);
+		}
+		System.out.println("뭐지?" + workDTO);
+		int work = workMapper.workCreate(workDTO);
 		
-		return null;
+		ResponseEntity<WorkDTO> result =
+			(work > 0)
+			? ResponseEntity.status(HttpStatus.OK).body(workDTO)
+			: ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return result;
 	}
 	
 	@GetMapping("")
@@ -46,6 +57,7 @@ public class WorkController {
 		return null;
 	}
 	
+	// TODO: works_idx 
 	@GetMapping("/list/date/{date}/{team_idx}")
 	@ResponseBody
 	public ResponseEntity<List<WorkDTO>> dateToWorkRead(
@@ -79,7 +91,7 @@ public class WorkController {
 		int updated = workMapper.workUpdate(workIdx);
 		if(updated < 1) {
 			Map<String, Object> notUpdated = Map.of(
-				"message", "업무를 업데이트하지 못했습니다."
+				"message", "업무를 완료 처리하지 못했습니다."
 			);
 			return ResponseEntity.badRequest().body(notUpdated);
 		}

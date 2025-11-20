@@ -147,7 +147,7 @@
 
         fetch(url, {
             method: "GET",
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('calendarToken') }
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         })
         .then(response => {
             if (!response.ok) {
@@ -200,7 +200,7 @@
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('calendarToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify({
                 works_idx: current_works_idx,
@@ -246,7 +246,7 @@
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('calendarToken')
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 body: JSON.stringify({
                     reply_comment: newComment 
@@ -281,7 +281,7 @@ function deleteReply(reply_idx) {
             fetch("/api/reply/" + reply_idx, {
                 method: "DELETE",
                 headers: { 
-                    'Authorization': 'Bearer ' + localStorage.getItem('calendarToken')
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 } 
             }) 
             .then(response => {

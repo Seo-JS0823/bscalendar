@@ -1,5 +1,7 @@
 package com.bscalendar.config;
 
+import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,97 +9,54 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.bscalendar.config.jwt.JwtAuthenticationFilter;
-import com.bscalendar.config.jwt.JwtTokenProvider;
-import com.bscalendar.member.service.MemberDetailsService;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.bscalendar.jwt.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	private final JwtTokenProvider tokenProvider;
-	private final MemberDetailsService detailsService;
-	
-	public SecurityConfig(
-			JwtTokenProvider tokenProvider,
-			MemberDetailsService detailsService) {
-		this.tokenProvider = tokenProvider;
-		this.detailsService = detailsService;
-	}
-	
+	@Autowired private JwtFilter jwtFilter;
+	private AuthenticationConfiguration authenticationConfiguration;
+
+	public SecurityConfig(AuthenticationConfiguration a){authenticationConfiguration = a;}
+
+	@Bean public AuthenticationManager authenticationManager(AuthenticationConfiguration c) throws Exception{return c.getAuthenticationManager();}
+
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf(csrf -> csrf.disable())
-			.cors(cors -> cors.disable())
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authorizeHttpRequests(auth -> auth
-				// 인증 불필요 경로
-				.requestMatchers(	
-					// 로그인 페이지
-					"/",
-					// 비번 찾기 페이지
-					"/find",
-					// 회원가입 페이지
-					"/join",
-					// 마이페이지
-					"/mypage",
-					// Login 요청 -> JWT Token 응답
-					"/api/member/login",
-					// 프로젝트 페이지들
-					"/project/**",
-					// 업무 페이지들
-					"/work/**",
-					// JSP Form Load 경로s
-					"/WEB-INF/views/**",
-					// 정적 리소스들,
-					"/css/**", "/js/**", "/img/**",
-					// 토큰 재생성,
-					"/api/member/auth/re",
-					// 에러
-					"/error",
-					// 추가 :  Redis 테스트 URL 허용
-					"/redis-test/**",
-					// FCM 서비스 워커 파일 허용
-					"/firebase-messaging-sw.js"
-				).permitAll()
-				// 인증 필요 경로
-				.requestMatchers(
-					// 마이페이지 데이터 로드
-					"/api/member/mypage/**",
-					// 모든 프로젝트 기능
-					"/api/project/**",
-					// 모든 업무 기능
-					"/api/work/**",
-					// 모든 메모 기능
-					"/api/reply/**"
-				).hasRole("BSC")
-				.anyRequest().authenticated())
-			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.formLogin(form -> form.disable())
-			.httpBasic(basic -> basic.disable());
+		.csrf(a -> a.disable()) // CORS 정책 꺼둠
+		.formLogin(a -> a.disable()) // 스프링 로그인 폼 꺼두기
+		.httpBasic(a -> a.disable()) // 스링 시큐리티의 기본 http 기능 꺼둠
+		.sessionManagement(a -> a.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 기능도 꺼둠 :: 꺼지기는 할까? ㅎㅎㅎ
+		.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // JWT를 검증하거나 말거나 하는 필터를 등록해 둠
+		.authorizeHttpRequests(a -> a // 무조건 허용할 요청의 주소와 검증 수행할 주소 등록
+				.requestMatchers("/**").permitAll()
+				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll() // preflight 도 무조건 허용 // 브라우저에서 선처리 하는 호구조사 같은 것이며 option 메서드 요청을 은밀하게 수행함
+				.anyRequest().authenticated()); // 그 외 무조건 검증
+		
 		return http.build();
-	}
-
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		
+		//.requestMatchers("/css/**", "/js/**", "/img/**", "/joinForm", "/join", "/loginForm", "/login", "/", "/index", "favicon.ico").permitAll() // 이놈들은 무조건 허용
 	}
 	
 	@Bean
-	AuthenticationManager authenticationManager(
-			AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-	}
-	
-	@Bean
-	JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(tokenProvider, detailsService);
-	}
-	
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration cors = new CorsConfiguration();
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		cors.addAllowedOrigin("*");
+		cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		cors.addAllowedHeader("*");
+		cors.setAllowCredentials(true);
+		cors.setMaxAge(3600L);
+		cors.addExposedHeader("Authorization");
+		source.registerCorsConfiguration("/**", cors);
+		
+		return source;
+	} // End of corsConfigurationSource()
 }

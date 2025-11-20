@@ -38,6 +38,3 @@ out/
 
 ### ENV ###
 .env
-
-### Firebase 비밀 키 추가 ###
-bscalendar-cf0df-firebase-adminsdk-fbsvc-fa1adef11f.json

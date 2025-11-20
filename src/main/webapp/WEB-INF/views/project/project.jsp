@@ -10,22 +10,11 @@
   <link rel="stylesheet" href="/css/layout.css">
   <title>부성카렌다</title>
   
-	<script src="/js/index.global.min.js"></script>
-	<script src="/js/calendar.js"></script>
 </head>
 <body>
-
-<nav class="top-menu-area">
-	<!-- JSP include -->
-	<!--
-	<script>
-		JWT MEMBER_ID Parsing
-		전역 변수로 MEMBER_ID 저장
-		모든 .jsp 파일에서 사용 가능
-	</script>
-	-->
-</nav>
-
+<%@ include file="../nav.jsp" %>
+<script src="/js/index.global.min.js"></script>
+<script src="/js/calendar.js"></script>
 <div class="container">
   <div class="content-area">
 
@@ -79,6 +68,7 @@
 				     		const dataSize = data.length;
 				     		if(dataSize <= 0) {
 				     			alert(memName + ' 님은 해당 달에 등록된 업무가 없습니다.');
+				     			return;
 				     		}
 				     		
 				     		// TODO: Calendar 위쪽에 이름 렌더링
@@ -104,11 +94,12 @@
 				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
-				     				fetch('/api/project/members/work/list/jenits/1')
+				     				fetch(`/api/project/members/work/list/\${memId}/1`)
 				     				.catch(err => console.err(err))
 				     				.then(response => response.json())
 				     				.then(data => {
 				     					let events = data.map(item => ({
+				     						title: memName + '님 등록 업무',
 				     						start: item.works_sdate,
 				     						end: item.works_edate,
 				     						team_idx: item.team_idx
@@ -127,6 +118,89 @@
       		});
       	})
       	
+      	function workRender2(workInfo) { // 위에 fetch로 불러온 data -> workInfo
+      		// TODO: 업무 리스트 렌더링
+      		const worklistEl = document.getElementById('worklist');
+      		worklistEl.innerHTML = `
+     			<tr>
+            <th>작성자</th>
+            <th>수행 시작일</th>
+            <th>수행 종료일</th>
+            <th>업무 내용</th>
+            <th>알람 시간</th>
+            <th>비고</th>
+          </tr>
+      		`;
+      		Array.from(workInfo).forEach(work => {
+      			const works_idx = work.works_idx;
+      			const memName = work.mem_name;
+      			const sdate = work.works_sdate.substring(0, 10);
+      			const edate = work.works_edate.substring(0, 10);
+      			const comment = work.works_comment;
+      			const alramState = work.works_alram;
+      			let alramDate = '알람 미등록';
+      			if(alramState === 'Y') {
+      				alramDate = work.works_alram_date;
+      			}
+      			const tr = document.createElement('tr');
+      			
+      			const innerHTML = `
+      			<td>\${memName}</td>
+      			<td>\${sdate}</td>
+      			<td>\${edate}</td>
+      			<td>\${comment}</td>
+      			<td>\${alramDate}</td>
+      			`;
+      			
+      			tr.innerHTML = innerHTML;
+      			console.log('ss',tr.innerHTML)
+      			
+      			const eventTd = document.createElement('td'); // 완료/미완료
+      			
+      			// 완료 미완료 상태
+      			const finFlag = work.works_fin_flag;
+      			
+      			if (finFlag === 'N') {
+      				eventTd.classList.add('worklist-notComplete');
+      				eventTd.textContent = '미완료';
+      				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
+      				eventTd.addEventListener('click', (e) => {
+      					if(confirm('업무를 완료 처리 하시겠습니까?')) {
+      						// TODO: 완료 처리하는 컨트롤러와 로직
+      						const url = `/api/work/update/\${work.works_idx}`;
+      						
+      						
+      						/*
+      						fetch(url, { method: 'put' })
+      						.catch(err => console.err(err))
+      						.then(response => response.json())
+      						.then(data => {
+      							
+      						});
+      						*/
+      					} else {
+      						e.preventDefault();
+      						e.stopPropagation();
+      					}
+      				})
+      				
+      			} else if (finFlag === 'Y') {
+      				eventTd.classList.add('worklist-complete');  				
+      				eventTd.textContent = '완료';
+      			}
+      			
+      			tr.appendChild(eventTd);
+      			
+      			tr.addEventListener('click', () => {
+      				// TODO: work-detail location
+      				const url = '/work/detail/' + works_idx;
+      				window.location.href = url;
+      			});
+      			
+      			worklistEl.appendChild(tr);
+      		});
+      		
+      	}
       	function dateWorkRender(info) {
 	   			const teamIdx = info.event.extendedProps.team_idx;
 					const sdate = info.event.startStr;
@@ -138,7 +212,7 @@
    				.catch(err => console.err(err))
    				.then(response => response.json())
    				.then(data => {
-   					workRender(data);
+   					workRender2(data);
    				});
 				}
       </script>
@@ -229,6 +303,11 @@
 		const url = workCreateLocation.href;
 		window.open(url + teamIdx, '_blank');
 	});
+	
+	const worklistEl = document.querySelector('#worklist'); // 업무 리시트 테이블 
+	
+	
+	
 </script>
 </body>
 </html>

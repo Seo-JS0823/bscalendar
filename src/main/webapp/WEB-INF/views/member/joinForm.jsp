@@ -1,14 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
-<html>
 <head>
-	<meta charset="UTF-8">
-	<title>BS Calendar</title>
-	<link rel="stylesheet" href="/css/member.css">
-	<script src="/js/member.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <link rel="stylesheet" href="/css/member.css" />
+  <script src="/js/member.js"></script>
 </head>
-<body>
-	<div class="wrap">
+<body onload="init()">
+   <div class="wrap">
      <div class="head">회원가입</div>
      <div class="box"><input type="text" name="mem_name" placeholder="이름" /></div><div></div>
      <div class="box"><input type="text" name="mem_position" placeholder="직책" /></div><div></div>

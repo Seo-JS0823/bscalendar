@@ -7,26 +7,4 @@
 
 3. 추가적으로 필요한 기능은 URL 다르게 해서 컨트롤러 메서드 추가하면 됩니다.
 
-4. Mapper도 가독성/수정/관리를 위해 통일하는 방향이 나을 것 같으니 mapper.xml로 작성
-
-### JWT Auth URL ###
-
-인증이 필요한 경로
-1. /api/project/**
-2. /api/member/**
-3. /api/work/**
-4. /api/reply/**
-
-인증 필요없는 경로
-1. /
-2. /login
-3. /find
-4. /api/member/login,
-5. /WEB-INF/views/**
-6. /css/**
-7. /js/**
-8. /img/**
-9. /project/**
-10. /work/**
-11. /mypage
-12. /error
+4. Mapper도 가독성/수정/관리를 위해 통일하는 방향이 나을 것 같으니 mapper.xml로 작성 
