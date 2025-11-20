@@ -11,10 +11,7 @@
   
 </head>
 <body>
-<nav class="top-menu-area">
-
-</nav>
-
+<%@ include file="../nav.jsp" %>
 <div class="container">
   <div class="detail-container">
     <div class="detail-descript">

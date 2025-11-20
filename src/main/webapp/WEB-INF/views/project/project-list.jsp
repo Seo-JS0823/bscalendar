@@ -107,7 +107,6 @@
     </div>
   </div>
 </div>
-
 <script> // 로그인한 유저의 프로젝트 리스트 렌더링
 	const mem_id = getTokenFromInfo('username');
 	const url = '/api/project/' + mem_id;

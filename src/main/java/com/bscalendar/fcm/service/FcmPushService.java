@@ -26,7 +26,7 @@ public class FcmPushService {
         // 1. Redis에서 사용자의 FCM 토큰 조회
         String redisKey = "fcm:user:" + userId;
         String token = redisService.getData(redisKey); // RedisTestService의 메서드 사용
-
+        System.out.println(token);
         if (token == null || token.isEmpty()) {
             System.out.println("알림 발송 실패: UserID " + userId + "의 FCM 토큰이 Redis에 없습니다.");
             return;

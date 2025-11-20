@@ -52,6 +52,7 @@ public class FcmController {
             return ResponseEntity.ok("FCM 토큰이 성공적으로 저장되었습니다.");
             
         } catch (Exception e) {
+        	System.out.println("서버 토큰 저장 에러 발 ㅆ 예 ㅇㅇ~:ㅇ ㄸ~ㄴ");
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("토큰 저장 중 서버 오류 발생");
         }
