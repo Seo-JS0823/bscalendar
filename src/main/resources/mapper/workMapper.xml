@@ -59,4 +59,11 @@
 			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{date} AND
 			W.WORKS_HIDE = 'N'
 	</select>
+	
+	<!-- 알람 기능 -->
+	<select id="getTeamMemberIds" resultType="String">
+        SELECT MEM_ID
+        FROM EG_MAPP
+        WHERE TEAM_IDX = #{team_idx}
+    </select>
 </mapper>

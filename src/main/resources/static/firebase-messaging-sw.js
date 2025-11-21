@@ -25,7 +25,8 @@ messaging.onBackgroundMessage(function(payload) {
   // payload에서 알림 제목과 내용을 추출
   const notificationTitle = "FCM 시스템 최종 성공";
   const notificationOptions = {
-    body: "모든 코드가 정상 작동합니다.",
+    body: payload.notification.body, 
+    icon: '/img/favicon.png' // (참고: 아이콘 경로는 유지)
   }
 
   // Service Worker가 직접 알림을 화면에 띄우는 코드 (OS 팝업)
