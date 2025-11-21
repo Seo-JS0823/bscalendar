@@ -13,16 +13,17 @@
 		UPDATE
 			EG_WORKS
 		SET
-			ALRAM_FIN_FLAG = 'Y'
+			WORKS_FIN_FLAG = #{works_fin_flag}
 		WHERE
 			WORKS_IDX = #{works_idx}
 	</update>
 	
 	<select id="findWorkToIdx" resultType="com.bscalendar.work.dto.WorkDTO">
 		SELECT
-			*
-		FROM
-			EG_WORKS
+			A.*,
+			B.mem_name
+		FROM EG_WORKS A JOIN EG_MEMBER B
+		ON A.mem_id = B.mem_id	
 		WHERE
 			WORKS_IDX = #{works_idx}
 	</select>
@@ -46,7 +47,7 @@
 	 JOIN EG_MEMBER member ON team.mem_id = member.mem_id 
 	 WHERE works_idx = #{works_idx}
 	</select> 
-	<select id="findToDateWorks" resultType="com.bscalendar.work.dto.WorkDTO">
+	<select id="findToDateWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
 		SELECT
 			W.*, M.MEM_NAME
 		FROM
@@ -59,11 +60,4 @@
 			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{date} AND
 			W.WORKS_HIDE = 'N'
 	</select>
-	
-	<!-- 알람 기능 -->
-	<select id="getTeamMemberIds" resultType="String">
-        SELECT MEM_ID
-        FROM EG_MAPP
-        WHERE TEAM_IDX = #{team_idx}
-    </select>
 </mapper>

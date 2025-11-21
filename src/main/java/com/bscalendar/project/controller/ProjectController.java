@@ -1,7 +1,10 @@
 package com.bscalendar.project.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -282,10 +285,10 @@ public class ProjectController {
 		
 		// TODO: Service에서 병합된 리스트 가져오기
 		List<MemberWorkDTO> response = projectSvc.worksListToDate(nowDate, team_idx, mem_id);
-		System.out.println(response);
+		
 		// TODO: 사이즈 검사
 		if(response.size() == 0) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.ok(response);
 	}

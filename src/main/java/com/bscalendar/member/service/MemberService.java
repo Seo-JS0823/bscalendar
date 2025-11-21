@@ -1,14 +1,11 @@
 package com.bscalendar.member.service;
 
 import java.util.HashMap;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.bscalendar.jwt.JwtUtil;
-import com.bscalendar.jwt.ShaTest;
-
 import lombok.extern.slf4j.Slf4j;
 import com.bscalendar.member.mapper.MemberMapper;
 
@@ -28,9 +25,7 @@ public class MemberService {
 		
 		mem_id = json.getString("mem_id");
 		mem_pwd = json.getString("mem_pwd");
-		//System.out.println("암호전: " + mem_pwd);
-		mem_pwd = ShaTest.encSHA512(mem_pwd);
-		//System.out.println("암호후: " + mem_pwd);
+		mem_pwd = bCryptPasswordEncoder.encode(mem_pwd);
 		mem_name = json.getString("mem_name");
 		mem_position = json.getString("mem_position");
 		mem_depart = json.getString("mem_depart");
@@ -50,19 +45,23 @@ public class MemberService {
 	}
 	
 	public HashMap<String, Object> getMember(String mem_id) {
-	    // 토큰에서 아이디 정보 가져와야 함
 	    return memmapper.getMember(mem_id);
 	}
 	
 	public boolean updateMember(JSONObject json) {
 		int x = 0;
-		String mem_id = null, mem_name = null, mem_position = null, mem_depart = null;
+		String mem_id = null, mem_name = null, mem_position = null, mem_depart = null, mem_pwd = null;
+		String chk_pwd = "0";
 		
 		mem_id = json.getString("mem_id");
 		mem_name = json.getString("mem_name");
 		mem_position = json.getString("mem_position");
 		mem_depart = json.getString("mem_depart");
-		x = memmapper.updateMember(mem_id, mem_name, mem_position, mem_depart);
+		mem_pwd = json.getString("mem_pwd");
+		
+		if(mem_pwd.equals(chk_pwd)) {
+			x = memmapper.updateMember(mem_id, mem_name, mem_position, mem_depart); // 패스워드 변경 안할 시
+		} else x = memmapper.updateMemberPwd(mem_id, mem_name, mem_position, mem_depart, mem_pwd); // 패스워드 변경 포함시
 		
 		return x > 0;
 	}
@@ -81,18 +80,12 @@ public class MemberService {
 		
 		mem_id = json.getString("mem_id");
 		mem_pwd = json.getString("mem_pwd");
-		//System.out.println("mem_pwd 로그인 암호전: " + mem_pwd);
-		//mem_pwd = ShaTest.encSHA512(mem_pwd);
-		//System.out.println("mem_pwd 로그인 암호후: " + mem_pwd);
-		//x = memmapper.loginMember(mem_id, mem_pwd);
-		
 		// 로그인한 유저의 mem_id로 getMember 메서드를 통해
 		// 해당 유저의 DB에 저장된 인코딩된 비밀번호 가져오기
 		HashMap<String, Object> targetMember = memmapper.getMember(mem_id);
 		
 		// HashMap<String, Object> 이므로 get("mem_pwd")해서 Object로 받아오기
 		Object targetPassword = targetMember.get("mem_pwd");
-		
 		// 일치하는지 검사하기 위한 boolean 변수 선언 기본값은 false
 		boolean validatePassword = false;
 		

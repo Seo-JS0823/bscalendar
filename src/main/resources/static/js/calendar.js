@@ -24,28 +24,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			const endDate = fetchInfo.endStr.substring(0, 10);
 			const nowDate = getNowDateString();
 			
-			console.log(`/api/project/work/cal/${startDate}/${endDate}/${teamIdx}/${memberId}`);
 			fetch(`/api/project/work/cal/${startDate}/${endDate}/${teamIdx}/${memberId}`)
 			.catch(err => console.err(err))
-			.then(response => {
-				const status = response.status;
-				console.log(status);
-				if(status === 204) {
-					return null;
-				}
-				return response.json();
-			})
+			.then(response => response.json())
 			.then(data => {
 				let events = workDataSetting(data);
 				const mergedEvents = mergeEvents(events);
-	 			successCallback(mergedEvents);
-				console.log(`/api/project/work/cal/${nowDate}/${teamIdx}/${memberId}`);
+ 				successCallback(mergedEvents);
+
  				fetch(`/api/project/work/cal/${nowDate}/${teamIdx}/${memberId}`)
  				.then(response => response.json())
  				.then(data => {
-					console.log(data);
 					workRender(data);
 				})
+ 				
 			})
 		},
 		dateClick: function(info) {
@@ -66,13 +58,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const memberTokenId = getTokenFromInfo('username');
 
+function endDatePlusOne(endStr) {
+	const oldDate = new Date(endStr);
+	oldDate.setDate(oldDate.getDate() + 1);
+	
+	const year = oldDate.getFullYear();
+	const month = String(oldDate.getMonth() + 1).padStart(2, '0');
+	const day = String(oldDate.getDate()).padStart(2, '0');
+	
+	return `${year}-${month}-${day}`;
+}
+
 function workDataSetting(data) {
-	if(data === null) {
-		return null;
-	}
 	let events = data.map(item => ({
 		start: item.works_sdate.substring(0, 10),
-		end: item.works_edate.substring(0, 10),
+		end: endDatePlusOne(item.works_edate.substring(0, 10)),
 		team_idx: item.team_idx,
 		hideFlag: item.works_hide
 	}));
@@ -92,95 +92,7 @@ function workDataSetting(data) {
 	return events;
 }
 
-function workRender(workInfo) {
-	// TODO: 업무 리스트 렌더링
-	const worklistEl = document.getElementById('worklist');
-	worklistEl.innerHTML = `
-	<tr>
-    <th>작성자</th>
-    <th>수행 시작일</th>
-    <th>수행 종료일</th>
-    <th>업무 내용</th>
-    <th>알람 시간</th>
-    <th>비고</th>
-  </tr>
-	`;
-	// TODO: 미완료, 완료 상태 렌더링
-	const finFlagState = document.getElementById('finFlagState');
-	let notFinFlag = 0;
-	let okFinFlag = 0;
-	
-	Array.from(workInfo).forEach(work => {
-		const works_idx = work.works_idx;
-		const memName = work.mem_name;
-		const sdate = work.works_sdate.substring(0, 10);
-		const edate = work.works_edate.substring(0, 10);
-		const comment = work.works_comment;
-		const alramState = work.works_alram;
-		let alramDate = '알람 미등록';
-		if(alramState === 'Y') {
-			alramDate = work.works_alram_date;
-		}
-		const tr = document.createElement('tr');
-		
-		const innerHTML = `
-		<td>${memName}</td>
-		<td>${sdate}</td>
-		<td>${edate}</td>
-		<td>${comment}</td>
-		<td>${alramDate}</td>
-		`;
-		
-		tr.innerHTML = innerHTML;
-		
-		const eventTd = document.createElement('td');
-		
-		// 완료 미완료 상태
-		const finFlag = work.works_fin_flag;
-		if (finFlag === 'N') {
-			notFinFlag++;
-			eventTd.classList.add('worklist-notComplete');
-			eventTd.textContent = '미완료';
-			// TODO: 미완료 상태일 때 이벤트 핸들러 등록
-			eventTd.addEventListener('click', (e) => {
-				if(confirm('업무를 완료 처리 하시겠습니까?')) {
-					e.stopPropagation();
-					e.preventDefault();
-					
-					// TODO: 완료 처리하는 컨트롤러와 로직
-					const url = `/api/work/update/${work.works_idx}`;
-					
-					/*
-					fetch(url, { method: 'put' })
-					.catch(err => console.err(err))
-					.then(response => response.json())
-					.then(data => {
-						
-					});
-					*/
-				} else {
-					e.stopPropagation();
-					e.preventDefault();
-				}
-			})
-			
-		} else if (finFlag === 'Y') {
-			okFinFlag++;
-			eventTd.classList.add('worklist-complete');  				
-			eventTd.textContent = '완료';
-		}
-		tr.appendChild(eventTd);
-		
-		tr.addEventListener('click', () => {
-			// TODO: work-detail location
-			const url = '/work/detail/' + works_idx;
-			window.location.href = url;
-		});		
-		worklistEl.appendChild(tr);
-	});
-	finFlagState.textContent = `미완료 업무 : ${notFinFlag} / 완료 업무 : ${okFinFlag}`;
-}
-
+/*
 // 막대기 렌더링 날짜 병합 함수
 function mergeEvents(events) {
 	if(!events || events.length === 0) {
@@ -196,13 +108,16 @@ function mergeEvents(events) {
 	let currentEvent = { ...events[0] };
 	for(let i = 1; i < events.length; i++) {
 		const nextEvent = events[i];
+		const hideFlag = events[i].hideFlag;
+		
+		// hideFlag = 'Y' IF hideFlag = 'N'
+		// 'Y' = #6495ed AND 'N' = lightpink
 		
 		const currentEnd = new Date(currentEvent.end);
 		const nextStart = new Date(nextEvent.start);
 		
 		// 현재 이벤트의 종료 날짜가 다음 이벤트의 시작 날짜보다 늦을 경우
 		if(currentEnd > nextStart) {
-			
 			// 병합: 더 늦은 종료날짜로 현재 이벤트의 종료일을 갱신
 			const nextEnd = new Date(nextEvent.end);
 			if(nextEnd > currentEnd) {
@@ -212,8 +127,71 @@ function mergeEvents(events) {
 			merged.push(currentEvent);
 			currentEvent = { ...nextEvent };
 		}
+		
 	}
 	merged.push(currentEvent);
+	return merged;
+}
+*/
+function mergeEvents(events) {
+	if(!events || events.length === 0) {
+		return [];
+	}
+	
+	// 이벤트 시작 날짜 기준 오름차순 정렬
+	events.sort((a, b) => new Date(a.start) - new Date(b.start));
+	
+  const hideMerged = [];
+  const noHideMerged = [];
+  for(let i = 0; i < events.length; i++) {
+		const hideFlag = events[i].hideFlag;
+		if(hideFlag === 'Y') {
+			hideMerged.push(events[i]);
+		} else if(hideFlag === 'N') {
+			noHideMerged.push(events[i]);
+		}
+	}
+	
+	hideMerged.sort((a, b) => new Date(a.start) - new Date(b.start));
+	noHideMerged.sort((a, b) => new Date(a.start) - new Date(b.start));
+	
+	const merged = [];
+	
+	let currentHideEvent = { ...hideMerged[0] };
+	for(let i = 1; i < hideMerged.length; i++) {
+		const nextEvent = hideMerged[i];
+		const currentEnd = new Date(currentHideEvent.end);
+		const nextStart = new Date(nextEvent.start);
+		
+		if(currentEnd > nextStart) {
+			const nextEnd = new Date(nextEvent.end);
+			if(nextEnd > currentEnd) {
+				currentHideEvent.end = nextEvent.end;
+			}
+		} else {
+			merged.push(currentHideEvent);
+			currentHideEvent = { ...nextEvent };
+		}
+	}
+	merged.push(currentHideEvent);
+	
+	let currentNoHideEvent = { ...noHideMerged[0] };
+	for(let i = 1; i < noHideMerged.length; i++) {
+		const nextEvent = noHideMerged[i];
+		const currentEnd = new Date(currentNoHideEvent.end);
+		const nextStart = new Date(nextEvent.start);
+		
+		if(currentEnd > nextStart) {
+			const nextEnd = new Date(nextEvent.end);
+			if(nextEnd > currentEnd) {
+				currentHideEvent.end = nextEvent.end;
+			}
+		} else {
+			merged.push(currentNoHideEvent);
+			currentNoHideEvent = { ...nextEvent };
+		}
+	}
+	merged.push(currentNoHideEvent);
 	return merged;
 }
 
@@ -222,13 +200,42 @@ function workAndDateRender(info) {
 	const teamIdx = window.location.pathname.replace('/project/', '');
 	const date = info.dateStr;
 	const url = `/api/project/work/cal/${date}/${teamIdx}/${memberTokenId}`;
+	const finFlagState = document.getElementById('finFlagState');
+	let yFlag = 0;
+	let nFlag = 0;
 	
 	fetch(url)
 	.catch(err => console.err(err))
-	.then(response => response.json())
+	.then(response => {
+		const status = response.status;
+		if(status === 204) {
+			const worklistNoContent = document.getElementById('worklist');
+			worklistNoContent.innerHTML = `
+			<tr>
+			  <th>해당 날짜에 조회된 공유 업무가 존재하지 않습니다.</th>
+			</tr>
+			`;
+			const worklisthideNoContent = document.getElementById('worklisthide');
+			worklisthideNoContent.innerHTML = `
+			<tr>
+			  <th>해당 날짜에 조회된 개인 업무가 존재하지 않습니다.</th>
+			</tr>
+			`;
+			finFlagState.innerHTML = '';
+			
+			const clickedDateNoContent = document.getElementById('clicked-date');
+			clickedDateNoContent.innerHTML = date;
+			return;
+		}
+		return response.json();
+	})
 	.then(data => {
+		if(!data) {
+			return;
+		}
 		const clickedDate = document.getElementById('clicked-date');
 		clickedDate.textContent = date;
+		
 		workRender(data);
 	});
 }

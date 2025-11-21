@@ -88,11 +88,11 @@
    	    .catch(error => console.dir(error))
    	    .then(response => response.json())
    	    .then(data => {
-   	    	console.log(data);
+   	    	console.log(data.token)
+   	    	
    	        if(data.result === "ok") {
-   	        	// 메인 페이지로 이동하기 전 localStorage에 Token 저장
    	        	localStorage.setItem('token', data.token);
-   	        	location.href="/index"; //** ===== 로그인 후 메인페이지로 이동해야 함 ** //
+   	        	location.href="/project/list"; //** ===== 로그인 후 메인페이지로 이동해야 함 ** //
    	        }
    	        else {
    	        	el =  els[1].children[0];

@@ -2,14 +2,12 @@ package com.bscalendar.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
@@ -20,11 +18,7 @@ public class JwtUtil {
 		// value 값을 가져와서 Jwts.SIG.HS256.key() -> 객체 키(SecretKey)를 생성
 		secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
 	}
-	
-	public String getValue(String token, String userId) {
-		return "";
-	}
-	
+
 	// 파싱된 토큰의 페이로드에서 username을 가져옴
 	public String getUsername(String token) {
 		return Jwts.parser().verifyWith(secretKey).build()

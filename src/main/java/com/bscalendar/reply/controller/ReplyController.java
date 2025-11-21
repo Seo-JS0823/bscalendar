@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bscalendar.fcm.service.FcmPushService;
-import com.bscalendar.member.dto.MemberDetails;
+import com.bscalendar.jwt.SecurityUser;
 import com.bscalendar.reply.dto.ReplyCreateDTO;
 import com.bscalendar.reply.dto.ReplyResponseDTO;
 import com.bscalendar.reply.dto.ReplyUpdateDTO;
@@ -45,7 +45,7 @@ public class ReplyController {
 		Object target = authentication.getPrincipal();
 		String loginMemberId = "";
 		if(target instanceof UserDetails) {
-			loginMemberId = ((MemberDetails) target).getUsername();
+			loginMemberId = ((SecurityUser) target).getUsername();
 			System.out.println("멤버 아디 : " + loginMemberId);
 		}
 		

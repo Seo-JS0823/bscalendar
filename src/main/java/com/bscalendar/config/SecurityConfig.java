@@ -32,7 +32,7 @@ public class SecurityConfig {
 		http
 		.csrf(a -> a.disable()) // CORS 정책 꺼둠
 		.formLogin(a -> a.disable()) // 스프링 로그인 폼 꺼두기
-		.httpBasic(a -> a.disable()) // 스링 시큐리티의 기본 http 기능 꺼둠
+		.httpBasic(a -> a.disable()) // 스프링 시큐리티의 기본 http 기능 꺼둠
 		.sessionManagement(a -> a.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 기능도 꺼둠 :: 꺼지기는 할까? ㅎㅎㅎ
 		.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // JWT를 검증하거나 말거나 하는 필터를 등록해 둠
 		.authorizeHttpRequests(a -> a // 무조건 허용할 요청의 주소와 검증 수행할 주소 등록
@@ -42,7 +42,8 @@ public class SecurityConfig {
 		
 		return http.build();
 		
-		//.requestMatchers("/css/**", "/js/**", "/img/**", "/joinForm", "/join", "/loginForm", "/login", "/", "/index", "favicon.ico").permitAll() // 이놈들은 무조건 허용
+		//.requestMatchers("/**").permitAll()
+		// .requestMatchers("/css/**", "/js/**", "/img/**", "/joinForm", "/join", "/loginForm", "/login", "/", "/index", "favicon.ico").permitAll() // 이놈들은 무조건 허용
 	}
 	
 	@Bean

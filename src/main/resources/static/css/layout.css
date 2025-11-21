@@ -676,7 +676,6 @@
 .worklist-content {
   width: 100%;
   height: 100%;
-  min-height: 30rem;
   border: 1px solid #ccc;
 }
 .worklist-content-header {
@@ -722,6 +721,7 @@
   border: 1px solid #ccc;
   border-collapse: collapse;
   table-layout: fixed;
+  margin-bottom: 1rem;
 }
 .worklist-content-table tr:not(.worklist-content-table tr:first-child):hover {
   background-color: #d8e3eb;
@@ -730,6 +730,11 @@
 .worklist-content-table th, td {
   border: 1px solid #ccc;
   text-align: center;
+}
+.worklist-content-table td:nth-of-type(4) {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }
 .worklist-content-table th {
   font-size: 1.2rem;
@@ -904,6 +909,15 @@
   display: flex;
   flex-direction: column;
 }
+.detail-content h3 {
+	margin: 1rem 0;
+}
+.detail-content hr {
+	width: 100%;
+	height: 1px;
+	border: none;
+	background: #ccc;
+}
 .detail-header-area {
 	display: flex;
 	align-items: center;
@@ -999,6 +1013,8 @@
 	width: 100%;
 	height: auto;
 	min-height: 21rem;
+	max-height: 60rem;
+	overflow-y: auto;
 	padding: 1rem;
 }
 .work-reply-member {
@@ -1053,6 +1069,14 @@
 	align-items: center;
 	justify-content: flex-end;
 }
+.work-reply textarea {
+	width: 100%;
+	height: 100%;
+	resize: none;
+	outline: none;
+	border: 1px solid #ccc;
+	padding: 0.5rem;
+}
 #reply-input {
 	width: 91%;
 	height: 6rem;
@@ -1076,12 +1100,17 @@
 .col-box {
 	width: 100%;
 	height: auto;
+	max-height: 60rem;
 	display: flex;
 	flex-direction: column;
 	padding: 0.6rem;
 	border: 1px solid #ccc;
 	border-radius: 1rem;
-	margin: 0.5rem 0;
+	overflow-y: auto;
+	margin: 1rem 0;
+}
+.col-box::-webkit-scrollbar {
+	display: none;
 }
 .col-box > p {
 	padding: 0.2rem 1rem;
@@ -1100,10 +1129,11 @@
 
 /* Calendar Clicked Event CSS */
 .clicked-day {
-	background: #6495ed !important;
+	background: lightgreen !important;
+	border: 2px solid #6495ed !important;
 }
 .clicked-day .fc-daygrid-day-number {
-	color: white;
+	color: #1e90ff;
 }
 .fc-day {
 	cursor: pointer;

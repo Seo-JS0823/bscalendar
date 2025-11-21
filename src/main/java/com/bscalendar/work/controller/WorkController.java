@@ -1,5 +1,6 @@
 package com.bscalendar.work.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,19 +35,22 @@ public class WorkController {
 	
 	@PostMapping("/insertWork")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> workCreate(@RequestBody WorkDTO workDTO) {
+	public ResponseEntity<Map<String,Object>> workCreate(@RequestBody WorkDTO workDTO) {
 		// TODO: 업무 생성
 		if(workDTO.getWorks_arlam_date().equals("")) {
 			workDTO.setWorks_arlam_date(null);
 		}
-		System.out.println("뭐지?" + workDTO);
 		int work = workMapper.workCreate(workDTO);
 		
-		ResponseEntity<WorkDTO> result =
-			(work > 0)
-			? ResponseEntity.status(HttpStatus.OK).body(workDTO)
-			: ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		return result;
+		Map<String,Object> result = new HashMap<>();
+		if( work>0 ) {
+			result.put("status","ok");
+			result.put("work", workDTO);
+			result.put("redirectUrl", "/project/" + workDTO.getTeam_idx());
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 	
 	@GetMapping("")
@@ -69,29 +73,33 @@ public class WorkController {
 		return ResponseEntity.ok(works);
 	}
 	
-	@PatchMapping("/update/{works_idx}")
+	@PatchMapping("/update/{works_idx}/{finFlagChange}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> readUpdate(@PathVariable("works_idx") Integer works_idx) {
+	public ResponseEntity<Map<String, Object>> readUpdate(
+			@PathVariable("works_idx") Integer works_idx,
+			@PathVariable("finFlagChange") String works_fin_flag
+			) {
 		// TODO: 멱등성 방어를 위해 SELECT하고 works_fin_flag 확인
 		WorkDTO target = workMapper.findWorkToIdx(works_idx);
 		if(target == null) {
 			return ResponseEntity.badRequest().body(null);
 		}
-		
-		String finFlag = target.getWorkd_fin_flag();
+		/*
 		if(finFlag.toLowerCase().equals("y")) {
 			Map<String, Object> errResponse = Map.of(
 				"message", "이미 완료된 업무입니다."
 			);
 			return ResponseEntity.badRequest().body(errResponse);
 		}
+		*/
 		
+		String finFlag = target.getWorks_fin_flag();
 		// TODO: 업무 수정
 		int workIdx = target.getWorks_idx();
-		int updated = workMapper.workUpdate(workIdx);
+		int updated = workMapper.workUpdate(workIdx, works_fin_flag);
 		if(updated < 1) {
 			Map<String, Object> notUpdated = Map.of(
-				"message", "업무를 완료 처리하지 못했습니다."
+				"message", "업무를 업데이트하지 못했습니다."
 			);
 			return ResponseEntity.badRequest().body(notUpdated);
 		}

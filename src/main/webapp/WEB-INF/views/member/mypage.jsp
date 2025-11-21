@@ -14,6 +14,8 @@
      <div class="box"><input type="text" name="mem_position" ></div><div></div>
      <div class="box"><input type="text" name="mem_depart"></div><div></div>
      <div class="box"><input type="text" name="mem_id" readonly></div><div>* 아이디는 수정불가</div>
+     <div class="box"><input type="password" name="mem_pwd" placeholder="패스워드"></div><div>* 패스워드 변경 원할 시 입력</div>
+     <div class="box"><input type="password" name="mem_pwd" placeholder="패스워드 재입력"></div><div></div>
      <button type="button" id="btnsend">수정</button>
      <div class="main-link"><a href="/index">메인으로 가기</a></div>
    </div>
@@ -65,16 +67,49 @@
                  msg.innerText = '';
                  btnsend.disabled = false; }
            }
+           
+           el = els.getElementsByClassName("box")[4].children[0];
+           el.onblur = e => {
+             let el = e.target;
+             
+             if( el.value.length != 0 ) {
+            	 let msg = e.target.parentElement.nextElementSibling;
+
+                 if( checkPassword(el.value) === false ) {
+                     msg.innerText = '비밀번호: 8글자 이상의 영문, 숫자, 특수문자 조합으로 사용하세요.';
+                     btnsend.disabled = true;
+                 } else {
+                     msg.innerText = '';
+                     btnsend.disabled = false; }
+             }
+           }
+           
+           el = els.getElementsByClassName("box")[5].children[0];
+           el.onblur = e => {
+             let el = e.target;
+                      
+             if( el.value.length !== 0 ) {
+               let msg = e.target.parentElement.nextElementSibling;
+                              
+               if( isMatch(els.getElementsByClassName("box")[4].children[0].value, el.value) === false ) {
+                   msg.innerText = '비밀번호 확인: 비밀번호와 일치하지 않습니다.';
+                   btnsend.disabled = true;
+               } else {
+                   msg.innerText = '';
+                   btnsend.disabled = false; }
+             } 
+           }
 	    } // End of init() */
 	   
 	   let getData = () => {
+		   let token = localStorage.getItem("token");		   
 		   let url = "/api/member/getMember";
-		   let token = localStorage.getItem('token');
-		   console.log(token);
+		   
            fetch(url, {
-               method: 'GET',
+               method: 'POST',
                headers: {
-            	   'Authorization': `Bearer \${token}`
+                   "Content-Type" : "application/json",
+                   "Authorization": `Bearer \${token}`
                }
            })
            .catch(error => console.error('Error:', error))
@@ -99,38 +134,43 @@
 	   
 	   let doEdit = () => {
 		    let data = {}, el = {}, els = document.querySelectorAll('.box');
-		    
-		    let token = localStorage.getItem('token');
 		    el.mem_name  = els[0].children[0]
 		    el.mem_position  = els[1].children[0]
-	      el.mem_depart  = els[2].children[0]
+	        el.mem_depart  = els[2].children[0]
 		    el.mem_id = els[3].children[0]
-	       
+		    el.mem_pwd = els[4].children[0]
+	       		    
 		    data.mem_name = el.mem_name.value.trim();
-        data.mem_position = el.mem_position.value.trim();
-        data.mem_depart = el.mem_depart.value.trim();
-        data.mem_id = el.mem_id.value.trim();
-        
-        params = {
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json",
-                "Authorization": `Bearer \${token}`
-            },
-            body:JSON.stringify(data)
-        }
-        fetch("/api/member/update", params)
-        .catch(error => console.dir(error))
-        .then(response => response.json())
-        .then(data => {
-            if(data.result === "ok") location.reload();
-            else {
-              console.log(data.result);
-            }
-        })
+	        data.mem_position = el.mem_position.value.trim();
+	        data.mem_depart = el.mem_depart.value.trim();
+	        data.mem_id = el.mem_id.value.trim();
+	        data.mem_pwd = el.mem_pwd.value.trim();
+	        if(!(el.mem_pwd.value.length)) data.mem_pwd = "0";
+	        
+	        params = {
+	            method: "POST",
+	            headers: {
+	                "Content-Type" : "application/json",
+	            },
+	            body:JSON.stringify(data)
+	        }
+	        fetch("/api/member/update", params)
+	        .catch(error => console.dir(error))
+	        .then(response => response.json())
+	        .then(data => {
+	            if(data.result === "ok") location.reload();
+	            else {
+	              console.log(data.result);
+	            }
+	        })
 	   } // End of doEdit() */
 	   
 	   btnsend.addEventListener('click', doEdit);
+	   
+	   /** 비밀번호: 숫자, 영문, 특수문자 체크*/
+	   let checkPassword = str =>  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(str);
+	   /** 비밀번호: 재입력 체크 */
+	   let isMatch = (password1, password2) => password1 === password2; 
    </script>
 </body>
 </html>
