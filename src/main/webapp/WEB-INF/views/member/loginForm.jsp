@@ -12,6 +12,7 @@
         <div class="box"><input type="text" name="mem_id" placeholder="아이디" /></div><div></div>
         <div class="box"><input type="password" name="mem_pwd" placeholder="패스워드" /></div><div></div>
         <button type="button" id="btnLogin" onclick="loginCheck()">로그인</button>
+        <div class="main-link"><a href="/joinForm">회원가입 하기</a></div>
     </div>
     
     <script>
