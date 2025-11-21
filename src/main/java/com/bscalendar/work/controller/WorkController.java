@@ -83,7 +83,7 @@ public class WorkController {
 		return ResponseEntity.ok(works);
 	}
 	
-	/* 업무 완료/미완료 변경 로직 */
+	/* 업무 완료/미완료 변경 로직  */
 	@PatchMapping("/update/{works_idx}/{finFlagChange}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> readUpdate(
@@ -103,7 +103,6 @@ public class WorkController {
 			return ResponseEntity.badRequest().body(errResponse);
 		}
 		*/
-		
 		String finFlag = target.getWorks_fin_flag();
 		// TODO: 업무 수정
 		int workIdx = target.getWorks_idx();
@@ -121,6 +120,20 @@ public class WorkController {
 			"work", updatedSuccess
 		);
 		return ResponseEntity.ok(success);
+	}
+	
+	/* 업무 상세정보 수정 로직 */
+	@PatchMapping("update/detail")
+	public ResponseEntity<WorkDTO> updateWorkDetail(
+			@RequestBody WorkDTO workDTO
+			) {
+		int result = workMapper.updateWorkDetail(workDTO);
+		WorkDTO workDetail = workMapper.getWorkDetail(workDTO.getWorks_idx());
+		if(result > 0) {
+			return ResponseEntity.ok(workDetail);
+		} else {
+			return ResponseEntity.badRequest().body(null);
+		}
 	}
 	
 	@DeleteMapping("/")

@@ -59,18 +59,21 @@
 	      		const detailUpdate = document.getElementById('detail-update'); // 업무 설정 ▽
 	      		const detailHeaderAreaEl = document.querySelector('.detail-header-area'); // 업무설정 header div
  						const detailUpdateAreaEl = document.getElementById('detail-update-area'); // 업무설정 안에 내용물 div
+ 						const worksOpenEl    = document.querySelector('#works_open'); // 공유 라디오 버튼
+ 						const worksPrivateEl = document.querySelector('#works_private'); // 비공유 라디오 버튼
+ 						const setArlamEl = document.querySelector('#setAlram'); // 알람 날짜 테그
+ 						console.log('안녕?',works_idx)
 						
 			  		fetch(`/api/work/detail/\${works_idx}`)
 			  			.then( response => response.json() )
 			  			.then( data => {
-			  				console.log(data)
 			  				ptags[0].textContent = data.team_name;
 			  				ptags[1].textContent = data.works_sdate.substring(0,10);
 			  				ptags[2].textContent = data.mem_name;
 			  				detail_textareaEl.value = data.works_comment;
 			  				
-			  					console.log('토큰 아이디',mem_id)
-			  					console.log('fetch 갖고온 아이디',data.mem_id)
+		  					console.log('토큰 아이디',mem_id)
+		  					console.log('fetch 갖고온 아이디',data.mem_id)
 			  				if(mem_id !== data.mem_id) {
 			  					detailHeaderAreaEl.innerHTML = '';
 			  					detailUpdateAreaEl.innerHTML = '';
@@ -78,7 +81,7 @@
 			  				}
 			  				
 			  			})
-
+			  			
 	      		let btnState = false;
 	      		detailUpdate.addEventListener('click', () => {
 	     				const detailUpdateArea = document.getElementById('detail-update-area'); // 업무설정 전체 div
@@ -92,12 +95,67 @@
 	      				detailUpdateArea.classList.add('opacitOpen');
 	      				
 	      				const updateBtn = document.createElement('button');
-	      				updateBtn.addEventListener('click', () => {
+	      				updateBtn.addEventListener('click', (e) => {
 	      					// TODO: 업무 설정 변경 로직
 	      					e.stopPropagation();
+	      				  let noRadioCheck = !worksOpenEl.checked && !worksPrivateEl.checked;
+	      			   	let textareaEmpty = detail_textareaEl.value.trim() === '';
 	      					
+	      				  if(noRadioCheck || textareaEmpty) {
+	      					  alert('공유/비공유를 선택 안했거나 업무내용이 비었습니다');
+	      					  e.preventDefault();
+	      					  return;
+	      				  }
 	      					
-	      				});
+	      					if(confirm('정말로 수정 하시겠습니까?')) {
+						  			let works_arlam = 'N';
+										let works_hide = 'N';
+										
+										if(setArlamEl.value) {
+											works_arlam = 'Y';
+										}
+										
+						  			function updateUrl(url) {
+										  fetch(url,{
+											  method: 'PATCH',
+											  headers: {'Content-type':'application/json; charset=UTF-8'},
+											  body: JSON.stringify({
+												  works_idx: works_idx,
+												  works_arlam_date: setArlamEl.value,
+												  works_arlam: works_arlam,
+												  works_hide: works_hide,
+												  works_comment: detail_textareaEl.value,
+											  }),
+										  })
+										  	.then( response => {
+										  		if(response.status === 200) {
+										  			alert('업무 내용이 성공적으로 수정되었습니다')
+										  			window.location.reload();
+										  			return response.json(); 
+										  		} else {
+										  			alert('서버 오류로 인해 수정 실패했습니다 다시 시도해주세요')
+										  			return;
+										  		}
+										  	 }
+										  	)
+										  	.catch( error => console.log(error) )
+										  	.then( data => {
+										  		console.log('수정한 후 디테일정보',data)
+										  	})
+			 						  }
+						  			
+										if(worksOpenEl.checked) { // /\${setArlamEl.value}/\${works_arlam}/\${works_hide}/\${detail_textareaEl.value}
+											updateUrl(`/api/work/update/detail`);
+										} else if(worksPrivateEl.checked) {
+											works_hide = 'Y';
+											updateUrl(`/api/work/update/detail`);
+										}
+	      					} else {
+	      						e.preventDefalut();
+	      						e.stopPropagation();
+	      					}
+			      		});
+	      				
 	      				updateBtn.classList.add('work-updateBtn');
 	      				updateBtn.textContent = '변경사항 저장';
 	      				

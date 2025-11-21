@@ -17,4 +17,6 @@ public interface WorkMapper {
 
 	WorkDTO getWorkDetail(Integer works_idx);
 	List<WorkDTO> findToDateWorks(String date, Integer team_idx);
+
+	int updateWorkDetail(WorkDTO workDTO);
 }

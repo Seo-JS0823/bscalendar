@@ -9,6 +9,7 @@
 				(#{team_idx}, #{mem_id}, #{works_comment}, #{works_hide}, #{works_arlam},
 			   #{works_arlam_date}, #{works_sdate}, #{works_edate})
 	</insert>
+	
 	<update id="workUpdate">
 		UPDATE
 			EG_WORKS
@@ -16,6 +17,18 @@
 			WORKS_FIN_FLAG = #{works_fin_flag}
 		WHERE
 			WORKS_IDX = #{works_idx}
+	</update>
+	
+	<update id="updateWorkDetail">
+		UPDATE
+			EG_WORKS
+		SET
+		 	works_comment = #{works_comment},
+		 	works_hide = #{works_hide},
+		 	works_arlam = #{works_arlam},
+		 	works_arlam_date = #{works_arlam_date}
+		WHERE 
+			works_idx = #{works_idx}
 	</update>
 	
 	<select id="findWorkToIdx" resultType="com.bscalendar.work.dto.WorkDTO">
