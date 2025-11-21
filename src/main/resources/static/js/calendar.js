@@ -95,6 +95,7 @@ function workDataSetting(data) {
 /*
 // 막대기 렌더링 날짜 병합 함수
 function mergeEvents(events) {
+	console.log(events);
 	if(!events || events.length === 0) {
 		return [];
 	}

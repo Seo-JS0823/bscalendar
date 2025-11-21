@@ -287,7 +287,7 @@
    				.catch(err => console.err(err))
    				.then(response => response.json())
    				.then(data => {
-   					workRender(data);
+   					workRender2(data);
    				});
 				}
       </script>
