@@ -41,35 +41,50 @@
       </div>
       <div id="detail-update-area" class="opacityClose">
 	      <div class="detail-content-check">
-	        <input type="radio" name="works_hide"><label>공유 (팀 업무)</label>
-	        <input type="radio" name="works_hide"><label>비공유 (개인 업무)</label>
+	        <input id="works_open" type="radio" name="works_hide"><label>공유 (팀 업무)</label>
+	        <input id="works_private" type="radio" name="works_hide"><label>비공유 (개인 업무)</label>
 	      </div>
 	      <div class="detail-alram">
 	      	<button id="setAlramBtn">알람 설정</button>
 	      	<input id="setAlram" type="datetime-local" class="detail-setAlram close">
+	      </div>
+      </div>
+      <p class="detail-header">업무 내용</p>
+      <textarea class="detail-textarea">TODO: 작성자 본인이 들어오면 수정 / 삭제 / 알람 / 등을 설정할 수 있는 BOX 보이게</textarea>
 	      	<script>
 	      		const ptags = document.querySelectorAll('.row-box > :nth-child(2)');
 	      		const works_idx = ${works_idx};
-	      		const mem_id = getTokenFromInfo('username');
-	      		
-	      		fetch(`/api/work/detail/\${works_idx}`)
-	      			.then( response => response.json() )
-	      			.then( data => {
-	      				console.log(data)
-	      				ptags[0].textContent = data.team_name;
-	      				ptags[1].textContent = data.works_sdate.substring(0,10);
-	      				ptags[2].textContent = data.mem_name;
-	      				
-	      				
-	      				
-	      			})
-	      		const detailUpdate = document.getElementById('detail-update');
+	      		const mem_id = getTokenFromInfo('username'); //토큰으로 mem_id 가져오기
+	      		const detail_textareaEl = document.querySelector('.detail-textarea'); // 업무내용
+	      		const detailUpdate = document.getElementById('detail-update'); // 업무 설정 ▽
+	      		const detailHeaderAreaEl = document.querySelector('.detail-header-area'); // 업무설정 header div
+ 						const detailUpdateAreaEl = document.getElementById('detail-update-area'); // 업무설정 안에 내용물 div
+						
+			  		fetch(`/api/work/detail/\${works_idx}`)
+			  			.then( response => response.json() )
+			  			.then( data => {
+			  				console.log(data)
+			  				ptags[0].textContent = data.team_name;
+			  				ptags[1].textContent = data.works_sdate.substring(0,10);
+			  				ptags[2].textContent = data.mem_name;
+			  				detail_textareaEl.value = data.works_comment;
+			  				
+			  					console.log('토큰 아이디',mem_id)
+			  					console.log('fetch 갖고온 아이디',data.mem_id)
+			  				if(mem_id !== data.mem_id) {
+			  					detailHeaderAreaEl.innerHTML = '';
+			  					detailUpdateAreaEl.innerHTML = '';
+			  					detail_textareaEl.readOnly = true;
+			  				}
+			  				
+			  			})
+
 	      		let btnState = false;
 	      		detailUpdate.addEventListener('click', () => {
-	      			const detailUpdateArea = document.getElementById('detail-update-area');
+	     				const detailUpdateArea = document.getElementById('detail-update-area'); // 업무설정 전체 div
 	      			const state = detailUpdateArea.className;
-    					const detailHeaderArea = document.getElementsByClassName('detail-header-area')[0];
-    					
+	   					const detailHeaderArea = document.getElementsByClassName('detail-header-area')[0];
+	   					
 	      			if(state === 'opacityClose') {
 	      				detailUpdate.innerHTML = `업무 설정 ▽`;
 	      				
@@ -79,6 +94,8 @@
 	      				const updateBtn = document.createElement('button');
 	      				updateBtn.addEventListener('click', () => {
 	      					// TODO: 업무 설정 변경 로직
+	      					e.stopPropagation();
+	      					
 	      					
 	      				});
 	      				updateBtn.classList.add('work-updateBtn');
@@ -113,11 +130,10 @@
 	      				setAlram.classList.add('close');      				
 	      			}
 	      		});
+	      		
+
 	      	</script>
-	      </div>
-      </div>
-      <p class="detail-header">업무 내용</p>
-            <textarea class="detail-textarea">TODO: 작성자 본인이 들어오면 수정 / 삭제 / 알람 / 등을 설정할 수 있는 BOX 보이게</textarea>
+
 
       <!-- 댓글 수정 부분 -->
       <p class="detail-header">업무 메모</p>
