@@ -83,6 +83,7 @@ public class WorkController {
 		return ResponseEntity.ok(works);
 	}
 	
+	/* 업무 완료/미완료 변경 로직 */
 	@PatchMapping("/update/{works_idx}/{finFlagChange}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> readUpdate(
