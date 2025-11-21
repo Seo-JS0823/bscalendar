@@ -17,4 +17,7 @@ public interface WorkMapper {
 
 	WorkDTO getWorkDetail(Integer works_idx);
 	List<WorkDTO> findToDateWorks(String date, Integer team_idx);
+	
+	//알람 기능 위한 추가
+	List<String> getTeamMemberIds(int team_idx);
 }

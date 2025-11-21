@@ -40,7 +40,7 @@ dependencies {
   implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
   
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-  implementation 'com.google.firebase:firebase-admin:9.3.0'
+  implementation 'com.google.firebase:firebase-admin:9.3.0'  
 	
 	compileOnly 'org.projectlombok:lombok'
 	
