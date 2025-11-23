@@ -1,4 +1,3 @@
-
 package com.bscalendar.redis.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +33,3 @@ public class RedisController {
         return "Redis 조회 결과 (Key: " + key + ") => " + value;
     }
 }
-
-//https://headf1rst.github.io/TIL/push-notification 블로그 주소

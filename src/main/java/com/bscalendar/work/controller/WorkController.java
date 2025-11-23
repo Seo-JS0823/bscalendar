@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bscalendar.work.dto.WorkDTO;
 import com.bscalendar.work.mapper.WorkMapper;
+import com.bscalendar.work.service.WorkService;
 
 @Controller
 @RequestMapping("/api/work")
 public class WorkController {
+	
+	//알람기능을 위한 추가
+	@Autowired
+	private WorkService workService;
 	
 	@Autowired
 	private WorkMapper workMapper;
