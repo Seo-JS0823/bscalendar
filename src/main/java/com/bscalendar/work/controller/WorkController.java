@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,14 +42,29 @@ public class WorkController {
 	@PostMapping("/insertWork")
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> workCreate(@RequestBody WorkDTO workDTO) {
+		
 		// TODO: 업무 생성
-		if(workDTO.getWorks_arlam_date().equals("")) {
+		if(workDTO.getWorks_arlam_date() != null && workDTO.getWorks_arlam_date().equals("")) {
 			workDTO.setWorks_arlam_date(null);
 		}
+		
+		// 1. DB 저장
 		int work = workMapper.workCreate(workDTO);
 		
 		Map<String,Object> result = new HashMap<>();
-		if( work>0 ) {
+		
+		if( work > 0 ) {
+			// 알림 발송 
+			// DB 저장이 성공했을 때만 실행됨. 에러(알림전송실패)가 나도 무시하고 넘어감.
+			try {
+				String memberId = workDTO.getMem_id();
+				if(memberId != null) {
+					workService.sendWorkAlarm(workDTO, memberId);
+				}
+			} catch (Exception e) {
+				System.out.println("⚠ 알림 발송 실패 (업무는 정상 등록됨): " + e.getMessage());
+			}
+			
 			result.put("status","ok");
 			result.put("work", workDTO);
 			result.put("redirectUrl", "/project/" + workDTO.getTeam_idx());
