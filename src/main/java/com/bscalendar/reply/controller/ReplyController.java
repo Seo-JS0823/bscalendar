@@ -57,21 +57,22 @@ public class ReplyController {
        }
 		
         // 알림 발송 로직 추가
-        try {
-            // ▼▼▼▼▼ [ SQL 조회 코드를 우회하고 현재 로그인 ID를 강제 사용 ] ▼▼▼▼▼
-            String taskAuthorId = loginMemberId; // 알림 발송 테스트를 위해 현재 로그인 ID를 대상 ID로 설정
+		
+		//!taskAuthorId 앞의 !을 지우면 나에게 알림이 옴
+		try {
+            String taskAuthorId = replyService.getTaskAuthorId(createDto.getWorks_idx());
             
-            // (참고: 이전에 주석 처리했던 if 문은 테스트를 위해 제거/해제합니다.)
+            if (taskAuthorId != null && !taskAuthorId.equals(loginMemberId)) {
                 
-            //"업무 원작성자"에게 알림 발송 (나 자신에게 알림이 옴)
-            fcmPushService.sendNotificationToUser(
-                taskAuthorId, 
-                "새 댓글 알림 💬", // 이모지 추가
-                loginMemberId + "님이 회원님의 업무에 새 댓글을 남겼습니다."
-            );
+                fcmPushService.sendNotificationToUser(
+                    taskAuthorId, 
+                    "새 댓글 알림 💬",
+                    loginMemberId + "님이 회원님의 업무에 새 댓글을 남겼습니다."
+                );
+            }
             
-        } catch (Exception e) {
-            // SQL 쿼리 실패 시 여기서 로그가 찍힙니다.
+        } catch (Exception e) {	
+            // 쿼리 실패 시 여기서 로그가 찍힘
         	e.printStackTrace();	
             System.out.println("댓글 알림 발송 실패 (무시): " + e.getMessage());
         }       

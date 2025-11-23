@@ -1,9 +1,9 @@
 package com.bscalendar.work.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.bscalendar.fcm.service.FcmPushService;
 import com.bscalendar.work.dto.WorkDTO;
@@ -12,58 +12,53 @@ import com.bscalendar.work.mapper.WorkMapper;
 @Service
 public class WorkService {
 
+    @Autowired(required = false)
+    private FcmPushService fcmPushService;
+    
     @Autowired
     private WorkMapper workMapper;
 
-    @Autowired
-    private FcmPushService fcmPushService; // 알림 발송기 주입
+    public void sendWorkAlarm(WorkDTO workDTO, String loginMemberId) {
+        // 1. FCM 서비스가 없으면 중단
+        if (fcmPushService == null) return;
 
-    /**
-     * 업무를 DB에 저장하고, 조건(공유)에 따라 팀원에게 알림을 발송합니다.
-     */
-    @Transactional
-    public int insertWork(WorkDTO workDTO, String loginMemberId) {
-        
-        // 1. DB에 업무 저장
-        int result = workMapper.workCreate(workDTO);
-
-        // 2. 저장이 성공했고, '공유(N)' 업무라면 알림 발송
-        if (result > 0 && "N".equals(workDTO.getWorks_hide())) {
-            try {
-                sendTeamNotification(workDTO, loginMemberId);
-            } catch (Exception e) {
-                // 알림 실패가 업무 등록 실패로 이어지지 않도록 로그만 남김
-                System.out.println("업무 알림 발송 실패 (무시): " + e.getMessage());
-            }
+        // 비공유('Y') 업무라면 알림 안 보내고 종료
+        if ("Y".equals(workDTO.getWorks_hide())) {
+            System.out.println("비공유 업무이므로 알림을 발송하지 않습니다.");
+            return; 
         }
-        
-        return result;
-    }
 
-    // 알림 발송 내부 메서드
-    private void sendTeamNotification(WorkDTO workDTO, String loginMemberId) {
-        // 팀원 목록 조회
-        List<String> teamMembers = workMapper.getTeamMemberIds(workDTO.getTeam_idx());
+        try {
+            // 팀원 목록 가져오기
+            // 아이디 조회
+            List<String> teamMembers = workMapper.getTeamMemberIds(workDTO.getTeam_idx());
+            
+            if (teamMembers != null) {
+                
+                // 1. DTO에서 업무 내용(comment)을 가져옵니다.
+                String content = workDTO.getWorks_comment();
+                
+                // 내용이 없을 경우를 대비해 null 체크, 20자로 글자 제한
+                if (content != null && content.length() > 20) {
+                    content = content.substring(0, 20) + "...";
+                } else if (content == null) {
+                    content = "새로운 업무"; // 내용이 아예 없을 때 기본 멘트
+                }
 
-        if (teamMembers != null) {
-            for (String memberId : teamMembers) {
-                // 나 자신에게는 보내지 않음
-                if (!memberId.equals(loginMemberId)) {
-                    
-                    // 내용 한도 (20자)
-                    String content = workDTO.getWorks_comment();
-                    if (content != null && content.length() > 20) {
-                        content = content.substring(0, 20) + "...";
+                String title = "새로운 팀 업무 등록 📅";
+                String body = loginMemberId + "님이 업무를 등록했습니다: " + content;
+
+                for (String memberId : teamMembers) {
+                    // 나 자신(!= loginMemberId)을 제외하고 팀원들에게 전송
+                    if (!memberId.equals(loginMemberId)) { 
+                         fcmPushService.sendNotificationToUser(memberId, title, body);
+                         //!memberId의 !제거 시 알림 오는거 확인 가능
                     }
-
-                    // 알림 발송 (FcmPushService 호출)
-                    fcmPushService.sendNotificationToUser(
-                        memberId, 
-                        "새 팀 업무 등록 📅", 
-                        loginMemberId + "님이 업무를 등록했습니다: " + content
-                    );
                 }
             }
+            
+        } catch (Exception e) {
+            System.out.println("알림 전송 중 에러 발생 (무시됨): " + e.getMessage());
         }
     }
 }
