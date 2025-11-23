@@ -1,9 +1,13 @@
 package com.bscalendar.fcm.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bscalendar.redis.service.RedisService;
+import com.bscalendar.reply.dto.AlramDTO;
+import com.bscalendar.reply.service.AlramService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -14,6 +18,9 @@ public class FcmPushService {
     @Autowired
     private RedisService redisService; //Redis에서 토큰을 가져올 서비스
 
+    @Autowired
+    private AlramService alramService;
+    
     @Autowired
     private FirebaseMessaging firebaseMessaging; // FCMConfig에서 만든 알림 발송 객체
 
@@ -50,6 +57,16 @@ public class FcmPushService {
         try {
             String response = firebaseMessaging.send(message);
             System.out.println("알림 발송 성공 (User: " + userId + "), Message ID: " + response);
+            
+            AlramDTO alram = new AlramDTO();
+            alram.setAlram_date(new Date());
+            alram.setMem_id(userId);
+            alram.setMessage(body);
+            alram.setTitle(title);
+            
+            boolean alramInsert = alramService.alramInsert(alram);
+            if(!alramInsert) System.out.println("알람 등록 실패");
+            
         } catch (Exception e) {
             System.out.println("알림 발송 실패 (User: " + userId + "): " + e.getMessage());
             // 여기서 e.getMessage()에 "UNREGISTERED" 등이 뜨면,

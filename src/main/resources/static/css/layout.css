@@ -32,6 +32,9 @@
 	padding: 0 1rem;
 	height: 100%;
 	align-content: center;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
 }
 .menuItem button {
 	background: none;
@@ -42,8 +45,44 @@
 	text-shadow: 0 0 3px #333;
 	color: white;
 }
-
-
+.alram {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	align-content: center;
+	cursor: pointer;
+}
+.alram_modal {
+	position: absolute;
+	width: 20rem;
+	height: auto;
+	padding-bottom: 0.5rem;
+	right: 0;
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+}
+.alram_modal.close {
+	display: none;
+}
+.alram_bodal.open {
+	display: block;
+}
+.alram_modal hr {
+	border: none;
+	width: 100%;
+	height: 1px;
+	background: #ccc;
+}
+.alram_modal_header {
+	text-align: center;
+	font-size: 1.5rem;
+	margin: 0.5rem 0;
+}
+#alram_history {
+	width: 100%;
+	height: auto;
+}
 
 /* 프로젝트 리스트 페이지 ================================== */
 .projectList-area {
@@ -271,10 +310,10 @@
 	border: none;
 	border-radius: 1.2rem;
 }
-/*.settingBox button:nth-of-type(1) { background: #00aa00; }*/
-.settingBox button:nth-of-type(1) { background: #dc3545; }
-.settingBox button:nth-of-type(2) { background: #6495ed; }
-.settingBox button:nth-of-type(3) { background: #aaa; }
+.settingBox button:nth-of-type(1) { background: #00aa00; }
+.settingBox button:nth-of-type(2) { background: #dc3545; }
+.settingBox button:nth-of-type(3) { background: #6495ed; }
+.settingBox button:nth-of-type(4) { background: #aaa; }
 .settingBox button:hover {
 	text-shadow: 0 0 3px #fff;
 	box-shadow: 0 0 5px #ccc;

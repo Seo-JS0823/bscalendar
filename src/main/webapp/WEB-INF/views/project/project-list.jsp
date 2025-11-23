@@ -63,9 +63,18 @@
               const url = '/api/project';
               
               const projectName = document.getElementById('team_name').value;
-              const projectStartDate = document.getElementById('team_sdate').value;
+              let projectStartDate = document.getElementById('team_sdate').value;
               const projectEndDate = document.getElementById('team_edate').value;
               const memberId = getTokenFromInfo('username');
+              
+              if(!projectStartDate) {
+            	  const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                
+            	  projectStartDate = `\${year}-\${month}=\${day}`;
+              }
               
               if(!projectName) {
             	  alert('프로젝트 제목은 필수입니다.')
@@ -85,8 +94,26 @@
             	  body: JSON.stringify(member)
               })
               .catch(error => console.log(error))
-              .then(response => response.json())
+              .then(response => {
+            	  const status = response.status;
+            	  if(status === 400) {
+            		  alert('알 수 없는 오류로 인하여 프로젝트 생성에 실패하였습니다. 잠시 후 다시 시도해주세요.');
+            		  window.location.reload();
+            	  }
+            	  return response.json();
+              })
               .then(data => {
+            	  if(!data) {
+            		  alert('F5를 눌러 새로고침 해주세요.');
+            		  return;
+            	  }
+            	  let sdate = data.team_sdate;
+            	  let edate = data.team_edate;
+            	  let teamName = data.team_name;
+            	  
+            	  alert(`\${sdate} 부터 \${edate} 까지 작업할 \${teamName} 프로젝트가 생성되었습니다.`);
+            	  window.location.reload();
+            	  
               });
               
             });
@@ -309,9 +336,9 @@
 			const projectWorkEndBtn = document.createElement('button');
 			projectWorkEndBtn.textContent = '프로젝트 완료';
 			projectWorkEndBtn.addEventListener('click', () => {
-				// TODO: 프로젝트가 종료되도록 fetch 요청 delete
+				// TODO: 프로젝트완료 되도록 fetch 요청 patch
 				const projectWorkEndUrl = '/api/project/endProject/' + team_idx;
-				const headers = { method: 'DELETE' }
+				const headers = { method: 'PATCH' }
 				fetch(projectWorkEndUrl, headers)
 				.then(response => response.json())
 				.then(data => {
@@ -319,19 +346,36 @@
 					window.location.reload();
 				});
 			});
-			/*
-			const projectMasterUpdateBtn = document.createElement('button');
-			projectMasterUpdateBtn.textContent = '관리자 변경';
-			projectMasterUpdateBtn.addEventListener('click', () => {
-				alert(team_idx);
+			const projectDeleteBtn = document.createElement('button');
+			projectDeleteBtn.textContent = '프로젝트 삭제';
+			projectDeleteBtn.addEventListener('click', () => {
+				const url = `/api/project/endProject/del/\${team_idx}`;
+				
+				let call = confirm('정말로 프로젝트를 삭제하시겠습니까?');
+				if(!call) return;
+				
+				fetch(url, {
+					method: 'DELETE'
+				})
+				.then(response => {
+					const status = response.status;
+					if(status === 400) {
+						alert('알 수 없는 오류로 인하여 정상적으로 처리되지 않았습니다. 다시 시도해 주세요.');
+						window.location.reload();
+					}
+					return response.json();
+				})
+				.then(data => {
+					alert(data.message);
+					window.location.reload();
+				})
 			});
-			*/
 			const modalCloseBtn = document.createElement('button');
 			modalCloseBtn.textContent = '닫 기';
 			modalCloseBtn.addEventListener('click', () => {
 				modalCloseOpen(projectSetting);
 			});
-			//settingBox4.appendChild(projectMasterUpdateBtn);
+			settingBox4.appendChild(projectDeleteBtn);
 			settingBox4.appendChild(projectWorkEndBtn);
 			settingBox4.appendChild(updateSettingBtn);
 			settingBox4.appendChild(modalCloseBtn);

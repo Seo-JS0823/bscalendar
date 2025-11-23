@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bscalendar.reply.mapper.AlramMapper">
+	<insert id="alramInsert">
+		INSERT INTO EG_ALRAM
+			(MEM_ID, ALRAM_DATE, MESSAGE, TITLE)
+		VALUES
+			(#{mem_id}, #{alram_date}, #{message}, #{title})
+	</insert>
+	
+	<select id="alramReadAll">
+		SELECT
+			*
+		FROM
+			EG_ALRAM
+		WHERE
+			MEM_ID = #{mem_id} AND
+			READ_FLAG = 'N'
+	</select>
+	
+	<update id="alramSeeUpdate">
+		UPDATE EG_ALRAM SET
+			READ_FLAG = 'Y'
+		WHERE
+			ALRAM_IDX = #{alram_idx}
+	</update>
+</mapper>

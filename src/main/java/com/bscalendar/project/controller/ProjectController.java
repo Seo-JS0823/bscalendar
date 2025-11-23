@@ -196,13 +196,13 @@ public class ProjectController {
 		));
 	}
 	
-	@DeleteMapping("/endProject/{team_idx}")
+	@PatchMapping("/endProject/{team_idx}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> projectDelete(
+	public ResponseEntity<Map<String, Object>> projectSuccessed(
 			@PathVariable("team_idx") Integer team_idx) {
-		// TODO: 프로젝트 삭제이지만 TEAM_DEL_FLAG 만 Y로 변경
-		boolean projectDeleted = projectSvc.projectDelete(team_idx);
-		if(!projectDeleted) {
+		// TODO: 프로젝트 삭제이지만 TEAM_CON_FLAG 만 Y로 변경
+		boolean projectSuccessed = projectSvc.projectSuccess(team_idx);
+		if(!projectSuccessed) {
 			return ResponseEntity.ok(Map.of(
 				"message", "예기치 않은 오류로 인해 프로젝트를 종료시키지 못하였습니다. 다시 시도해주세요."
 			));
@@ -291,5 +291,18 @@ public class ProjectController {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/endProject/del/{team_idx}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> projectDelete(
+			@PathVariable("team_idx") Integer team_idx) {
+		boolean projectDelete = projectSvc.projectDelete(team_idx);
+		if(!projectDelete) {
+			return ResponseEntity.badRequest().body(null);
+		}
+		return ResponseEntity.ok(Map.of(
+			"message", "프로젝트가 정상적으로 삭제되었습니다."
+		));
 	}
 }

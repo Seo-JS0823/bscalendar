@@ -57,9 +57,12 @@ public interface ProjectMapper {
 	// 프로젝트의 기본 정보를 업데이트함
 	public int projectSettingUpdate(Integer team_idx, String team_edate, String team_name);
 
-	// 프로젝트를 종료 처리함
-	public int projectDelete(Integer team_idx);
+	// 프로젝트를 완료 처리함
+	public int projectSuccess(Integer team_idx);
 
+	// 프로젝트를 삭제 처리함
+	public int projectDelete(Integer team_idx);
+	
 	// 프로젝트에서 멤버를 추방함
 	public int projectMemberDelete(Integer team_idx, String mem_id);
 

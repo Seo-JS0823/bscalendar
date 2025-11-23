@@ -53,7 +53,8 @@
 		WHERE
 			MEMBER.MEM_ID = TEAM.MEM_ID AND
 			MAPP.TEAM_IDX = TEAM.TEAM_IDX AND
-			MAPP.MEM_ID = #{mem_id}
+			MAPP.MEM_ID = #{mem_id} AND
+			TEAM.TEAM_DEL_FLAG = 'N'
 	</select>
 	
 	<!-- 프로젝트에 소속된 멤버 조회, ID: projectMembersRead -->
@@ -179,10 +180,18 @@
 			TEAM_IDX = #{team_idx}
 	</update>
 	
+	<!-- 프로젝트 Success -->
+	<update id="projectSuccess">
+		UPDATE EG_TEAM SET
+			TEAM_CON_FLAG = 'Y'
+		WHERE
+			TEAM_IDX = #{team_idx}
+	</update>
+	
 	<!-- 프로젝트 Delete -->
 	<update id="projectDelete">
 		UPDATE EG_TEAM SET
-			TEAM_CON_FLAG = 'Y'
+			TEAM_DEL_FLAG = 'Y'
 		WHERE
 			TEAM_IDX = #{team_idx}
 	</update>

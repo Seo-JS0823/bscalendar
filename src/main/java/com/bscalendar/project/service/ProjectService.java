@@ -134,7 +134,13 @@ public class ProjectService {
 		return projectUpdated > 0;
 	}
 
-	// 프로젝트를 종료합니다. 정상적으로 처리되었으면 true를 반환합니다.
+	// 프로젝트를 완료합니다. 정상적으로 처리되었으면 true를 반환합니다.
+	public boolean projectSuccess(Integer team_idx) {
+		int projectSuccessed = projectMapper.projectSuccess(team_idx);
+		return projectSuccessed > 0;
+	}
+	
+	// 프로젝트를 삭제합니다. 정상적으로 처리되었으면 true를 반환합니다.
 	public boolean projectDelete(Integer team_idx) {
 		int projectDeleted = projectMapper.projectDelete(team_idx);
 		return projectDeleted > 0;

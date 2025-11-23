@@ -4,6 +4,16 @@
 		<button onclick="homeLocation()">Project Home</button>
 	</div>
 	<div class="menuItem">
+		<div id="alram_control" class="alram">
+			<img src="/img/alram.png">
+			<div id="alram_modal" class="alram_modal close">
+				<h1 class="alram_modal_header">최근 알림 내역</h1>
+				<hr>
+				<div id="alram_history">
+					
+				</div>
+			</div>
+		</div>
 		<button onclick="myPageLocation()">마이페이지</button>
 	</div>
 </nav>
@@ -116,6 +126,44 @@
 	}
 </script>
 <script>
+const alramModal = document.getElementById('alram_modal');
+const alramControl = document.getElementById('alram_control');
+const alramHistory = document.getElementById('alram_history');
+
+alramControl.addEventListener('click', () => {
+	alramModalControl(alramModal);
+});
+
+function alramModalControl(alramModal) {
+	const state = alramModal.className.split(' ')[1];
+	if(state === 'close') {
+		alramModal.classList.remove('close');
+		alramModal.classList.add('open');
+	} else if(state === 'open') {
+		alramModal.classList.remove('open');
+		alramModal.classList.add('close');
+	}
+}
+
+fetch('/api/alram/' + getTokenFromInfo('username'))
+.then(response => {
+	const status = response.status;
+	if(status === 204) {
+		
+	}
+	return response.json();
+})
+.then(data => {
+	data.forEach(alram => {
+		const alramIdx = alram.alram_idx;
+		const date = alram.alram_date;
+		const title = alram.title;
+		const message = alram.message;
+		
+		
+	});
+});
+
 messaging.onMessage((payload) => {
 	console.log(payload);
 })
