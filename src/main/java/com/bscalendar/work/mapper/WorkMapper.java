@@ -20,5 +20,5 @@ public interface WorkMapper {
 	int updateWorkDetail(WorkDTO workDTO);
 	
 	//알람 기능 위한 추가
-	List<String> getTeamMemberIds(int team_idx);
+	List<WorkDTO> getTeamMemberIds(int team_idx);
 }
