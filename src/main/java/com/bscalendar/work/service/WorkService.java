@@ -2,11 +2,13 @@ package com.bscalendar.work.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bscalendar.fcm.service.FcmPushService;
+import com.bscalendar.member.mapper.MemberMapper;
 import com.bscalendar.reply.dto.AlramDTO;
 import com.bscalendar.reply.service.AlramService;
 import com.bscalendar.work.dto.WorkDTO;
@@ -20,6 +22,9 @@ public class WorkService {
     
     @Autowired
     private WorkMapper workMapper;
+    
+    @Autowired
+    private MemberMapper memberMapper;
     
     @Autowired
     private AlramService alramService;
@@ -38,7 +43,9 @@ public class WorkService {
             // 팀원 목록 가져오기
             // 아이디 조회
             List<WorkDTO> teamMembers = workMapper.getTeamMemberIds(workDTO.getTeam_idx());
-            
+            System.out.println(teamMembers);
+            Map<String, Object> workCreateMember = memberMapper.getMember(loginMemberId);
+            String workCreateMemberName = (String) workCreateMember.get("mem_name");
             if (teamMembers != null) {
                 
                 // 1. DTO에서 업무 내용(comment)을 가져옵니다.
@@ -53,28 +60,15 @@ public class WorkService {
 
                 String title = "새로운 팀 업무 등록 📅";
 
-                for (WorkDTO memberId : teamMembers) {
+                for (WorkDTO member : teamMembers) {
                     // 나 자신(!= loginMemberId)을 제외하고 팀원들에게 전송
-                	String targetName = memberId.getMem_name();
-                	String targetId = memberId.getMem_id();
-                	String body = targetName + "님이 업무를 등록했습니다: ";
-                    if (!targetId.equals(loginMemberId)) { 
+                	String targetName = member.getMem_name();
+                	String targetId = member.getMem_id();
+                	System.out.println("푸시 전송 전 대상 이름 : " + targetName + " , 대상 아이디 : " + targetId);
+                	String body = workCreateMemberName + "님이 업무를 등록했습니다: ";
+                    if (!targetId.equals(loginMemberId)) {
                     	//!targetId의 !제거 시 알림 오는거 확인 가능
-                         fcmPushService.sendNotificationToUser(targetId, targetName, title, body);
-                         try {
-                             AlramDTO alram = new AlramDTO();
-                             alram.setMem_id(targetId);      
-                             alram.setTitle(title);       
-                             alram.setMessage(body);      
-                             alram.setRead_flag("N");        
-                             alram.setAlram_date(new Date());
-                             
-                             // 팀원이 만든 메서드 호출!
-                             alramService.alramInsert(alram);
-                             
-                         } catch (Exception dbE) {
-                             System.out.println("DB 알림 저장 실패(무시): " + dbE.getMessage());
-                         }
+                        fcmPushService.sendNotificationToUser(targetId, targetName, title, body);
                     }
                 }
             }

@@ -157,6 +157,7 @@
       		`;
       		// TODO: 미완료, 완료 상태 렌더링
       		const finFlagState = document.getElementById('finFlagState');
+      		const member_id = getTokenFromInfo('username');
       		let notFinFlag = 0;
       		let okFinFlag = 0;
       		
@@ -165,6 +166,7 @@
       			const works_idx = work.works_idx;
       			const memName = work.mem_name;
       			const sdate = work.works_sdate.substring(0, 10);
+      			const works_hide = work.works_hide;
       			const edate = work.works_edate.substring(0, 10);
       			const comment = work.works_comment;
       			const alramState = work.works_alram;
@@ -196,8 +198,12 @@
       				notFinFlag++;
       				// TODO: 미완료 상태일 때 이벤트 핸들러 등록
       				eventTd.addEventListener('click', (e) => {
+      					e.stopPropagation();
+      					if(member_id !== mem_id) {
+      						alert(`너.. \${memName} 아니지..?`);
+      						return;
+      					}
       					if(confirm('업무를 완료 처리 하시겠습니까?')) {
-      						e.stopPropagation();
       						e.preventDefault();
       						// TODO: 완료 처리하는 컨트롤러와 로직
       						const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
@@ -233,9 +239,13 @@
       			// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
       				finFlagChange = 'N';
       				eventTd.addEventListener('click', (e) => {
+      					e.stopPropagation();
+      					if(member_id !== mem_id) {
+      						alert(`너.. \${memName} 아니지..?`);
+      						return;
+      					}
       					if(confirm('업무를 다시 미완료 처리 하시겠습니까?')) {
 	      					e.preventDefault();
-	      					e.stopPropagation();
 	      					const url = `/api/work/update/\${work.works_idx}/\${finFlagChange}`;
 	      					fetch(url, {
 	      						method: 'PATCH'
@@ -264,7 +274,7 @@
       			
       			tr.addEventListener('click', () => {
       				// TODO: work-detail location
-      				const url = '/work/detail/' + works_idx;
+      				const url = `/work/detail/\${works_idx}/\${teamIdx}`;
       				window.location.href = url;
       			});
       			const hideState = work.works_hide;

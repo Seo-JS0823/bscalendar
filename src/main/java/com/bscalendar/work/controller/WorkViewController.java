@@ -28,11 +28,15 @@ public class WorkViewController {
 		return "work/work-create";
 	}
 	
-	@GetMapping("/work/detail/{works_idx}")
-	public String workRead(@PathVariable("works_idx") Integer works_idx, Model model) {
+	@GetMapping("/work/detail/{works_idx}/{team_idx}")
+	public String workRead(
+			@PathVariable("works_idx") Integer works_idx,
+			@PathVariable("team_idx") Integer team_idx,
+			Model model) {
 		WorkDTO workDTO = workMapper.getWorkDetail(works_idx);
 		model.addAttribute("works_idx",works_idx);
-		
+		model.addAttribute("team_idx",team_idx);
+
 		return "work/work-detail";
 	}
 	

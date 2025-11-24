@@ -33,11 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
  				successCallback(mergedEvents);
 
  				fetch(`/api/project/work/cal/${nowDate}/${teamIdx}/${memberId}`)
- 				.then(response => response.json())
- 				.then(data => {
-					workRender(data);
+ 				.then(response => {
+					const status = response.status;
+					if(status === 204) {
+						return;
+					}
+					return response.json();
 				})
- 				
+ 				.then(data => {
+					if(data) workRender(data);
+					else return;
+				})
 			})
 		},
 		dateClick: function(info) {
@@ -185,7 +191,7 @@ function mergeEvents(events) {
 		if(currentEnd > nextStart) {
 			const nextEnd = new Date(nextEvent.end);
 			if(nextEnd > currentEnd) {
-				currentHideEvent.end = nextEvent.end;
+				currentNoHideEvent.end = nextEvent.end;
 			}
 		} else {
 			merged.push(currentNoHideEvent);

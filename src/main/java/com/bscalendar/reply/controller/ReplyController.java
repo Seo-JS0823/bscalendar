@@ -69,26 +69,10 @@ public class ReplyController {
             if (taskAuthorId != null && !taskAuthorId.equals(loginMemberId)) {
                 	
             	String title = "새 댓글 알림 💬";
-            	String body = loginMemberId + "님이 회원님의 업무에 새 댓글을 남겼습니다.";
+            	String body = taskAuthorName + "님이 회원님의 업무에 새 댓글을 남겼습니다.";
             	
             	// 1. FCM 발송 (위에서 만든 변수 사용)
-                fcmPushService.sendNotificationToUser(taskAuthorId, taskAuthorName,title, body);
-                
-                // 2. DB 저장
-                try {
-                	AlramDTO alram = new AlramDTO();
-                	alram.setMem_id(taskAuthorId);      	
-                	alram.setTitle(title);
-                	alram.setMessage(body);                	
-                	alram.setRead_flag("N");      
-                	alram.setAlram_date(new Date());
-                	
-                	// 팀원이 만든 서비스 호출해서 DB에 저장
-                	alramService.alramInsert(alram);
-                	
-                } catch (Exception dbE) {
-                	System.out.println("DB 알림 저장 실패(무시): " + dbE.getMessage());
-                }
+                fcmPushService.sendNotificationToUser(taskAuthorId, taskAuthorName, title, body);
             }
             
         } catch (Exception e) {	

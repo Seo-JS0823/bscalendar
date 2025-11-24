@@ -31,6 +31,15 @@
 			works_idx = #{works_idx}
 	</update>
 	
+	<update id="deleteWork">
+		UPDATE
+		  EG_WORKS
+		SET 
+		  works_del_flag = 'Y'
+		WHERE
+			works_idx = #{works_idx}
+	</update>
+	
 	<select id="findWorkToIdx" resultType="com.bscalendar.work.dto.WorkDTO">
 		SELECT
 			A.*,
@@ -54,7 +63,8 @@
 	 	 works.works_arlam,
 	 	 works.works_arlam_date,
 	 	 works.works_sdate,
-	 	 works.works_edate
+	 	 works.works_edate,
+	 	 works.works_del_flag
 	 FROM EG_WORKS works
 	 JOIN EG_TEAM team ON works.team_idx = team.team_idx
 	 JOIN EG_MEMBER member ON works.mem_id = member.mem_id 
@@ -71,7 +81,8 @@
 			W.TEAM_IDX = #{team_idx} AND
 			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{date} AND
 			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{date} AND
-			W.WORKS_HIDE = 'N'
+			W.WORKS_HIDE = 'N' AND
+			W.works_del_flag = 'N'
 	</select>
 	
 	<!-- 알람 기능을 위한 쿼리 -->
@@ -82,6 +93,7 @@
 	    	EG_MAPP MP, EG_MEMBER M
 	    WHERE
 	    	MP.MEM_ID = M.MEM_ID AND
+	    	MP.MAPP_DEL_FLAG = 'N' AND
 	    	MP.TEAM_IDX = #{team_idx}
 	</select>
 </mapper>
