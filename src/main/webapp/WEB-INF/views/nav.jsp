@@ -10,7 +10,6 @@
 				<h1 class="alram_modal_header">최근 알림 내역</h1>
 				<hr>
 				<div id="alram_history">
-					
 				</div>
 			</div>
 		</div>
@@ -145,26 +144,70 @@ function alramModalControl(alramModal) {
 	}
 }
 
-fetch('/api/alram/' + getTokenFromInfo('username'))
-.then(response => {
-	const status = response.status;
-	if(status === 204) {
-		
-	}
-	return response.json();
-})
-.then(data => {
-	data.forEach(alram => {
-		const alramIdx = alram.alram_idx;
-		const date = alram.alram_date;
-		const title = alram.title;
-		const message = alram.message;
-		
-		
+alramCall();
+
+function alramItems(alram) {
+	const alramIdx = alram.alram_idx;
+	const date = alram.alram_date;
+	const datetime = date.replace('T', ' ').substring(0, 16);
+	const title = alram.title;
+	const message = alram.message;
+	
+	const alramDiv = document.createElement('div');
+	alramDiv.classList.add('alram_item');
+	const html = `
+		<p>\${datetime}</p>
+		<h1>\${alram.title}</h1>
+		<p>\${alram.message}</p>
+	`;
+	
+	alramDiv.innerHTML = html;
+	alramDiv.addEventListener('click', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		const url = `/api/alram/\${alramIdx}`;
+		const headers = {
+			method: 'PATCH'	
+		};
+		fetch(url, headers)
+		.then(response => {
+			const status = response.status;
+			if(status === 400) return;
+			return response.json();
+		})
+		.then(data => {
+			if(!data) return;
+			const updated = data.update;
+			if(updated === 'ok') alramHistory.removeChild(alramDiv);
+		})
 	});
-});
+	
+	alramHistory.appendChild(alramDiv);
+}
+
+function alramCall() {
+	fetch('/api/alram/' + getTokenFromInfo('username'))
+	.then(response => {
+		const status = response.status;
+		if(status === 204) {
+			return;
+		}
+		return response.json();
+	})
+	.then(data => {
+		if(!data) return;
+		console.log(data);
+		data.forEach(alram => {
+			alramItems(alram);
+		});
+	});
+}
 
 messaging.onMessage((payload) => {
-	console.log(payload);
+	alramHistory.innerHTML = '';
+	alramCall();
+	alramModalControl(alramModal);
+	
+	setTimeout(() => { alramModalControl(alramModal); }, 3000);
 })
 </script>

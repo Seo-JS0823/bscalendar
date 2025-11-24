@@ -58,8 +58,9 @@ public class FcmPushService {
             String response = firebaseMessaging.send(message);
             System.out.println("알림 발송 성공 (User: " + userId + "), Message ID: " + response);
             
+            Date now = new Date();
             AlramDTO alram = new AlramDTO();
-            alram.setAlram_date(new Date());
+            alram.setAlram_date(now);
             alram.setMem_id(userId);
             alram.setMessage(body);
             alram.setTitle(title);

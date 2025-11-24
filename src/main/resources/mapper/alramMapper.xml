@@ -16,6 +16,8 @@
 		WHERE
 			MEM_ID = #{mem_id} AND
 			READ_FLAG = 'N'
+		ORDER BY
+			ALRAM_IDX asc
 	</select>
 	
 	<update id="alramSeeUpdate">
