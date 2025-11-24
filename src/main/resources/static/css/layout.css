@@ -969,14 +969,24 @@
 	display: none;
 }
 .detail-header-area .work-updateBtn {
-	width: 10rem;
+	width: 14rem;
 	height: 2.5rem;
 	color: white;
 	background: #00aa00;
 	border-radius: 1rem;
-	
+}
+.detail-header-area .work-deleteBtn {
+	width: 10rem;
+	height: 2.5rem;
+	color: white;
+	background: red;
+	border-radius: 1rem;
 }
 .detail-header-area .work-updateBtn:hover {
+	text-shadow: 0 0 3px #fff;
+	box-shadow: 0 0 3px #ccc;
+}
+.detail-header-area .work-deleteBtn:hover {
 	text-shadow: 0 0 3px #fff;
 	box-shadow: 0 0 3px #ccc;
 }

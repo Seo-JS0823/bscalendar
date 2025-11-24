@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bscalendar.work.mapper.WorkMapper">
+
+	<!-- 업무 등록 로직 -->
 	<insert id="workCreate">
 			INSERT INTO EG_WORKS
 				(team_idx, mem_id, works_comment, works_hide, works_arlam,
@@ -10,6 +12,7 @@
 			   #{works_arlam_date}, #{works_sdate}, #{works_edate})
 	</insert>
 	
+	<!-- 업무 완료/미완료 변경 로직 -->
 	<update id="workUpdate">
 		UPDATE
 			EG_WORKS
@@ -19,6 +22,7 @@
 			WORKS_IDX = #{works_idx}
 	</update>
 	
+	<!-- 업무 상세정보 수정 로직 -->
 	<update id="updateWorkDetail">
 		UPDATE
 			EG_WORKS
@@ -31,6 +35,17 @@
 			works_idx = #{works_idx}
 	</update>
 	
+	<!-- 업무 삭제 로직 -->
+	<update id="deleteWork">
+		UPDATE
+		  EG_WORKS
+		SET 
+		  works_del_flag = 'Y'
+		WHERE
+			works_idx = #{works_idx}
+	</update>
+	
+	<!-- 멱등성 방어 -->
 	<select id="findWorkToIdx" resultType="com.bscalendar.work.dto.WorkDTO">
 		SELECT
 			A.*,
@@ -41,6 +56,7 @@
 			WORKS_IDX = #{works_idx}
 	</select>
 	
+	<!-- 업무 상세정보 조회 로직 -->
  	<select id="getWorkDetail" resultType="com.bscalendar.work.dto.WorkDTO">
 	 SELECT 
 	 	 member.mem_name,
@@ -54,12 +70,15 @@
 	 	 works.works_arlam,
 	 	 works.works_arlam_date,
 	 	 works.works_sdate,
-	 	 works.works_edate
+	 	 works.works_edate,
+	 	 works.works_del_flag
 	 FROM EG_WORKS works
 	 JOIN EG_TEAM team ON works.team_idx = team.team_idx
 	 JOIN EG_MEMBER member ON works.mem_id = member.mem_id 
 	 WHERE works.works_idx = #{works_idx}
 	</select> 
+	
+	<!-- 날짜기준으로 업무 조회하기 -->
 	<select id="findToDateWorks" resultType="com.bscalendar.project.dto.response.MemberWorkDTO">
 		SELECT
 			W.*, M.MEM_NAME
@@ -71,7 +90,8 @@
 			W.TEAM_IDX = #{team_idx} AND
 			DATE_FORMAT(W.WORKS_SDATE, '%Y-%m-%d') <![CDATA[ <= ]]> #{date} AND
 			DATE_FORMAT(W.WORKS_EDATE, '%Y-%m-%d') <![CDATA[ >= ]]> #{date} AND
-			W.WORKS_HIDE = 'N'
+			W.WORKS_HIDE = 'N' AND
+		  works_del_flag = 'N'
 	</select>
 	
 	<!-- 알람 기능을 위한 쿼리 -->

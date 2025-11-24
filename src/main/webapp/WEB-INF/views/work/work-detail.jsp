@@ -54,6 +54,7 @@
 	      	<script>
 	      		const ptags = document.querySelectorAll('.row-box > :nth-child(2)');
 	      		const works_idx = ${works_idx};
+	      		const team_idx = ${team_idx};
 	      		const mem_id = getTokenFromInfo('username'); //토큰으로 mem_id 가져오기
 	      		const detail_textareaEl = document.querySelector('.detail-textarea'); // 업무내용
 	      		const detailUpdate = document.getElementById('detail-update'); // 업무 설정 ▽
@@ -95,6 +96,7 @@
 	      				detailUpdateArea.classList.add('opacitOpen');
 	      				
 	      				const updateBtn = document.createElement('button');
+	      				const deleteBtn = document.createElement('button');
 	      				updateBtn.addEventListener('click', (e) => {
 	      					// TODO: 업무 설정 변경 로직
 	      					e.stopPropagation();
@@ -154,16 +156,50 @@
 	      						e.preventDefalut();
 	      						e.stopPropagation();
 	      					}
-			      		});
+			      		}); // updateBtn.addEventListener('click')
+			      		
+			      		deleteBtn.addEventListener('click', (e) => {
+			      			// 업무 삭제
+			      			e.stopPropagation();
+			      			if( confirm('정말로 해당 업무를 삭제하시겠습니까?') ) {
+			      				fetch(`/api/work/Delete/\${works_idx}`,{ 
+			      						method: 'PATCH',
+			      						headers: {'Content-type':'application/json; cahrset=UTF-8'},
+			      				})
+			      					.catch( error => console.log('업무삭제 에러:', error) )
+			      				  .then( response => {
+			      						if(response.status === 200) {
+			      							return response.json();
+			      						} else {
+			      							alert('서버 문제로 인한 업무 삭제 실패');
+			      							return;
+			      						}
+			      				  })
+			      				  .then( data => {
+			      					  alert('업무 삭제 성공');
+			      					  window.location.href = `/project/\${team_idx}`;
+			      				  } )
+			      			} else {
+			      				e.preventDefault();
+			      				e.stopPropagation();
+			      			}
+			      			
+			      		})
+			      		
+			      		deleteBtn.classList.add('work-deleteBtn');
+			      		deleteBtn.textContent = '업무 삭제';
 	      				
 	      				updateBtn.classList.add('work-updateBtn');
 	      				updateBtn.textContent = '변경사항 저장';
 	      				
       					detailHeaderArea.appendChild(updateBtn);
+      					detailHeaderArea.appendChild(deleteBtn);
 	      				
 	      			} else if(state === 'opacitOpen') {
 	      				const updateBtn = document.getElementsByClassName('work-updateBtn')[0];
+	      				const deleteBtn = document.getElementsByClassName('work-deleteBtn')[0];
 	      				detailHeaderArea.removeChild(updateBtn);
+	      				detailHeaderArea.removeChild(deleteBtn);
 	      				detailUpdate.innerHTML = `
 	      				업무 설정 △
 	      				<span id="detail-update-descript" style="font-size: 1.2rem;" >

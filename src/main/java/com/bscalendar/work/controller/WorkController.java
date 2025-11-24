@@ -157,12 +157,24 @@ public class WorkController {
 		}
 	}
 	
-	@DeleteMapping("/")
+	/* 업무 삭제 로직(실제로 삭제는 안돼고 works_del_flag -> 'Y') */
+	@PatchMapping("/Delete/{works_idx}")
 	@ResponseBody
-	public ResponseEntity<WorkDTO> readDelete() {
+	public ResponseEntity<WorkDTO> readDelete(
+			@PathVariable("works_idx") Integer works_idx
+			) {
 		// TODO: 업무 삭제
+		workMapper.deleteWork(works_idx);
 		
-		return null;
+		WorkDTO deleted = workMapper.getWorkDetail(works_idx);
+		String works_del_flag = deleted.getWorks_del_flag();
+		
+		ResponseEntity<WorkDTO> response =
+				(works_del_flag.equals("Y") )
+					?  ResponseEntity.ok(deleted)
+					:  ResponseEntity.badRequest().body(null);
+		
+		return response;
 	}
 	
 }
