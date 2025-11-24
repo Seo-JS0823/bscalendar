@@ -165,6 +165,7 @@
       			const mem_id = work.mem_id;
       			const works_idx = work.works_idx;
       			const memName = work.mem_name;
+      			const works_hide = work.works_hide;
       			const sdate = work.works_sdate.substring(0, 10);
       			const edate = work.works_edate.substring(0, 10);
       			const comment = work.works_comment;

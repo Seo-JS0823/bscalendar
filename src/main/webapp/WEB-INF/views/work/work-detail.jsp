@@ -80,8 +80,14 @@
 			  					detailUpdateAreaEl.innerHTML = '';
 			  					detail_textareaEl.readOnly = true;
 			  				}
+		  					
+		  					if(data.works_hide === 'Y') {
+		  						worksPrivateEl.checked = true;
+		  					} else if(data.works_hide === 'N') {
+		  						worksOpenEl.checked = true;
+		  					}
 			  				
-			  			})
+			  			})	
 			  			
 	      		let btnState = false;
 	      		detailUpdate.addEventListener('click', () => {
