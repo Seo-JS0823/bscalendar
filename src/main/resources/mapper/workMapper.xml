@@ -75,9 +75,13 @@
 	</select>
 	
 	<!-- 알람 기능을 위한 쿼리 -->
-	<select id="getTeamMemberIds" resultType="String">
-	    SELECT MEM_ID
-	    FROM EG_MAPP
-	    WHERE TEAM_IDX = #{team_idx}
+	<select id="getTeamMemberIds" resultType="com.bscalendar.work.dto.WorkDTO">
+	    SELECT
+	    	MP.MEM_ID, M.MEM_NAME
+	    FROM
+	    	EG_MAPP MP, EG_MEMBER M
+	    WHERE
+	    	MP.MEM_ID = M.MEM_ID AND
+	    	MP.TEAM_IDX = #{team_idx}
 	</select>
 </mapper>

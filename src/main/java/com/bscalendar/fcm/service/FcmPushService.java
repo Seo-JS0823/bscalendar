@@ -28,7 +28,7 @@ public class FcmPushService {
      // @param userId 알림을 받을 사용자의 ID
      // @param title 알림 제목
      //  @param body 알림 본문
-    public void sendNotificationToUser(String userId, String title, String body) {
+    public void sendNotificationToUser(String userId, String userName, String title, String body) {
         
         // 1. Redis에서 사용자의 FCM 토큰 조회
         String redisKey = "fcm:user:" + userId;

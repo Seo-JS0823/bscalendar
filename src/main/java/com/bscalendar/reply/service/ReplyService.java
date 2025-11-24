@@ -14,6 +14,7 @@ public class ReplyService {
 
     @Autowired
     private ReplyMapper replyMapper;
+    
 
     @Transactional
     public ReplyResponseDTO createReply(ReplyCreateDTO createDto, String memId) {
