@@ -165,8 +165,8 @@
       			const mem_id = work.mem_id;
       			const works_idx = work.works_idx;
       			const memName = work.mem_name;
-      			const works_hide = work.works_hide;
       			const sdate = work.works_sdate.substring(0, 10);
+      			const works_hide = work.works_hide;
       			const edate = work.works_edate.substring(0, 10);
       			const comment = work.works_comment;
       			const alramState = work.works_alram;
@@ -239,7 +239,7 @@
       			// TODO: 완료상태를 미완료로 되돌리고 싶으면 여기다가 AddEventListener
       				finFlagChange = 'N';
       				eventTd.addEventListener('click', (e) => {
-	      				e.stopPropagation();
+      					e.stopPropagation();
       					if(member_id !== mem_id) {
       						alert(`너.. \${memName} 아니지..?`);
       						return;

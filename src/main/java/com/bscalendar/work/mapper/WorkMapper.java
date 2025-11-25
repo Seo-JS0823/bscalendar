@@ -11,10 +11,10 @@ public interface WorkMapper {
 	
 	/* 업무 완료/미완료 변경 로직 */
 	int workUpdate(Integer works_idx, String works_fin_flag);
-	
+
 	/* 멱등성 방어 */
 	WorkDTO findWorkToIdx(Integer works_idx);
-	
+
 	/* 업무 등록 로직 */
 	int workCreate(WorkDTO workDTO);
 	
@@ -26,10 +26,10 @@ public interface WorkMapper {
 	
 	/* 업무 수정 로직 */
 	int updateWorkDetail(WorkDTO workDTO);
-	
+
 	/* 업무 삭제 로직(WORKS_DEL_FLAG를 'Y'로 변경) */
 	int deleteWork(Integer works_idx);
 	
 	//알람 기능 위한 추가
-	List<String> getTeamMemberIds(int team_idx);
+	List<WorkDTO> getTeamMemberIds(int team_idx);
 }

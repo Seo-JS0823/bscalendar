@@ -36,7 +36,6 @@ public class WorkViewController {
 		WorkDTO workDTO = workMapper.getWorkDetail(works_idx);
 		model.addAttribute("works_idx",works_idx);
 		model.addAttribute("team_idx",team_idx);
-		
 		return "work/work-detail";
 	}
 	

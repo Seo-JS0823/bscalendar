@@ -7,17 +7,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.bscalendar.project.service.ProjectService;
 import com.bscalendar.work.dto.WorkDTO;
 import com.bscalendar.work.mapper.WorkMapper;
 import com.bscalendar.work.service.WorkService;
@@ -29,6 +28,9 @@ public class WorkController {
 	//알람기능을 위한 추가
 	@Autowired
 	private WorkService workService;
+	
+	@Autowired
+	private ProjectService projectService;
 	
 	@Autowired
 	private WorkMapper workMapper;
@@ -54,6 +56,7 @@ public class WorkController {
 		Map<String,Object> result = new HashMap<>();
 		
 		if( work > 0 ) {
+			
 			// 알림 발송 
 			// DB 저장이 성공했을 때만 실행됨. 에러(알림전송실패)가 나도 무시하고 넘어감.
 			try {
@@ -69,6 +72,7 @@ public class WorkController {
 			result.put("work", workDTO);
 			result.put("redirectUrl", "/project/" + workDTO.getTeam_idx());
 			return ResponseEntity.status(HttpStatus.OK).body(result);
+			
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
@@ -161,18 +165,17 @@ public class WorkController {
 	@PatchMapping("/Delete/{works_idx}")
 	@ResponseBody
 	public ResponseEntity<WorkDTO> readDelete(
-			@PathVariable("works_idx") Integer works_idx
-			) {
+			@PathVariable("works_idx") Integer works_idx) {
 		// TODO: 업무 삭제
 		workMapper.deleteWork(works_idx);
 		
 		WorkDTO deleted = workMapper.getWorkDetail(works_idx);
 		String works_del_flag = deleted.getWorks_del_flag();
 		
-		ResponseEntity<WorkDTO> response =
-				(works_del_flag.equals("Y") )
-					?  ResponseEntity.ok(deleted)
-					:  ResponseEntity.badRequest().body(null);
+		ResponseEntity<WorkDTO> response = 
+				(works_del_flag.equals("Y"))
+					? ResponseEntity.ok(deleted)
+					: ResponseEntity.badRequest().body(null);
 		
 		return response;
 	}

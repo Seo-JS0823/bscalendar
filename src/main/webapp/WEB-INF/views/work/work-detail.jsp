@@ -86,8 +86,7 @@
 		  					} else if(data.works_hide === 'N') {
 		  						worksOpenEl.checked = true;
 		  					}
-			  				
-			  			})	
+			  			})
 			  			
 	      		let btnState = false;
 	      		detailUpdate.addEventListener('click', () => {
@@ -165,6 +164,37 @@
 			      		}); // updateBtn.addEventListener('click')
 			      		
 			      		deleteBtn.addEventListener('click', (e) => {
+			      			// 업무 삭제
+			      			e.stopPropagation();
+			      			if( confirm('정말로 해당 업무를 삭제하시겠습니까?') ) {
+			      				fetch(`/api/work/Delete/\${works_idx}`,{ 
+			      						method: 'PATCH',
+			      						headers: {'Content-type':'application/json; cahrset=UTF-8'},
+			      				})
+			      					.catch( error => console.log('업무삭제 에러:', error) )
+			      				  .then( response => {
+			      						if(response.status === 200) {
+			      							return response.json();
+			      						} else {
+			      							alert('서버 문제로 인한 업무 삭제 실패');
+			      							return;
+			      						}
+			      				  })
+			      				  .then( data => {
+			      					  alert('업무 삭제 성공');
+			      					  window.location.href = `/project/\${team_idx}`;
+			      				  } )
+			      			} else {
+			      				e.preventDefault();
+			      				e.stopPropagation();
+			      			}
+			      			
+			      		})
+			      		
+			      		deleteBtn.classList.add('work-deleteBtn');
+			      		deleteBtn.textContent = '업무 삭제';
+	      				
+	      				deleteBtn.addEventListener('click', (e) => {
 			      			// 업무 삭제
 			      			e.stopPropagation();
 			      			if( confirm('정말로 해당 업무를 삭제하시겠습니까?') ) {

@@ -54,10 +54,10 @@
 }
 .alram_modal {
 	position: absolute;
-	width: 20rem;
+	width: 30rem;
 	height: auto;
 	padding-bottom: 0.5rem;
-	right: 0;
+	left: -130px;
 	background: white;
 	border: 1px solid #ccc;
 	border-radius: 1rem;
@@ -82,7 +82,31 @@
 #alram_history {
 	width: 100%;
 	height: auto;
+	padding: 0 0.5rem;
 }
+.alram_item {
+	width: 100%;
+	height: auto;
+	border: 1px solid #ccc;
+	border-radius: 1rem;
+	padding: 0.5rem;
+	margin-bottom: 0.3rem;
+}
+.alram_item:hover {
+	border: 1px solid #6495ed;
+	box-shadow: 0 0 3px #ccc;
+}
+.alram_item h1 {
+	font-size: 1.3rem;
+	margin: 0;
+}
+.alram_item p {
+	font-size: 1.1rem;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 
 /* 프로젝트 리스트 페이지 ================================== */
 .projectList-area {
@@ -786,9 +810,11 @@
 }
 .worklist-complete { /* 완료된 업무 */
   background-color: #00aa00;
+  color: white;
 }
 .worklist-notComplete {
   background-color: #dc3545;
+  color: white;
 }
 
 @media (width <= 1200px) {
