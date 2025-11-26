@@ -171,7 +171,7 @@ let join = () => {
     .catch(error => console.dir(error))
     .then(response => response.json())
     .then(data => {
-        if(data.result === "ok") location.href="/loginForm";
+        if(data.result === "ok") location.href="/";
         else console.log(data)
     })
 } // End of join() */

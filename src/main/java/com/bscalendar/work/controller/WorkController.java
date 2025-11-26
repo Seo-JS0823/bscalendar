@@ -51,11 +51,11 @@ public class WorkController {
 		}
 		
 		// 1. DB 저장
-		int work = workMapper.workCreate(workDTO);
-		
+		workMapper.workCreate(workDTO);
+		System.out.println("생성된 works_idx = " + workDTO.getWorks_idx());
 		Map<String,Object> result = new HashMap<>();
 		
-		if( work > 0 ) {
+		if( workDTO.getWorks_idx() != null ) {
 			
 			// 알림 발송 
 			// DB 저장이 성공했을 때만 실행됨. 에러(알림전송실패)가 나도 무시하고 넘어감.

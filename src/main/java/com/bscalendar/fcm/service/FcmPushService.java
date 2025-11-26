@@ -24,7 +24,7 @@ public class FcmPushService {
     @Autowired
     private FirebaseMessaging firebaseMessaging; 
 
-    public void sendNotificationToUser(String userId, String userName, String title, String body) {
+    public void sendNotificationToUser(String userId, String userName, String title, String body, String location) {
         
         // FCM 발송이랑 상관없이 무조건 기록부터 남기기
         try {
@@ -33,7 +33,8 @@ public class FcmPushService {
             alram.setMem_id(userId);
             alram.setMessage(body);
             alram.setTitle(title);
-            alram.setRead_flag("N"); 
+            alram.setRead_flag("N");
+            alram.setLocation(location);
             
             boolean alramInsert = alramService.alramInsert(alram);
             if(!alramInsert) System.out.println("DB 알람 등록 실패");

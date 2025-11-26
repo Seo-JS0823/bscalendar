@@ -43,6 +43,7 @@
       <script>
       	const memberList = document.getElementsByClassName('project-members-list')[0];
       	const teamIdx = document.getElementById('team_idx').value;
+      	console.log(teamIdx);
       	fetch(`/api/project/members/\${teamIdx}`)
       	.catch(error => console.error(error))
       	.then(response => response.json())
@@ -60,6 +61,7 @@
       			btn.addEventListener('click', () => {
       				// TODO: fetch GET 요청 보내서 멤버가 등록한 업무 리스트 가져오기
       				const url = `/api/project/members/work/list/\${memId}/\${teamIdx}`;
+      				console.log(url);
 				     	fetch(url)
 				     	.catch(error => console.error(error))
 				     	.then(response => response.json())
@@ -97,7 +99,7 @@
 				     			},
 				     			// TODO: 달력에 등록된 업무 막대기를 렌더링하는 함수
 				     			events: function(fetchInfo, successCallback, failureCallback) {
-				     				fetch(`/api/project/members/work/list/\${memId}/1`)
+				     				fetch(`/api/project/members/work/list/\${memId}/\${teamIdx}`)
 				     				.catch(err => console.err(err))
 				     				.then(response => response.json())
 				     				.then(data => {

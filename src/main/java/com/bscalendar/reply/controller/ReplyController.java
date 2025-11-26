@@ -72,7 +72,7 @@ public class ReplyController {
             	String body = taskAuthorName + "님이 회원님의 업무에 새 댓글을 남겼습니다.";
             	
             	// 1. FCM 발송 (위에서 만든 변수 사용)
-                fcmPushService.sendNotificationToUser(taskAuthorId, taskAuthorName, title, body);
+                fcmPushService.sendNotificationToUser(taskAuthorId, taskAuthorName, title, body, "/work/detail/" + createDto.getWorks_idx() + "/" + response.getTeam_idx());
             }
             
         } catch (Exception e) {	

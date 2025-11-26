@@ -24,6 +24,9 @@ public interface ProjectMapper {
 	// 프로젝트 조회 (Value : mem_id)
 	public List<ProjectDTO> projectRead(ProjectDTO project);
 	
+	// 프로젝트 이름
+	public ProjectDTO getProjectName(Integer team_idx);
+	
 	// 프로젝트에 소속된 멤버 조회 (param1 : team_idx)
 	public List<ProjectMemberDTO> projectMembersRead(Integer team_idx);
 	

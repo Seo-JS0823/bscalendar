@@ -329,7 +329,8 @@
 					return response.json();
 				})
 				.then(data => {
-					
+					alert(data.message);
+					window.location.reload();
 				});
 				
 			});

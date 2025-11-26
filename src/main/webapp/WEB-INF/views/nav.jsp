@@ -152,6 +152,7 @@ function alramItems(alram) {
 	const datetime = date.replace('T', ' ').substring(0, 16);
 	const title = alram.title;
 	const message = alram.message;
+	const location = alram.location || '/project/list';
 	
 	const alramDiv = document.createElement('div');
 	alramDiv.classList.add('alram_item');
@@ -177,8 +178,8 @@ function alramItems(alram) {
 		})
 		.then(data => {
 			if(!data) return;
-			const updated = data.update;
-			if(updated === 'ok') alramHistory.removeChild(alramDiv);
+			if(data.update === 'ok') alramHistory.removeChild(alramDiv);
+			window.location.href = location;
 		})
 	});
 	

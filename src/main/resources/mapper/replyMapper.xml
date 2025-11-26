@@ -35,11 +35,16 @@
             R.MEM_ID        AS mem_id,
             R.REPLY_COMMENT AS reply_comment,
             R.REPLY_REGDATE AS reply_regdate,
-            M.MEM_NAME      AS mem_name
+            M.MEM_NAME      AS mem_name,
+            T.TEAM_IDX			AS team_idx
         FROM 
             EG_REPLY R
         JOIN 
             EG_MEMBER M ON R.MEM_ID = M.MEM_ID
+        JOIN
+        		EG_WORKS W ON W.WORKS_IDX = R.WORKS_IDX
+       	JOIN
+       			EG_TEAM T ON T.TEAM_IDX = W.TEAM_IDX
         WHERE 
             R.REPLY_IDX = #{reply_idx}
     </select>
@@ -54,11 +59,16 @@
             R.MEM_ID        AS mem_id,
             R.REPLY_COMMENT AS reply_comment,
             R.REPLY_REGDATE AS reply_regdate,
-            M.MEM_NAME      AS mem_name
+            M.MEM_NAME      AS mem_name,
+            T.TEAM_IDX			AS team_idx
         FROM 
             EG_REPLY R
         JOIN 
             EG_MEMBER M ON R.MEM_ID = M.MEM_ID
+        JOIN
+        		EG_WORKS W ON W.WORKS_IDX = R.WORKS_IDX
+       	JOIN
+       			EG_TEAM T ON T.TEAM_IDX = W.TEAM_IDX
         WHERE 
             R.WORKS_IDX = #{works_idx}
         ORDER BY 

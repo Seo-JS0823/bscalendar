@@ -17,7 +17,7 @@
      <div class="box"><input type="password" name="mem_pwd" placeholder="패스워드"></div><div>* 패스워드 변경 원할 시 입력</div>
      <div class="box"><input type="password" name="mem_pwd" placeholder="패스워드 재입력"></div><div></div>
      <button type="button" id="btnsend">수정</button>
-     <div class="main-link"><a href="/index">메인으로 가기</a></div>
+     <div class="main-link"><a href="/project/list">메인으로 가기</a></div>
    </div>
    
    <script>
