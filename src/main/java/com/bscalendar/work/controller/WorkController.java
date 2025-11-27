@@ -44,7 +44,6 @@ public class WorkController {
 	@PostMapping("/insertWork")
 	@ResponseBody
 	public ResponseEntity<Map<String,Object>> workCreate(@RequestBody WorkDTO workDTO) {
-		
 		// TODO: 업무 생성
 		if(workDTO.getWorks_arlam_date() != null && workDTO.getWorks_arlam_date().equals("")) {
 			workDTO.setWorks_arlam_date(null);

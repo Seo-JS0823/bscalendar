@@ -32,8 +32,7 @@ public class AlramService {
 	// 정상 업데이트 true
 	// 업데이트 실패 false
 	public boolean alramSeeUpdate(int alram_idx) {
-		int updated = alramMapper.alramSeeUpdate(alram_idx);
-		return updated > 0;
+		return alramMapper.alramSeeUpdate(alram_idx) > 0 ? true : false;
 	}
 	
 }
