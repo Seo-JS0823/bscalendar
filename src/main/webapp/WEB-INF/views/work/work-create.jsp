@@ -75,33 +75,51 @@
     	  if(privateEl.checked) {
     		  hideCheck = 'Y';
     	  }
-
-    	  fetch(url, {
-    		  method: 'POST',
-    		  headers: {'Content-type':'application/json; charset=UTF-8'},
-    		  body: JSON.stringify({
-    			  team_idx: teamIdx,
-    		  	mem_id: memId,
-    			  works_comment: workCommentEl.value,
-    			  works_hide: hideCheck,
-    			  works_arlam: alarmCheck,
-    			  works_arlam_date: alarmEl.value,
-    			  works_sdate: startDateEl.value, 
-    				works_edate: endDateEl.value,
-    		  }),
-    	  })
-    	  .then( response => {
-    		  const status = response.status;
-    		  if(status === 400) {
-    			  alert('네트워크 오류로 인해 업무 등록이 실패하였습니다. 다시 시도해주세요.');
-    			  return;
-    		  }
-    		  return response.json();
-    	  })
-    	  .then( data => {
-    		  if(data.status === 'ok')
-    				window.location.href = data.redirectUrl;
-    	  })
+    	  
+    	  let noRadioCheck = !openEl.checked && !privateEl.checked;
+    	  let noWorkDate = !startDateEl.value || !endDateEl.value;
+    	  let noWorkComment = !workCommentEl.value;
+    	  
+    	  if(noRadioCheck || noWorkDate || noWorkComment) {
+    		  alert('알람 설정을 제외한 빈공간이 있으면 안됩니다')
+    		  return;
+    	  }
+				
+    	  if(confirm('업무를 등록 하시겠습니까?')) {
+	    	  fetch(url, {
+	    		  method: 'POST',
+	    		  headers: {'Content-type':'application/json; charset=UTF-8'},
+	    		  body: JSON.stringify({
+	    			  team_idx: teamIdx,
+	    		  	mem_id: memId,
+	    			  works_comment: workCommentEl.value,
+	    			  works_hide: hideCheck,
+	    			  works_arlam: alarmCheck,
+	    			  works_arlam_date: alarmEl.value,
+	    			  works_sdate: startDateEl.value, 
+	    				works_edate: endDateEl.value,
+	    		  }),
+	    	  })
+	    	  .then( response => {
+	    		  const status = response.status;
+	    		  if(status === 400) {
+	    			  alert('네트워크 오류로 인해 업무 등록이 실패하였습니다. 다시 시도해주세요.');
+	    			  return;
+	    		  }
+	    		  return response.json();
+	    	  })
+	    	  .then( data => {
+	    		  if(data.status !== 'ok') {
+	    			  alert('서버문제로 인하여 등록을 실패하였습니다');
+	    			  return;
+	    		  } else if(data.status === 'ok'){
+	    			  alert('업무가 성공적으로 등록 돼었습니다');
+	    				window.location.href = data.redirectUrl;
+	    		  }
+	    	  }) 
+    	  } else {
+    		  e.preventDefault();
+    	  }// confirm
     	  
       }); // 업무등록 클릭 이벤트
     }) // DOMContentLoaded
