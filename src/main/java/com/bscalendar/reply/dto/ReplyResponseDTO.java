@@ -30,4 +30,7 @@ public class ReplyResponseDTO {
     @JsonProperty("reply_regdate") 
     private String reply_regdate;
     
+    @JsonProperty("team_idx")
+    private Integer team_idx;
+    
 }

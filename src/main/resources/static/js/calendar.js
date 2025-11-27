@@ -26,8 +26,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			
 			fetch(`/api/project/work/cal/${startDate}/${endDate}/${teamIdx}/${memberId}`)
 			.catch(err => console.err(err))
-			.then(response => response.json())
+			.then(response => {
+				const status = response.status;
+				if(status === 204) return;
+				
+				return response.json();
+			})
 			.then(data => {
+				if(!data) return;
 				let events = workDataSetting(data);
 				const mergedEvents = mergeEvents(events);
  				successCallback(mergedEvents);

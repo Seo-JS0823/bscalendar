@@ -3,9 +3,9 @@
 <mapper namespace="com.bscalendar.reply.mapper.AlramMapper">
 	<insert id="alramInsert">
 		INSERT INTO EG_ALRAM
-			(MEM_ID, ALRAM_DATE, MESSAGE, TITLE)
+			(MEM_ID, ALRAM_DATE, MESSAGE, TITLE, LOCATION)
 		VALUES
-			(#{mem_id}, #{alram_date}, #{message}, #{title})
+			(#{mem_id}, #{alram_date}, #{message}, #{title}, #{location})
 	</insert>
 	
 	<select id="alramReadAll">

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bscalendar.fcm.service.FcmPushService;
 import com.bscalendar.project.dto.ProjectDTO;
 import com.bscalendar.project.dto.response.MemberWorkDTO;
 import com.bscalendar.project.dto.response.ProjectMemberDTO;
@@ -16,8 +17,12 @@ import com.bscalendar.project.mapper.ProjectMapper;
 
 @Service
 public class ProjectService {
+	
 	@Autowired
 	private ProjectMapper projectMapper;
+	
+	@Autowired(required = false)
+	private FcmPushService fcmPushService;
 	
 	// 프로젝트 생성: Controller [POST: projectCreate Method]
 	// SQL 3번 날라감
@@ -102,6 +107,13 @@ public class ProjectService {
 			}
 		}
 		
+		ProjectDTO team = projectMapper.getProjectName(team_idx);
+		String teamName = team.getTeam_name();
+		String teamMaster = team.getMem_name();
+		String teamMasterId = team.getMem_id();
+		
+		String title = "프로젝트에 초대되었습니다. 📅";
+		
 		String response = "";
 		int targetSize = 0;
 		for(int i = 0; i < memberIds.size(); i++) {
@@ -113,6 +125,12 @@ public class ProjectService {
 			if(inserted > 0) {
 				response += projectAddTarget.getMem_name() + ", ";
 				targetSize++;
+				
+				String targetId = projectAddTarget.getMem_id();
+				String message = teamName + " 프로젝트에 " + teamMaster + " 님이 초대하였습니다.";
+				if(!targetId.equals(teamMasterId)) {
+					fcmPushService.sendNotificationToUser(targetId, null, title, message, "/project/" + team_idx);
+				}
 			}
 		}
 		

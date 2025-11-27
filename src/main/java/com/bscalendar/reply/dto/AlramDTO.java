@@ -15,6 +15,7 @@ public class AlramDTO {
 	private String title;
 	private String message;
 	private String read_flag;
+	private String location;
 	
 	public AlramDTO() {}
 }

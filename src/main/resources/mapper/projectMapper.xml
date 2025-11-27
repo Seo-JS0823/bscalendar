@@ -58,6 +58,16 @@
 			TEAM.TEAM_DEL_FLAG = 'N'
 	</select>
 	
+	<select id="getProjectName">
+		SELECT
+			T.TEAM_NAME, M.MEM_NAME, M.MEM_ID
+		FROM
+			EG_TEAM T, EG_MEMBER M
+		WHERE
+			M.MEM_ID = T.MEM_ID AND
+			T.TEAM_IDX = #{team_idx}
+	</select>
+	
 	<!-- 프로젝트에 소속된 멤버 조회, ID: projectMembersRead -->
 	<select id="projectMembersRead" resultType="com.bscalendar.project.dto.response.ProjectMemberDTO">
 		SELECT

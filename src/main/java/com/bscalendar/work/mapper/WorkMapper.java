@@ -16,7 +16,7 @@ public interface WorkMapper {
 	WorkDTO findWorkToIdx(Integer works_idx);
 
 	/* 업무 등록 로직 */
-	int workCreate(WorkDTO workDTO);
+	void workCreate(WorkDTO workDTO);
 	
 	/* 업무 상세정보 SELECT 로직 */
 	WorkDTO getWorkDetail(Integer works_idx);

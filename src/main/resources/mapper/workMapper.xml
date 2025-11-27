@@ -3,7 +3,7 @@
 <mapper namespace="com.bscalendar.work.mapper.WorkMapper">
 
 	<!-- 업무 등록 로직 -->
-	<insert id="workCreate">
+	<insert id="workCreate" parameterType="com.bscalendar.work.dto.WorkDTO" useGeneratedKeys="true" keyProperty="works_idx">
 			INSERT INTO EG_WORKS
 				(team_idx, mem_id, works_comment, works_hide, works_arlam,
 				 works_arlam_date, works_sdate, works_edate)
@@ -97,10 +97,11 @@
 	<!-- 알람 기능을 위한 쿼리 -->
 	<select id="getTeamMemberIds" resultType="com.bscalendar.work.dto.WorkDTO">
 	    SELECT
-	    	MP.MEM_ID, M.MEM_NAME
+	    	MP.MEM_ID, M.MEM_NAME, T.TEAM_NAME
 	    FROM
-	    	EG_MAPP MP, EG_MEMBER M
+	    	EG_MAPP MP, EG_MEMBER M, EG_TEAM T
 	    WHERE
+	    	T.TEAM_IDX = MP.TEAM_IDX AND
 	    	MP.MEM_ID = M.MEM_ID AND
 	    	MP.MAPP_DEL_FLAG = 'N' AND
 	    	MP.TEAM_IDX = #{team_idx}
